@@ -207,7 +207,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorTexture = textureLoader.load('https://source.unsplash.com/1024x1024/?terrazzo-floor');
+    const floorTexture = textureLoader.load('https://source.unsplash.com/1024x1024/?grey-tile-floor');
     floorTexture.colorSpace = THREE.SRGBColorSpace;
     floorTexture.wrapS = THREE.RepeatWrapping;
     floorTexture.wrapT = THREE.RepeatWrapping;
