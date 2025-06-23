@@ -59,6 +59,77 @@ function createAisle(length: number, shelves: number, height: number, width: num
   return group;
 }
 
+function createShoppingCart(): THREE.Group {
+  const cart = new THREE.Group();
+  const material = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.8, roughness: 0.4 });
+  const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true, transparent: true, opacity: 0.3 });
+
+  // Basket
+  const basketPoints = [
+    new THREE.Vector3(-0.4, 0.5, -0.6), // bottom front left
+    new THREE.Vector3(0.4, 0.5, -0.6),  // bottom front right
+    new THREE.Vector3(0.4, 0.5, 0.6),   // bottom back right
+    new THREE.Vector3(-0.4, 0.5, 0.6),  // bottom back left
+    new THREE.Vector3(-0.5, 1.0, -0.7), // top front left
+    new THREE.Vector3(0.5, 1.0, -0.7),  // top front right
+    new THREE.Vector3(0.5, 1.0, 0.7),   // top back right
+    new THREE.Vector3(-0.5, 1.0, 0.7),  // top back left
+  ];
+
+  const basketGeo = new THREE.BufferGeometry().setFromPoints(basketPoints);
+  basketGeo.setIndex([
+    // bottom
+    0, 1, 2, 0, 2, 3,
+    // top (not rendered)
+    // front
+    0, 4, 5, 0, 5, 1,
+    // back
+    3, 2, 6, 3, 6, 7,
+    // left
+    0, 3, 7, 0, 7, 4,
+    // right
+    1, 5, 6, 1, 6, 2
+  ]);
+  basketGeo.computeVertexNormals();
+
+  const basketMesh = new THREE.Mesh(basketGeo, wireframeMaterial);
+  cart.add(basketMesh);
+
+  // Frame
+  const frameMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.9, roughness: 0.3 });
+  
+  // Handle
+  const handleBarGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.0, 8);
+  const handleBar = new THREE.Mesh(handleBarGeo, frameMaterial);
+  handleBar.rotation.z = Math.PI / 2;
+  handleBar.position.set(0, 1.1, 0.8);
+  cart.add(handleBar);
+
+  // Wheels
+  const wheelGeo = new THREE.CylinderGeometry(0.1, 0.1, 0.05, 16);
+  wheelGeo.rotateX(Math.PI / 2);
+  const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x333333 });
+
+  const createWheel = (x: number, z: number) => {
+    const wheel = new THREE.Mesh(wheelGeo, wheelMaterial);
+    wheel.position.set(x, 0.1, z);
+    cart.add(wheel);
+  };
+  createWheel(-0.35, -0.5);
+  createWheel(0.35, -0.5);
+  createWheel(-0.35, 0.5);
+  createWheel(0.35, 0.5);
+
+  cart.traverse(child => {
+      if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+      }
+  });
+
+  return cart;
+}
+
 export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
@@ -67,6 +138,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
   const cameraRef = useRef<THREE.PerspectiveCamera>();
   const rendererRef = useRef<THREE.WebGLRenderer>();
   const avatarRef = useRef<THREE.Group>();
+  const cartRef = useRef<THREE.Group>();
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshes = useRef<THREE.Mesh[]>([]);
 
@@ -174,6 +246,18 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     camera.position.set(0, 4, 20);
     camera.lookAt(avatar.position);
 
+    // Shopping Cart
+    const cart = createShoppingCart();
+    const cartOffset = new THREE.Vector3(0, 0, 1.5);
+    const worldOffset = cartOffset.applyQuaternion(avatar.quaternion);
+    const cartPosition = avatar.position.clone().add(worldOffset);
+    cartPosition.y = 0;
+    cart.position.copy(cartPosition);
+    cart.quaternion.copy(avatar.quaternion);
+    scene.add(cart);
+    cartRef.current = cart;
+
+
     // Aisles
     const aisleHeight = 3.5;
     const aisleWidth = 1.5;
@@ -224,7 +308,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Animation loop
     const animate = () => {
-      if (!avatarRef.current || !cameraRef.current || !rendererRef.current || !sceneRef.current) return;
+      if (!avatarRef.current || !cameraRef.current || !rendererRef.current || !sceneRef.current || !cartRef.current) {
+        requestAnimationFrame(animate);
+        return;
+      }
       requestAnimationFrame(animate);
 
       const moveSpeed = 0.1;
@@ -245,6 +332,14 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
       if (keysPressed.current['d']) {
         avatarRef.current.rotation.y -= rotateSpeed;
       }
+
+      // Cart follows avatar
+      const cartOffset = new THREE.Vector3(0, 0, 1.5); // Pushed back from avatar
+      const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
+      const cartTargetPosition = avatarRef.current.position.clone().add(worldOffset);
+      cartTargetPosition.y = 0; // Keep cart on the floor
+      cartRef.current.position.lerp(cartTargetPosition, 0.15);
+      cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
 
       const cameraOffset = new THREE.Vector3(0, 3, 6);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
