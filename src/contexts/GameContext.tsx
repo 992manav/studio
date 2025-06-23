@@ -23,7 +23,7 @@ const GameContext = createContext<GameContextType | undefined>(undefined);
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wallet, setWallet] = useState(500);
-  const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>({ color: '#FFA52A', texture: null });
+  const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>({ color: '#E54ED0', texture: null });
   const { toast } = useToast();
 
   const addToCart = (product: Product, quantity: number = 1) => {
