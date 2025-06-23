@@ -356,10 +356,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
       avatarRef.current.getWorldDirection(forward);
 
       if (keysPressed.current['w']) {
-        avatarRef.current.position.addScaledVector(forward, moveSpeed);
+        avatarRef.current.position.addScaledVector(forward, -moveSpeed);
       }
       if (keysPressed.current['s']) {
-        avatarRef.current.position.addScaledVector(forward, -moveSpeed);
+        avatarRef.current.position.addScaledVector(forward, moveSpeed);
       }
       if (keysPressed.current['a']) {
         avatarRef.current.rotation.y += rotateSpeed;
