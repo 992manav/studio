@@ -38,7 +38,7 @@ export const ProductDetailsDialog = ({ product, isOpen, onOpenChange }: ProductD
         </DialogHeader>
         <div className="py-4 space-y-4">
             <div className="w-full h-64 relative">
-                <Image src={product.image} alt={product.name} layout="fill" objectFit="cover" className="rounded-lg" data-ai-hint="product detail" />
+                <Image src={product.image} alt={product.name} layout="fill" objectFit="cover" className="rounded-lg" data-ai-hint={product.hint || 'product detail'} />
             </div>
           <p>{product.description}</p>
           <p className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</p>

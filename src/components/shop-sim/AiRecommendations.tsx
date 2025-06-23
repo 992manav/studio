@@ -63,7 +63,7 @@ export const AiRecommendations = ({ onProductClick }: AiRecommendationsProps) =>
         <div className="space-y-3">
           {recommendations.map(product => (
             <Card key={product.id} className="p-3 flex items-center gap-3 bg-secondary/50">
-                <Image src={product.image} alt={product.name} width={48} height={48} className="rounded-md border" data-ai-hint="product suggestion" />
+                <Image src={product.image} alt={product.name} width={48} height={48} className="rounded-md border" data-ai-hint={product.hint || 'product suggestion'} />
               <div className="flex-grow cursor-pointer" onClick={() => onProductClick(product)}>
                 <p className="font-medium text-sm">{product.name}</p>
                 <p className="text-xs text-muted-foreground">${product.price.toFixed(2)}</p>

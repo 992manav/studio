@@ -34,7 +34,7 @@ export const ShoppingCart = ({ onProductClick }: ShoppingCartProps) => {
           <div className="space-y-4">
             {cart.map((item) => (
               <div key={item.id} className="flex items-start gap-4">
-                <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md border" data-ai-hint="product image" />
+                <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md border" data-ai-hint={item.hint || 'product image'} />
                 <div className="flex-grow">
                   <h4 className="font-semibold">{item.name}</h4>
                   <p className="text-sm text-muted-foreground">${item.price.toFixed(2)}</p>

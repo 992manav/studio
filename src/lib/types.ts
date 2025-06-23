@@ -7,6 +7,7 @@ export interface Product {
   category: string;
   position: [number, number, number];
   size: [number, number, number];
+  hint?: string;
 }
 
 export interface CartItem extends Product {

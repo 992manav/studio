@@ -1,9 +1,10 @@
 import type { Product } from './types';
 
 // Shelf positions:
-// Aisle 1 (Left): x = -11, y = 3.25, z = -10 to 10
-// Aisle 2 (Right): x = 11, y = 3.25, z = -10 to 10
-// Aisle 3 (Back): z = -19, y = 3.25, x = -6 to 6
+// Aisle 1 (Left): x ~ -10.5, y depends on shelf, z = -12.5 to 12.5
+// Aisle 2 (Right): x ~ 10.5, y depends on shelf, z = -12.5 to 12.5
+// Aisle 3 (Back): z ~ -18.5, y depends on shelf, x = -9 to 9
+// Shelf tops (y): ~0.025, 0.87, 1.71, 2.55, 3.39
 
 export const products: Product[] = [
   // Aisle 1: Groceries & Pharmacy
@@ -14,8 +15,9 @@ export const products: Product[] = [
     description: 'Fresh and nutritious whole milk. A household essential.',
     image: 'https://placehold.co/400x400.png',
     category: 'Groceries',
-    position: [-11, 3.75, -10],
+    position: [-10.5, 1.71 + 0.75, -10], // Shelf 3
     size: [0.5, 1.5, 0.5],
+    hint: 'milk carton'
   },
   {
     id: 3,
@@ -24,8 +26,9 @@ export const products: Product[] = [
     description: 'Delicious pepperoni pizza, ready to bake.',
     image: 'https://placehold.co/400x400.png',
     category: 'Groceries',
-    position: [-11, 3.35, -7],
+    position: [-10.5, 0.87 + 0.1, -7], // Shelf 2
     size: [1.2, 0.2, 1.2],
+    hint: 'pizza box'
   },
   {
     id: 12,
@@ -34,8 +37,20 @@ export const products: Product[] = [
     description: 'One dozen Grade A large eggs.',
     image: 'https://placehold.co/400x400.png',
     category: 'Groceries',
-    position: [-11, 3.6, -4],
+    position: [-10.5, 0.87 + 0.35, -4], // Shelf 2
     size: [1, 0.7, 0.5],
+    hint: 'egg carton'
+  },
+  {
+    id: 15,
+    name: 'Fresh Cravings Salsa',
+    price: 3.98,
+    description: 'Restaurant style salsa, medium heat.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Groceries',
+    position: [-10.5, 0.025 + 0.3, 0], // Shelf 1
+    size: [0.6, 0.6, 0.6],
+    hint: 'salsa jar'
   },
   {
     id: 2,
@@ -44,8 +59,9 @@ export const products: Product[] = [
     description: 'Pain reliever and fever reducer. 200mg tablets.',
     image: 'https://placehold.co/400x400.png',
     category: 'Pharmacy',
-    position: [-11, 3.5, 8],
+    position: [-10.5, 0.025 + 0.4, 8], // Shelf 1
     size: [0.4, 0.8, 0.3],
+    hint: 'medicine bottle'
   },
   {
     id: 13,
@@ -54,8 +70,9 @@ export const products: Product[] = [
     description: '24-hour non-drowsy allergy relief tablets.',
     image: 'https://placehold.co/400x400.png',
     category: 'Pharmacy',
-    position: [-11, 3.5, 10],
+    position: [-10.5, 0.025 + 0.4, 10], // Shelf 1
     size: [0.4, 0.8, 0.3],
+    hint: 'medicine box'
   },
 
   // Aisle 2: Apparel, Outdoors, Home Goods
@@ -66,18 +83,42 @@ export const products: Product[] = [
     description: 'Comfortable and durable 100% cotton crewneck t-shirt.',
     image: 'https://placehold.co/400x400.png',
     category: 'Apparel',
-    position: [11, 3.3, -8],
+    position: [10.5, 1.71 + 0.05, -8], // Shelf 3
     size: [0.8, 0.1, 1],
+    hint: 'folded shirt'
   },
    {
+    id: 19,
+    name: 'Wrangler Mens Jeans',
+    price: 19.98,
+    description: 'Regular fit straight leg jeans for men.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Apparel',
+    position: [10.5, 1.71 + 0.05, -10], // Shelf 3
+    size: [0.8, 0.1, 1],
+    hint: 'folded jeans'
+  },
+  {
     id: 6,
     name: 'Ozark Trail Tent',
     price: 49.99,
     description: '4-person dome tent, perfect for camping trips.',
     image: 'https://placehold.co/400x400.png',
     category: 'Outdoors',
-    position: [11, 4, 4],
+    position: [10.5, 2.55 + 1, 4], // Shelf 4
     size: [2, 2, 2],
+    hint: 'camping tent package'
+  },
+  {
+    id: 20,
+    name: 'Coleman Cooler',
+    price: 24.98,
+    description: '48-Quart Performance 3-Day Cooler.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Outdoors',
+    position: [10.5, 0.87 + 0.6, 6], // Shelf 2
+    size: [1.5, 1.2, 1.2],
+    hint: 'beverage cooler'
   },
   {
     id: 9,
@@ -86,8 +127,9 @@ export const products: Product[] = [
     description: 'Official size and weight street basketball.',
     image: 'https://placehold.co/400x400.png',
     category: 'Sporting Goods',
-    position: [11, 3.75, 8],
+    position: [10.5, 1.71 + 0.5, 8], // Shelf 3
     size: [1, 1, 1],
+    hint: 'basketball'
   },
   {
     id: 7,
@@ -96,8 +138,9 @@ export const products: Product[] = [
     description: 'Soft and absorbent 100% cotton bath towel.',
     image: 'https://placehold.co/400x400.png',
     category: 'Home Goods',
-    position: [11, 3.3, 0],
+    position: [10.5, 0.87 + 0.1, 0], // Shelf 2
     size: [1.5, 0.2, 1],
+    hint: 'folded towel'
   },
   {
     id: 10,
@@ -106,8 +149,20 @@ export const products: Product[] = [
     description: '18-piece nonstick cookware set, perfect for any kitchen.',
     image: 'https://placehold.co/400x400.png',
     category: 'Home Goods',
-    position: [11, 4, -2],
+    position: [10.5, 2.55 + 0.75, -2], // Shelf 4
     size: [2, 1.5, 2],
+    hint: 'cookware set box'
+  },
+  {
+    id: 16,
+    name: 'George Foreman Grill',
+    price: 29.99,
+    description: 'Classic plate grill for 2 servings.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Home Goods',
+    position: [10.5, 0.87 + 0.4, -5], // Shelf 2
+    size: [1, 0.8, 1],
+    hint: 'grill box'
   },
 
   // Aisle 3: Electronics & Toys
@@ -118,18 +173,31 @@ export const products: Product[] = [
     description: '50" Class 4K UHD (2160P) LED Roku Smart TV.',
     image: 'https://placehold.co/400x400.png',
     category: 'Electronics',
-    position: [-5, 4.25, -19],
-    size: [0.2, 2.5, 4.5],
+    position: [-5, 1.71 + 1.25, -18.5], // Shelf 3
+    size: [4.5, 2.5, 0.2],
+    hint: 'television box'
   },
-    {
+  {
     id: 14,
     name: 'onn. Bluetooth Speaker',
     price: 20.00,
     description: 'Portable bluetooth speaker with 8 hours of playtime.',
     image: 'https://placehold.co/400x400.png',
     category: 'Electronics',
-    position: [-1, 3.5, -19],
+    position: [-1, 0.025 + 0.25, -18.5], // Shelf 1
     size: [0.8, 0.5, 0.4],
+    hint: 'speaker box'
+  },
+  {
+    id: 18,
+    name: 'Apple AirPods',
+    price: 129.00,
+    description: '2nd Generation Apple AirPods with Charging Case.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Electronics',
+    position: [-3, 0.025 + 0.2, -18.5], // Shelf 1
+    size: [0.3, 0.4, 0.3],
+    hint: 'airpods box'
   },
   {
     id: 8,
@@ -138,8 +206,9 @@ export const products: Product[] = [
     description: 'A box of 484 classic LEGO bricks for creative building.',
     image: 'https://placehold.co/400x400.png',
     category: 'Toys',
-    position: [3, 3.7, -19],
+    position: [3, 0.87 + 0.4, -18.5], // Shelf 2
     size: [1.2, 0.8, 0.5],
+    hint: 'lego box'
   },
   {
     id: 11,
@@ -148,8 +217,20 @@ export const products: Product[] = [
     description: 'The ultimate dollhouse with 3 stories, 8 rooms, and a working elevator.',
     image: 'https://placehold.co/400x400.png',
     category: 'Toys',
-    position: [6, 4.5, -19],
+    position: [6, 2.55 + 1.5, -18.5], // Shelf 4
     size: [2.5, 3, 1],
+    hint: 'dollhouse box'
+  },
+    {
+    id: 17,
+    name: 'Nerf Elite 2.0 Blaster',
+    price: 14.97,
+    description: 'Includes 16 Nerf Elite darts and has a 8-dart rotating drum.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Toys',
+    position: [0, 0.87 + 0.4, -18.5], // Shelf 2
+    size: [1.5, 0.8, 0.4],
+    hint: 'toy gun box'
   },
 ];
 
@@ -159,4 +240,6 @@ export const trendingProducts: string[] = [
   'Great Value Milk',
   'LEGO Classic Bricks',
   'Spalding Basketball',
+  'Apple AirPods',
+  'Barbie Dreamhouse'
 ];
