@@ -207,12 +207,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorTexture = textureLoader.load('https://source.unsplash.com/1024x1024/?grey-tile-floor');
-    floorTexture.colorSpace = THREE.SRGBColorSpace;
-    floorTexture.wrapS = THREE.RepeatWrapping;
-    floorTexture.wrapT = THREE.RepeatWrapping;
-    floorTexture.repeat.set(75, 75);
-    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, roughness: 0.5, metalness: 0.0 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -538,4 +533,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 };
 
     
+    
+
     
