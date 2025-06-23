@@ -169,7 +169,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111827); // Dark background for the scene
-    scene.fog = new THREE.Fog(0x111827, 20, 70);
+    scene.fog = new THREE.Fog(0x111827, 40, 120);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -196,7 +196,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     scene.add(hemisphereLight);
 
     // Floor
-    const floorGeometry = new THREE.PlaneGeometry(100, 100);
+    const floorGeometry = new THREE.PlaneGeometry(150, 150);
     const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
@@ -240,10 +240,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
         }
     });
 
-    avatar.position.set(0, 0, 15);
+    avatar.position.set(0, 0, 25);
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 20);
+    camera.position.set(0, 4, 31);
     camera.lookAt(avatar.position);
 
     // Shopping Cart
@@ -262,19 +262,19 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const aisleHeight = 3.5;
     const aisleWidth = 1.5;
     const aisleShelves = 5;
+    const mainAisleLength = 40;
+    const backAisleLength = 40;
 
-    const aisle1 = createAisle(25, aisleShelves, aisleHeight, aisleWidth);
-    aisle1.position.set(-10, 0, 0);
-    aisle1.rotation.y = Math.PI / 2;
-    scene.add(aisle1);
-
-    const aisle2 = createAisle(25, aisleShelves, aisleHeight, aisleWidth);
-    aisle2.position.set(10, 0, 0);
-    aisle2.rotation.y = Math.PI / 2;
-    scene.add(aisle2);
+    const mainAislePositions = [-16, -8, 8, 16];
+    mainAislePositions.forEach(x => {
+        const aisle = createAisle(mainAisleLength, aisleShelves, aisleHeight, aisleWidth);
+        aisle.position.set(x, 0, 0);
+        aisle.rotation.y = Math.PI / 2;
+        scene.add(aisle);
+    });
     
-    const backAisle = createAisle(18, aisleShelves, aisleHeight, aisleWidth);
-    backAisle.position.set(0, 0, -18);
+    const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth);
+    backAisle.position.set(0, 0, -22);
     scene.add(backAisle);
 
     // Products
