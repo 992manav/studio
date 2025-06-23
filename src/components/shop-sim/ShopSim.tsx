@@ -11,7 +11,7 @@ import { AvatarCustomizer } from './AvatarCustomizer';
 
 export default function ShopSim() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { getProductById } = useGame();
+  const { getProductById, cart } = useGame();
 
   const handleProductClick = (product: Product | number) => {
     const productData = typeof product === 'number' ? getProductById(product) : product;
@@ -27,7 +27,7 @@ export default function ShopSim() {
   return (
     <div className="flex h-screen w-full font-body bg-background text-foreground overflow-hidden">
       <main className="flex-1 relative">
-        <ThreeScene onProductClick={handleProductClick} />
+        <ThreeScene onProductClick={handleProductClick} cart={cart} />
         <div className="absolute top-4 left-4 flex items-center gap-4">
           <Wallet />
           <AvatarCustomizer />

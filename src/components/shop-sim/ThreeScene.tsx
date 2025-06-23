@@ -4,11 +4,12 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { products } from '@/lib/products';
-import type { Product } from '@/lib/types';
+import type { Product, CartItem } from '@/lib/types';
 import { useGame } from '@/contexts/GameContext';
 
 interface ThreeSceneProps {
   onProductClick: (product: Product) => void;
+  cart: CartItem[];
 }
 
 function createAisle(length: number, shelves: number, height: number, width: number): THREE.Group {
@@ -131,7 +132,7 @@ function createShoppingCart(): THREE.Group {
   return cart;
 }
 
-export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
+export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
 
@@ -140,6 +141,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
   const rendererRef = useRef<THREE.WebGLRenderer>();
   const avatarRef = useRef<THREE.Group>();
   const cartRef = useRef<THREE.Group>();
+  const cartItemsGroupRef = useRef<THREE.Group>();
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshes = useRef<THREE.Mesh[]>([]);
 
@@ -358,16 +360,20 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     camera.lookAt(avatar.position);
 
     // Shopping Cart
-    const cart = createShoppingCart();
+    const cartModel = createShoppingCart();
     const cartOffset = new THREE.Vector3(0, 0, 1.5);
     const worldOffset = cartOffset.applyQuaternion(avatar.quaternion);
     const cartPosition = avatar.position.clone().add(worldOffset);
     cartPosition.y = 0;
-    cart.position.copy(cartPosition);
-    cart.quaternion.copy(avatar.quaternion);
-    scene.add(cart);
-    cartRef.current = cart;
+    cartModel.position.copy(cartPosition);
+    cartModel.quaternion.copy(avatar.quaternion);
+    scene.add(cartModel);
+    cartRef.current = cartModel;
 
+    // This group will hold the product meshes inside the cart.
+    const itemsGroup = new THREE.Group();
+    cartItemsGroupRef.current = itemsGroup;
+    cartModel.add(itemsGroup);
 
     // Aisles
     const aisleHeight = 3.5;
@@ -504,6 +510,58 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
       }
     };
   }, [onPointerClick]);
+
+  useEffect(() => {
+    if (!cartItemsGroupRef.current) return;
+
+    const group = cartItemsGroupRef.current;
+    const textureLoader = new THREE.TextureLoader();
+
+    // Clear existing items from the 3D cart
+    while (group.children.length > 0) {
+        const child = group.children[0] as THREE.Mesh;
+        group.remove(child);
+        child.geometry.dispose();
+        if (Array.isArray(child.material)) {
+            child.material.forEach(m => m.dispose());
+        } else {
+            child.material.dispose();
+        }
+    }
+
+    // Add current cart items to the 3D cart
+    cart.forEach(item => {
+        for (let i = 0; i < item.quantity; i++) {
+            const productGeometry = new THREE.BoxGeometry(...item.size);
+            const placeholderMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc });
+            const productMesh = new THREE.Mesh(productGeometry, placeholderMaterial);
+
+            // Position items randomly inside the basket area
+            productMesh.position.set(
+                (Math.random() - 0.5) * 0.7, // x-axis
+                0.6 + (Math.random() * 0.3),  // y-axis (stacked)
+                (Math.random() - 0.5) * 1.1   // z-axis
+            );
+
+            // Random rotation for a more natural look
+            productMesh.rotation.set(
+                Math.random() * 0.5,
+                Math.random() * Math.PI * 2,
+                Math.random() * 0.5
+            );
+            
+            productMesh.castShadow = true;
+            
+            textureLoader.load(item.image, (texture) => {
+                texture.colorSpace = THREE.SRGBColorSpace;
+                productMesh.material = new THREE.MeshStandardMaterial({ map: texture });
+                (productMesh.material as THREE.Material).needsUpdate = true;
+            });
+
+            group.add(productMesh);
+        }
+    });
+  }, [cart]);
 
   useEffect(() => {
     if (!avatarRef.current) return;
