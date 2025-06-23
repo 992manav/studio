@@ -25,6 +25,7 @@ export interface Npc {
   personality: string;
   position: [number, number, number];
   color: string;
+  path?: [number, number, number][];
 }
 
 export interface ChatMessage {

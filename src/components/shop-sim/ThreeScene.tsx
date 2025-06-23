@@ -4,7 +4,7 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { products } from '@/lib/products';
-import { npcs } from '@/lib/npcs';
+import { npcs as allNpcs } from '@/lib/npcs';
 import type { Product, CartItem, Npc } from '@/lib/types';
 import { useGame } from '@/contexts/GameContext';
 
@@ -213,6 +213,17 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshes = useRef<THREE.Mesh[]>([]);
   const npcMeshes = useRef<THREE.Group[]>([]);
+  const npcAnimationData = useRef<{
+    model: THREE.Group;
+    npcData: Npc;
+    path: THREE.Vector3[];
+    currentTargetIndex: number;
+    speed: number;
+    isPaused: boolean;
+    pauseTimer: number;
+  }[]>([]);
+  const clock = useRef(new THREE.Clock());
+
 
   const onPointerClick = useCallback((event: MouseEvent) => {
     if (!mountRef.current || !cameraRef.current) return;
@@ -231,10 +242,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       while (clickedNpcGroup.parent && !clickedNpcGroup.userData.id) {
           clickedNpcGroup = clickedNpcGroup.parent;
       }
-      const npc = clickedNpcGroup.userData as Npc;
-      if (npc) {
-        onNpcClick(npc);
-        return;
+      const npcId = clickedNpcGroup.userData.id;
+      if (npcId) {
+        const npcData = allNpcs.find(n => n.id === npcId);
+        if (npcData) {
+            onNpcClick(npcData);
+            return;
+        }
       }
     }
 
@@ -272,11 +286,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xaaaaaa, 0.2)); 
-    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x444444, 0.2);
+    scene.add(new THREE.AmbientLight(0xaaaaaa, 0.1));
+    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x444444, 0.1);
     scene.add(hemisphereLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.1);
+    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.05);
     directionalLight.position.set(-30, 40, 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -292,7 +306,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.9, metalness: 0.0 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -326,40 +340,56 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     frontWall.receiveShadow = true;
     scene.add(frontWall);
 
-    // Walmart Blue Stripe
+    // Rainbow Stripe
     const stripeHeight = 1.5;
     const stripeY = wallHeight - 5;
-    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff }); // Magenta
+    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff }); // Placeholder, will be replaced
     const stripeGeoH = new THREE.PlaneGeometry(wallSize, stripeHeight);
     const stripeGeoV = new THREE.PlaneGeometry(wallSize, stripeHeight);
 
-    const backStripe = new THREE.Mesh(stripeGeoH, stripeMaterial);
+    const colors = [0xff0000, 0xffa500, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0xee82ee];
+    const stripeSegments = 70;
+
+    const createStripe = (geometry: THREE.BufferGeometry, isVertical: boolean) => {
+        const group = new THREE.Group();
+        const segmentSize = (isVertical ? wallSize : wallSize) / stripeSegments;
+        for (let i = 0; i < stripeSegments; i++) {
+            const segmentGeo = new THREE.PlaneGeometry(isVertical ? stripeHeight : segmentSize, isVertical ? segmentSize : stripeHeight);
+            const segmentMat = new THREE.MeshBasicMaterial({ color: colors[i % colors.length] });
+            const segment = new THREE.Mesh(segmentGeo, segmentMat);
+            if (isVertical) {
+                segment.position.z = -wallSize/2 + i * segmentSize + segmentSize/2;
+            } else {
+                segment.position.x = -wallSize/2 + i * segmentSize + segmentSize/2;
+            }
+            group.add(segment);
+        }
+        return group;
+    }
+    
+    const backStripe = createStripe(stripeGeoH, false);
     backStripe.position.set(0, stripeY, -wallSize / 2 + 0.01);
     scene.add(backStripe);
-    
-    const frontStripe = new THREE.Mesh(stripeGeoH, stripeMaterial);
+
+    const frontStripe = createStripe(stripeGeoH, false);
     frontStripe.position.set(0, stripeY, wallSize / 2 - 0.01);
     frontStripe.rotation.y = Math.PI;
     scene.add(frontStripe);
 
-    const leftStripe = new THREE.Mesh(stripeGeoV, stripeMaterial);
+    const leftStripe = createStripe(stripeGeoV, true);
     leftStripe.position.set(-wallSize / 2 + 0.01, stripeY, 0);
     leftStripe.rotation.y = Math.PI / 2;
     scene.add(leftStripe);
 
-    const rightStripe = new THREE.Mesh(stripeGeoV, stripeMaterial);
+    const rightStripe = createStripe(stripeGeoV, true);
     rightStripe.position.set(wallSize / 2 - 0.01, stripeY, 0);
     rightStripe.rotation.y = -Math.PI / 2;
     scene.add(rightStripe);
+
     
     // Ceiling
     const ceilingGeometry = new THREE.PlaneGeometry(150, 150);
-    const ceilingTexture = textureLoader.load('https://source.unsplash.com/2048x2048/?warehouse-ceiling|metal-grid');
-    ceilingTexture.colorSpace = THREE.SRGBColorSpace;
-    ceilingTexture.wrapS = THREE.RepeatWrapping;
-    ceilingTexture.wrapT = THREE.RepeatWrapping;
-    ceilingTexture.repeat.set(20, 20);
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, color: 0xdcdcdc });
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
     ceiling.position.y = wallHeight;
     ceiling.rotation.x = Math.PI / 2;
@@ -380,20 +410,31 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     camera.lookAt(avatar.position);
 
     // NPCs
-    npcMeshes.current = npcs.map(npcData => {
-      const npcAvatar = createCharacter();
-      const npcMaterial = new THREE.MeshStandardMaterial({ color: npcData.color });
-      npcAvatar.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-              child.material = npcMaterial;
-          }
-      });
-      npcAvatar.position.fromArray(npcData.position);
-      npcAvatar.lookAt(avatar.position.x, 0, avatar.position.z);
-      npcAvatar.userData = npcData;
-      scene.add(npcAvatar);
-      return npcAvatar;
+    npcAnimationData.current = allNpcs.map(npcData => {
+        const npcAvatar = createCharacter();
+        const npcMaterial = new THREE.MeshStandardMaterial({ color: npcData.color });
+        npcAvatar.traverse((child) => {
+            if (child instanceof THREE.Mesh) {
+                child.material = npcMaterial;
+            }
+        });
+        npcAvatar.position.fromArray(npcData.position);
+        npcAvatar.userData = { id: npcData.id };
+        scene.add(npcAvatar);
+        
+        const path = (npcData.path || []).map(p => new THREE.Vector3(...p));
+
+        return {
+            model: npcAvatar,
+            npcData,
+            path,
+            currentTargetIndex: 0,
+            speed: 1.0 + (Math.random() - 0.5) * 0.5, // units per second
+            isPaused: false,
+            pauseTimer: 0
+        };
     });
+    npcMeshes.current = npcAnimationData.current.map(data => data.model);
 
 
     // Shopping Cart
@@ -418,7 +459,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const aisleShelves = 5;
     const mainAisleLength = 40;
     const backAisleLength = 40;
-    const aisleColors = [0xff0000, 0xffa500, 0x00ff00, 0x0000ff, 0xee82ee]; // Red, Orange, Green, Blue, Violet
+    const aisleColors = [0xff0000, 0xffa500, 0xffff00, 0x00ff00, 0x0000ff, 0xee82ee];
 
     const mainAislePositions = [-16, -8, 8, 16];
     mainAislePositions.forEach((x, index) => {
@@ -428,12 +469,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         scene.add(aisle);
     });
     
-    const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth, aisleColors[4]);
+    const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth, aisleColors[5]);
     backAisle.position.set(0, 0, -22);
     scene.add(backAisle);
 
     // Light Fixtures
-    const lightFixtureMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe0 });
+    const lightFixtureMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.1 });
     const lightFixtureGeometry = new THREE.BoxGeometry(mainAisleLength * 0.9, 0.2, 0.5);
     const lightY = wallHeight - 1;
 
@@ -443,7 +484,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         fixture.rotation.y = Math.PI / 2;
         scene.add(fixture);
 
-        const pointLight = new THREE.PointLight(0xfff8e7, 250, 50, 2);
+        const pointLight = new THREE.PointLight(0xfff8e7, 80, 50, 1.5);
         pointLight.position.set(x, lightY - 1, 0);
         scene.add(pointLight);
     });
@@ -451,7 +492,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
     backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
-    const backAisleLight = new THREE.PointLight(0xfff8e7, 250, 50, 2);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 80, 50, 1.5);
     backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
@@ -492,24 +533,61 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       }
       requestAnimationFrame(animate);
 
-      const moveSpeed = 0.1;
-      const rotateSpeed = 0.03;
+      const delta = clock.current.getDelta();
+      const moveSpeed = 5.0; // units per second
+      const rotateSpeed = 2.0; // radians per second
       
       const forward = new THREE.Vector3();
       avatarRef.current.getWorldDirection(forward);
 
       if (keysPressed.current['w']) {
-        avatarRef.current.position.addScaledVector(forward, moveSpeed);
+        avatarRef.current.position.addScaledVector(forward, moveSpeed * delta);
       }
       if (keysPressed.current['s']) {
-        avatarRef.current.position.addScaledVector(forward, -moveSpeed);
+        avatarRef.current.position.addScaledVector(forward, -moveSpeed * delta);
       }
       if (keysPressed.current['a']) {
-        avatarRef.current.rotation.y += rotateSpeed;
+        avatarRef.current.rotation.y += rotateSpeed * delta;
       }
       if (keysPressed.current['d']) {
-        avatarRef.current.rotation.y -= rotateSpeed;
+        avatarRef.current.rotation.y -= rotateSpeed * delta;
       }
+
+      // NPC Movement
+      npcAnimationData.current.forEach(npc => {
+        if (npc.isPaused) {
+            npc.pauseTimer -= delta;
+            if (npc.pauseTimer <= 0) {
+                npc.isPaused = false;
+                npc.currentTargetIndex = (npc.currentTargetIndex + 1) % npc.path.length;
+            }
+            return; // Don't move while paused
+        }
+
+        if (!npc.path || npc.path.length === 0) return;
+
+        const targetPosition = npc.path[npc.currentTargetIndex];
+        const currentPosition = npc.model.position;
+        const distanceToTarget = currentPosition.distanceTo(targetPosition);
+
+        if (distanceToTarget < 0.2) { // Reached waypoint
+            if (Math.random() < 0.2) { // 20% chance to pause
+                npc.isPaused = true;
+                npc.pauseTimer = Math.random() * 5 + 3; // Pause for 3-8 seconds
+            } else {
+                npc.currentTargetIndex = (npc.currentTargetIndex + 1) % npc.path.length;
+            }
+        } else {
+            // Move towards the target
+            const direction = new THREE.Vector3().subVectors(targetPosition, currentPosition).normalize();
+            const moveDistance = npc.speed * delta;
+            npc.model.position.addScaledVector(direction, moveDistance);
+            
+            // Face the direction of movement
+            const lookAtTarget = new THREE.Vector3().copy(currentPosition).add(direction);
+            npc.model.lookAt(lookAtTarget.x, npc.model.position.y, lookAtTarget.z);
+        }
+      });
 
       // Cart follows avatar
       const cartOffset = new THREE.Vector3(0, 0, 1.5); // Pushed back from avatar
