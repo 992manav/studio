@@ -207,33 +207,68 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const avatar = new THREE.Group();
     const avatarMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color });
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.25, 32, 16), avatarMaterial.clone());
-    head.position.y = 1.65;
-    
-    const torso = new THREE.Mesh(new THREE.BoxGeometry(0.7, 1.0, 0.4), avatarMaterial.clone());
-    torso.position.y = 1.0;
+    // --- Define proportions ---
+    const legRadius = 0.1;
+    const legLength = 0.7; // Cylindrical part length
+    const legCapsuleHeight = legLength + 2 * legRadius; // Total height of leg capsule
 
-    const legGeo = new THREE.CylinderGeometry(0.12, 0.1, 1.0, 16);
+    const torsoRadius = 0.2;
+    const torsoLength = 0.2; // Cylindrical part length
+    const torsoCapsuleHeight = torsoLength + 2 * torsoRadius; // Total height of torso capsule
+
+    const neckHeight = 0.1;
+    const neckRadius = 0.07;
+    
+    const headRadius = 0.15;
+
+    const armRadius = 0.06;
+    const armLength = 0.6; // Cylindrical part length
+
+    // --- Create body parts ---
+    const legGeo = new THREE.CapsuleGeometry(legRadius, legLength, 4, 8);
+    const torsoGeo = new THREE.CapsuleGeometry(torsoRadius, torsoLength, 4, 8);
+    const armGeo = new THREE.CapsuleGeometry(armRadius, armLength, 4, 8);
+    const headGeo = new THREE.SphereGeometry(headRadius, 32, 16);
+    const neckGeo = new THREE.CylinderGeometry(neckRadius, neckRadius, neckHeight, 16);
+
+    // --- Position body parts ---
+    // Start from the floor (y=0) and build up
+    const legY = legCapsuleHeight / 2;
+    const torsoY = legCapsuleHeight + torsoCapsuleHeight / 2;
+    const neckY = legCapsuleHeight + torsoCapsuleHeight;
+    const headY = neckY + neckHeight / 2 + headRadius * 0.8;
+    const armY = torsoY + torsoLength / 2 - 0.1;
+
+    // Legs
     const leftLeg = new THREE.Mesh(legGeo, avatarMaterial.clone());
-    leftLeg.position.set(-0.2, 0, 0);
+    leftLeg.position.set(-torsoRadius * 0.6, legY, 0);
     
     const rightLeg = new THREE.Mesh(legGeo, avatarMaterial.clone());
-    rightLeg.position.set(0.2, 0, 0);
+    rightLeg.position.set(torsoRadius * 0.6, legY, 0);
 
-    const armGeo = new THREE.CylinderGeometry(0.08, 0.06, 0.9, 16);
+    // Torso
+    const torso = new THREE.Mesh(torsoGeo, avatarMaterial.clone());
+    torso.position.y = torsoY;
+
+    // Neck
+    const neck = new THREE.Mesh(neckGeo, avatarMaterial.clone());
+    neck.position.y = neckY;
+
+    // Head
+    const head = new THREE.Mesh(headGeo, avatarMaterial.clone());
+    head.position.y = headY;
+    
+    // Arms
     const leftArm = new THREE.Mesh(armGeo, avatarMaterial.clone());
-    leftArm.position.set(-0.45, 1.0, 0);
+    leftArm.position.set(-(torsoRadius + armRadius), armY, 0);
     leftArm.rotation.z = Math.PI / 12;
 
     const rightArm = new THREE.Mesh(armGeo, avatarMaterial.clone());
-    rightArm.position.set(0.45, 1.0, 0);
+    rightArm.position.set(torsoRadius + armRadius, armY, 0);
     rightArm.rotation.z = -Math.PI / 12;
-
-    const body = new THREE.Group();
-    body.add(torso, leftLeg, rightLeg, leftArm, rightArm);
-    body.position.y = 0.5;
-
-    avatar.add(head, body);
+    
+    // --- Assemble avatar ---
+    avatar.add(head, neck, torso, leftLeg, rightLeg, leftArm, rightArm);
     avatar.traverse((child) => {
         if (child instanceof THREE.Mesh) {
             child.castShadow = true;
