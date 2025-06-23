@@ -11,7 +11,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const GenerateAvatarInputSchema = z.object({
-  description: z.string().describe('A text description of the avatar to generate.'),
+  description: z.string().describe("A text description of the avatar's shirt to generate."),
 });
 export type GenerateAvatarInput = z.infer<typeof GenerateAvatarInputSchema>;
 
@@ -23,7 +23,7 @@ export type GenerateAvatarOutput = z.infer<typeof GenerateAvatarOutputSchema>;
 export async function generateAvatar(input: GenerateAvatarInput): Promise<GenerateAvatarOutput> {
   const {media} = await ai.generate({
     model: 'googleai/gemini-2.0-flash-preview-image-generation',
-    prompt: `Generate a full-body portrait of a video game avatar based on the following description. The background should be a simple, neutral color. The avatar should be in a T-pose. Style: simple, 3D render, cartoonish. Description: ${input.description}`,
+    prompt: `Generate a seamless, tileable texture for a video game character's shirt based on the following description. The texture should be visually appealing and suitable for a 3D model. Do not include any text or logos unless specified. Style: simple, cartoonish. Description: ${input.description}`,
     config: {
       responseModalities: ['TEXT', 'IMAGE'],
     },

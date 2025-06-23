@@ -21,7 +21,7 @@ export const AvatarCustomizer = () => {
         toast({
             variant: "destructive",
             title: "Error",
-            description: "Please enter a description for your avatar.",
+            description: "Please enter a description for your avatar's shirt.",
         });
         return;
     }
@@ -30,7 +30,7 @@ export const AvatarCustomizer = () => {
         const result = await generateAvatar({ description });
         setAvatarConfig({ ...avatarConfig, texture: result.avatarDataUri });
         toast({
-            title: "Avatar Generated!",
+            title: "Avatar Texture Generated!",
             description: "Your new look has been applied.",
         });
     } catch (error) {
@@ -38,7 +38,7 @@ export const AvatarCustomizer = () => {
         toast({
             variant: "destructive",
             title: "Avatar Generation Failed",
-            description: "Could not generate avatar. Please try again.",
+            description: "Could not generate texture. Please try again.",
         });
     } finally {
         setLoading(false);
@@ -55,14 +55,14 @@ export const AvatarCustomizer = () => {
       <PopoverContent className="w-80">
         <div className="grid gap-4">
           <div className="space-y-2">
-            <h4 className="font-medium leading-none">Avatar Generation</h4>
-            <p className="text-sm text-muted-foreground">Describe your avatar and let AI create it.</p>
+            <h4 className="font-medium leading-none">Avatar Customization</h4>
+            <p className="text-sm text-muted-foreground">Describe a texture for your avatar's shirt.</p>
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="avatar-description">Description</Label>
+            <Label htmlFor="avatar-description">Shirt Description</Label>
             <Textarea
               id="avatar-description"
-              placeholder="e.g., a knight with shining armor, a robot with glowing blue eyes"
+              placeholder="e.g., a red shirt with white stripes, a blue hoodie with a star pattern"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
@@ -70,7 +70,7 @@ export const AvatarCustomizer = () => {
           </div>
           <Button onClick={handleGenerate} disabled={loading}>
             {loading ? <Loader2 className="animate-spin" /> : <Wand2 />}
-            {loading ? 'Generating...' : 'Generate Avatar'}
+            {loading ? 'Generating...' : 'Generate Texture'}
           </Button>
         </div>
       </PopoverContent>

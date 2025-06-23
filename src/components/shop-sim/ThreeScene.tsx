@@ -134,71 +134,125 @@ function createShoppingCart(): THREE.Group {
   return cart;
 }
 
-function createCharacter(): THREE.Group {
-    const avatar = new THREE.Group();
-    
-    // --- Define proportions ---
-    const legRadius = 0.1;
-    const legLength = 0.7;
-    const legCapsuleHeight = legLength + 2 * legRadius; 
+function createCharacter(materials: {
+  skin: THREE.Material;
+  hair: THREE.Material;
+  shirt: THREE.Material;
+  pants: THREE.Material;
+  shoes: THREE.Material;
+}): THREE.Group {
+  const group = new THREE.Group();
 
-    const torsoRadius = 0.2;
-    const torsoLength = 0.2;
-    const torsoCapsuleHeight = torsoLength + 2 * torsoRadius; 
+  const head = new THREE.Mesh(
+    new THREE.SphereGeometry(0.15, 32, 16),
+    materials.skin
+  );
+  head.position.y = 1.6;
+  group.add(head);
 
-    const neckHeight = 0.1;
-    const neckRadius = 0.07;
-    
-    const headRadius = 0.15;
+  const hair = new THREE.Mesh(
+    new THREE.SphereGeometry(0.16, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+    materials.hair
+  );
+  hair.position.y = 1.6;
+  group.add(hair);
 
-    const armRadius = 0.06;
-    const armLength = 0.6;
+  const eyeGeo = new THREE.SphereGeometry(0.02, 12, 8);
+  const eyeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+  const pupilMaterial = new THREE.MeshStandardMaterial({ color: 0x000000 });
+  const leftEye = new THREE.Mesh(eyeGeo, eyeMaterial);
+  leftEye.position.set(-0.06, 1.62, 0.13);
+  group.add(leftEye);
+  const rightEye = new THREE.Mesh(eyeGeo, eyeMaterial);
+  rightEye.position.set(0.06, 1.62, 0.13);
+  group.add(rightEye);
+  
+  const leftPupil = new THREE.Mesh(new THREE.SphereGeometry(0.01, 8, 8), pupilMaterial);
+  leftPupil.position.z = 0.015;
+  leftEye.add(leftPupil);
+  const rightPupil = new THREE.Mesh(new THREE.SphereGeometry(0.01, 8, 8), pupilMaterial);
+  rightPupil.position.z = 0.015;
+  rightEye.add(rightPupil);
 
-    // --- Create body parts ---
-    const legGeo = new THREE.CapsuleGeometry(legRadius, legLength, 4, 8);
-    const torsoGeo = new THREE.CapsuleGeometry(torsoRadius, torsoLength, 4, 8);
-    const armGeo = new THREE.CapsuleGeometry(armRadius, armLength, 4, 8);
-    const headGeo = new THREE.SphereGeometry(headRadius, 32, 16);
-    const neckGeo = new THREE.CylinderGeometry(neckRadius, neckRadius, neckHeight, 16);
+  const neck = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.07, 0.07, 0.1, 16),
+    materials.skin
+  );
+  neck.position.y = 1.5;
+  group.add(neck);
 
-    // --- Position body parts ---
-    const legY = legCapsuleHeight / 2;
-    const torsoY = legCapsuleHeight + torsoCapsuleHeight / 2;
-    const neckY = legCapsuleHeight + torsoCapsuleHeight;
-    const headY = neckY + neckHeight / 2 + headRadius * 0.8;
-    const armY = torsoY + torsoLength / 2 - 0.1;
+  const torso = new THREE.Mesh(
+    new THREE.BoxGeometry(0.35, 0.5, 0.2),
+    materials.shirt
+  );
+  torso.name = "torso";
+  torso.position.y = 1.2;
+  group.add(torso);
 
-    const leftLeg = new THREE.Mesh(legGeo);
-    leftLeg.position.set(-torsoRadius * 0.6, legY, 0);
-    
-    const rightLeg = new THREE.Mesh(legGeo);
-    rightLeg.position.set(torsoRadius * 0.6, legY, 0);
+  const hips = new THREE.Mesh(
+    new THREE.BoxGeometry(0.35, 0.2, 0.2),
+    materials.pants
+  );
+  hips.position.y = 0.9;
+  group.add(hips);
 
-    const torso = new THREE.Mesh(torsoGeo);
-    torso.position.y = torsoY;
+  // Arms
+  const armGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.5, 8);
+  const handGeo = new THREE.SphereGeometry(0.06, 8, 8);
 
-    const neck = new THREE.Mesh(neckGeo);
-    neck.position.y = neckY;
+  const leftArm = new THREE.Mesh(armGeo, materials.shirt);
+  leftArm.name = "leftArm";
+  leftArm.position.set(-0.225, 1.15, 0);
+  leftArm.rotation.z = Math.PI / 12;
+  group.add(leftArm);
+  
+  const leftHand = new THREE.Mesh(handGeo, materials.skin);
+  leftHand.position.y = -0.25;
+  leftArm.add(leftHand);
 
-    const head = new THREE.Mesh(headGeo);
-    head.position.y = headY;
-    
-    const leftArm = new THREE.Mesh(armGeo);
-    leftArm.position.set(-(torsoRadius + armRadius), armY, 0);
-    leftArm.rotation.z = Math.PI / 12;
+  const rightArm = new THREE.Mesh(armGeo, materials.shirt);
+  rightArm.name = "rightArm";
+  rightArm.position.set(0.225, 1.15, 0);
+  rightArm.rotation.z = -Math.PI / 12;
+  group.add(rightArm);
+  
+  const rightHand = new THREE.Mesh(handGeo, materials.skin);
+  rightHand.position.y = -0.25;
+  rightArm.add(rightHand);
+  
+  // Legs
+  const legGeo = new THREE.CylinderGeometry(0.07, 0.07, 0.8, 8);
+  const shoeGeo = new THREE.BoxGeometry(0.1, 0.1, 0.2);
 
-    const rightArm = new THREE.Mesh(armGeo);
-    rightArm.position.set(torsoRadius + armRadius, armY, 0);
-    rightArm.rotation.z = -Math.PI / 12;
-    
-    avatar.add(head, neck, torso, leftLeg, rightLeg, leftArm, rightArm);
-    avatar.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
-        }
-    });
-    return avatar;
+  const leftLeg = new THREE.Mesh(legGeo, materials.pants);
+  leftLeg.position.set(-0.1, 0.4, 0);
+  group.add(leftLeg);
+  
+  const leftShoe = new THREE.Mesh(shoeGeo, materials.shoes);
+  leftShoe.position.y = -0.45;
+  leftShoe.position.z = 0.05;
+  leftLeg.add(leftShoe);
+
+  const rightLeg = new THREE.Mesh(legGeo, materials.pants);
+  rightLeg.position.set(0.1, 0.4, 0);
+  group.add(rightLeg);
+  
+  const rightShoe = new THREE.Mesh(shoeGeo, materials.shoes);
+  rightShoe.position.y = -0.45;
+  rightShoe.position.z = 0.05;
+  rightLeg.add(rightShoe);
+
+
+  group.traverse((child) => {
+    if (child instanceof THREE.Mesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  return group;
 }
+
 
 export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -268,8 +322,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x1a1a1a);
-    scene.fog = new THREE.Fog(0x1a1a1a, 70, 160);
+    scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.Fog(0x87ceeb, 70, 160);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -286,11 +340,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xaaaaaa, 0.1));
-    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x444444, 0.1);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.4));
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.4);
     scene.add(hemisphereLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.05);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
     directionalLight.position.set(-30, 40, 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -306,7 +360,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8, metalness: 0.1 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x4a4a4a, roughness: 0.8, metalness: 0.2 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -315,7 +369,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Walls & Ceiling
     const wallHeight = 20;
     const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.8 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.9 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
@@ -389,20 +443,21 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     
     // Ceiling
     const ceilingGeometry = new THREE.PlaneGeometry(150, 150);
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0x444444 });
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
     ceiling.position.y = wallHeight;
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
     // Player Avatar
-    const avatar = createCharacter();
-    const avatarMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color });
-    avatar.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-            child.material = avatarMaterial;
-        }
-    });
+    const playerMaterials = {
+        skin: new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 }),
+        hair: new THREE.MeshStandardMaterial({ color: 0x442200, roughness: 0.8 }),
+        shirt: new THREE.MeshStandardMaterial({ color: avatarConfig.color, roughness: 0.8 }),
+        pants: new THREE.MeshStandardMaterial({ color: 0x2e3a87, roughness: 0.8 }),
+        shoes: new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 }),
+    };
+    const avatar = createCharacter(playerMaterials);
     avatar.position.set(0, 0, 25);
     scene.add(avatar);
     avatarRef.current = avatar;
@@ -411,13 +466,19 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // NPCs
     npcAnimationData.current = allNpcs.map(npcData => {
-        const npcAvatar = createCharacter();
-        const npcMaterial = new THREE.MeshStandardMaterial({ color: npcData.color });
-        npcAvatar.traverse((child) => {
-            if (child instanceof THREE.Mesh) {
-                child.material = npcMaterial;
-            }
-        });
+        const shirtColor = new THREE.Color(npcData.color);
+        const pantsColor = new THREE.Color(npcData.color).multiplyScalar(0.5);
+        const hairColors = [0x222222, 0xaf8f6d, 0x553311, 0xdbb888, 0xcc4444, 0x666666];
+
+        const materials = {
+            skin: new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 }),
+            hair: new THREE.MeshStandardMaterial({ color: hairColors[npcData.id % hairColors.length], roughness: 0.8 }),
+            shirt: new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.8 }),
+            pants: new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.8 }),
+            shoes: new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 }),
+        };
+        const npcAvatar = createCharacter(materials);
+        
         npcAvatar.position.fromArray(npcData.position);
         npcAvatar.userData = { id: npcData.id };
         scene.add(npcAvatar);
@@ -484,7 +545,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         fixture.rotation.y = Math.PI / 2;
         scene.add(fixture);
 
-        const pointLight = new THREE.PointLight(0xfff8e7, 80, 50, 1.5);
+        const pointLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
         pointLight.position.set(x, lightY - 1, 0);
         scene.add(pointLight);
     });
@@ -492,7 +553,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
     backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
-    const backAisleLight = new THREE.PointLight(0xfff8e7, 80, 50, 1.5);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
     backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
@@ -681,25 +742,26 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
   useEffect(() => {
     if (!avatarRef.current) return;
+    
+    const torso = avatarRef.current.getObjectByName("torso");
+    const leftArm = avatarRef.current.getObjectByName("leftArm");
+    const rightArm = avatarRef.current.getObjectByName("rightArm");
+
+    const shirtParts = [torso, leftArm, rightArm].filter((p): p is THREE.Mesh => p instanceof THREE.Mesh);
 
     if (avatarConfig.texture) {
       const textureLoader = new THREE.TextureLoader();
       textureLoader.load(avatarConfig.texture, (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
-        const newMaterial = new THREE.MeshStandardMaterial({ map: texture });
-        avatarRef.current?.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.material = newMaterial;
-          }
-        });
+        texture.wrapS = THREE.RepeatWrapping;
+        texture.wrapT = THREE.RepeatWrapping;
+        texture.repeat.set(2, 2);
+        const newMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
+        shirtParts.forEach(part => part.material = newMaterial);
       });
     } else {
-      const newMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color });
-      avatarRef.current.traverse((child) => {
-        if (child instanceof THREE.Mesh) {
-          child.material = newMaterial;
-        }
-      });
+      const newMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color, roughness: 0.8 });
+      shirtParts.forEach(part => part.material = newMaterial);
     }
   }, [avatarConfig.texture, avatarConfig.color]);
 
