@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/product-recommendations.ts';
 import '@/ai/flows/avatar-generator.ts';
+import '@/ai/flows/customer-chat.ts';

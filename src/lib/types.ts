@@ -18,3 +18,16 @@ export interface AvatarConfig {
   color: string;
   texture: string | null;
 }
+
+export interface Npc {
+  id: number;
+  name: string;
+  personality: string;
+  position: [number, number, number];
+  color: string;
+}
+
+export interface ChatMessage {
+  sender: 'user' | 'npc';
+  text: string;
+}

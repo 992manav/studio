@@ -4,11 +4,13 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 import * as THREE from 'three';
 import { products } from '@/lib/products';
-import type { Product, CartItem } from '@/lib/types';
+import { npcs } from '@/lib/npcs';
+import type { Product, CartItem, Npc } from '@/lib/types';
 import { useGame } from '@/contexts/GameContext';
 
 interface ThreeSceneProps {
   onProductClick: (product: Product) => void;
+  onNpcClick: (npc: Npc) => void;
   cart: CartItem[];
 }
 
@@ -132,7 +134,73 @@ function createShoppingCart(): THREE.Group {
   return cart;
 }
 
-export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) => {
+function createCharacter(): THREE.Group {
+    const avatar = new THREE.Group();
+    
+    // --- Define proportions ---
+    const legRadius = 0.1;
+    const legLength = 0.7;
+    const legCapsuleHeight = legLength + 2 * legRadius; 
+
+    const torsoRadius = 0.2;
+    const torsoLength = 0.2;
+    const torsoCapsuleHeight = torsoLength + 2 * torsoRadius; 
+
+    const neckHeight = 0.1;
+    const neckRadius = 0.07;
+    
+    const headRadius = 0.15;
+
+    const armRadius = 0.06;
+    const armLength = 0.6;
+
+    // --- Create body parts ---
+    const legGeo = new THREE.CapsuleGeometry(legRadius, legLength, 4, 8);
+    const torsoGeo = new THREE.CapsuleGeometry(torsoRadius, torsoLength, 4, 8);
+    const armGeo = new THREE.CapsuleGeometry(armRadius, armLength, 4, 8);
+    const headGeo = new THREE.SphereGeometry(headRadius, 32, 16);
+    const neckGeo = new THREE.CylinderGeometry(neckRadius, neckRadius, neckHeight, 16);
+
+    // --- Position body parts ---
+    const legY = legCapsuleHeight / 2;
+    const torsoY = legCapsuleHeight + torsoCapsuleHeight / 2;
+    const neckY = legCapsuleHeight + torsoCapsuleHeight;
+    const headY = neckY + neckHeight / 2 + headRadius * 0.8;
+    const armY = torsoY + torsoLength / 2 - 0.1;
+
+    const leftLeg = new THREE.Mesh(legGeo);
+    leftLeg.position.set(-torsoRadius * 0.6, legY, 0);
+    
+    const rightLeg = new THREE.Mesh(legGeo);
+    rightLeg.position.set(torsoRadius * 0.6, legY, 0);
+
+    const torso = new THREE.Mesh(torsoGeo);
+    torso.position.y = torsoY;
+
+    const neck = new THREE.Mesh(neckGeo);
+    neck.position.y = neckY;
+
+    const head = new THREE.Mesh(headGeo);
+    head.position.y = headY;
+    
+    const leftArm = new THREE.Mesh(armGeo);
+    leftArm.position.set(-(torsoRadius + armRadius), armY, 0);
+    leftArm.rotation.z = Math.PI / 12;
+
+    const rightArm = new THREE.Mesh(armGeo);
+    rightArm.position.set(torsoRadius + armRadius, armY, 0);
+    rightArm.rotation.z = -Math.PI / 12;
+    
+    avatar.add(head, neck, torso, leftLeg, rightLeg, leftArm, rightArm);
+    avatar.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+            child.castShadow = true;
+        }
+    });
+    return avatar;
+}
+
+export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
 
@@ -144,6 +212,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
   const cartItemsGroupRef = useRef<THREE.Group>();
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshes = useRef<THREE.Mesh[]>([]);
+  const npcMeshes = useRef<THREE.Group[]>([]);
 
   const onPointerClick = useCallback((event: MouseEvent) => {
     if (!mountRef.current || !cameraRef.current) return;
@@ -154,25 +223,39 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
 
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(pointer, cameraRef.current);
+    
+    // Check for NPC clicks first
+    const npcIntersects = raycaster.intersectObjects(npcMeshes.current, true);
+    if (npcIntersects.length > 0) {
+      let clickedNpcGroup = npcIntersects[0].object;
+      while (clickedNpcGroup.parent && !clickedNpcGroup.userData.id) {
+          clickedNpcGroup = clickedNpcGroup.parent;
+      }
+      const npc = clickedNpcGroup.userData as Npc;
+      if (npc) {
+        onNpcClick(npc);
+        return;
+      }
+    }
 
-    const intersects = raycaster.intersectObjects(productMeshes.current);
-
-    if (intersects.length > 0) {
-      const clickedObject = intersects[0].object;
+    // Then check for product clicks
+    const productIntersects = raycaster.intersectObjects(productMeshes.current);
+    if (productIntersects.length > 0) {
+      const clickedObject = productIntersects[0].object;
       const product = clickedObject.userData as Product;
       if (product) {
         onProductClick(product);
       }
     }
-  }, [onProductClick]);
+  }, [onProductClick, onNpcClick]);
 
   useEffect(() => {
     if (!mountRef.current) return;
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb); // A pleasant sky blue
-    scene.fog = new THREE.Fog(0x87ceeb, 70, 160);
+    scene.background = new THREE.Color(0x1a1a1a);
+    scene.fog = new THREE.Fog(0x1a1a1a, 70, 160);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -189,11 +272,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xaaaaaa, 0.2)); 
-    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x888888, 0.3);
+    scene.add(new THREE.AmbientLight(0xaaaaaa, 0.1)); 
+    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x888888, 0.15);
     scene.add(hemisphereLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.15);
+    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.05);
     directionalLight.position.set(-30, 40, 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -218,7 +301,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     // Walls & Ceiling
     const wallHeight = 20;
     const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffe0, roughness: 0.8 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.8 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
@@ -282,82 +365,36 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
-    // Avatar
-    const avatar = new THREE.Group();
+    // Player Avatar
+    const avatar = createCharacter();
     const avatarMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color });
-
-    // --- Define proportions ---
-    const legRadius = 0.1;
-    const legLength = 0.7;
-    const legCapsuleHeight = legLength + 2 * legRadius; 
-
-    const torsoRadius = 0.2;
-    const torsoLength = 0.2;
-    const torsoCapsuleHeight = torsoLength + 2 * torsoRadius; 
-
-    const neckHeight = 0.1;
-    const neckRadius = 0.07;
-    
-    const headRadius = 0.15;
-
-    const armRadius = 0.06;
-    const armLength = 0.6;
-
-    // --- Create body parts ---
-    const legGeo = new THREE.CapsuleGeometry(legRadius, legLength, 4, 8);
-    const torsoGeo = new THREE.CapsuleGeometry(torsoRadius, torsoLength, 4, 8);
-    const armGeo = new THREE.CapsuleGeometry(armRadius, armLength, 4, 8);
-    const headGeo = new THREE.SphereGeometry(headRadius, 32, 16);
-    const neckGeo = new THREE.CylinderGeometry(neckRadius, neckRadius, neckHeight, 16);
-
-    // --- Position body parts ---
-    const legY = legCapsuleHeight / 2;
-    const torsoY = legCapsuleHeight + torsoCapsuleHeight / 2;
-    const neckY = legCapsuleHeight + torsoCapsuleHeight;
-    const headY = neckY + neckHeight / 2 + headRadius * 0.8;
-    const armY = torsoY + torsoLength / 2 - 0.1;
-
-    // Legs
-    const leftLeg = new THREE.Mesh(legGeo, avatarMaterial.clone());
-    leftLeg.position.set(-torsoRadius * 0.6, legY, 0);
-    
-    const rightLeg = new THREE.Mesh(legGeo, avatarMaterial.clone());
-    rightLeg.position.set(torsoRadius * 0.6, legY, 0);
-
-    // Torso
-    const torso = new THREE.Mesh(torsoGeo, avatarMaterial.clone());
-    torso.position.y = torsoY;
-
-    // Neck
-    const neck = new THREE.Mesh(neckGeo, avatarMaterial.clone());
-    neck.position.y = neckY;
-
-    // Head
-    const head = new THREE.Mesh(headGeo, avatarMaterial.clone());
-    head.position.y = headY;
-    
-    // Arms
-    const leftArm = new THREE.Mesh(armGeo, avatarMaterial.clone());
-    leftArm.position.set(-(torsoRadius + armRadius), armY, 0);
-    leftArm.rotation.z = Math.PI / 12;
-
-    const rightArm = new THREE.Mesh(armGeo, avatarMaterial.clone());
-    rightArm.position.set(torsoRadius + armRadius, armY, 0);
-    rightArm.rotation.z = -Math.PI / 12;
-    
-    // --- Assemble avatar ---
-    avatar.add(head, neck, torso, leftLeg, rightLeg, leftArm, rightArm);
     avatar.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-            child.castShadow = true;
+            child.material = avatarMaterial;
         }
     });
-
     avatar.position.set(0, 0, 25);
     scene.add(avatar);
     avatarRef.current = avatar;
     camera.position.set(0, 4, 31);
     camera.lookAt(avatar.position);
+
+    // NPCs
+    npcMeshes.current = npcs.map(npcData => {
+      const npcAvatar = createCharacter();
+      const npcMaterial = new THREE.MeshStandardMaterial({ color: npcData.color });
+      npcAvatar.traverse((child) => {
+          if (child instanceof THREE.Mesh) {
+              child.material = npcMaterial;
+          }
+      });
+      npcAvatar.position.fromArray(npcData.position);
+      npcAvatar.lookAt(avatar.position.x, 0, avatar.position.z);
+      npcAvatar.userData = npcData;
+      scene.add(npcAvatar);
+      return npcAvatar;
+    });
+
 
     // Shopping Cart
     const cartModel = createShoppingCart();
@@ -406,7 +443,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
         fixture.rotation.y = Math.PI / 2;
         scene.add(fixture);
 
-        const pointLight = new THREE.PointLight(0xfff8e7, 8000, 40, 0.7);
+        const pointLight = new THREE.PointLight(0xfff8e7, 4000, 40, 0.7);
         pointLight.position.set(x, lightY - 1, 0);
         scene.add(pointLight);
     });
@@ -414,7 +451,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
     backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
-    const backAisleLight = new THREE.PointLight(0xfff8e7, 8000, 40, 0.7);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 4000, 40, 0.7);
     backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
@@ -461,10 +498,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
       const forward = new THREE.Vector3();
       avatarRef.current.getWorldDirection(forward);
 
-      if (keysPressed.current['s']) {
+      if (keysPressed.current['w']) {
         avatarRef.current.position.addScaledVector(forward, moveSpeed);
       }
-      if (keysPressed.current['w']) {
+      if (keysPressed.current['s']) {
         avatarRef.current.position.addScaledVector(forward, -moveSpeed);
       }
       if (keysPressed.current['a']) {
@@ -590,9 +627,3 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
 
   return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
 };
-
-    
-    
-
-    
-
