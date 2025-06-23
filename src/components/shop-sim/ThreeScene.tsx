@@ -13,9 +13,9 @@ interface ThreeSceneProps {
 
 function createAisle(length: number, shelves: number, height: number, width: number): THREE.Group {
   const group = new THREE.Group();
-  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.1, roughness: 0.8 });
+  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xd3d3d3, metalness: 0.1, roughness: 0.8 });
   const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x4682b4, metalness: 0.5, roughness: 0.5 });
-  const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.8 });
+  const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, roughness: 0.8 });
 
   const shelfThickness = 0.05;
   const supportWidth = 0.1;
@@ -187,11 +187,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6)); 
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.8);
+    scene.add(new THREE.AmbientLight(0xdddddd, 0.3)); 
+    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x888888, 0.4);
     scene.add(hemisphereLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
+    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.2);
     directionalLight.position.set(-30, 40, 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -221,7 +221,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     // Walls & Ceiling
     const wallHeight = 20;
     const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f8ff, roughness: 0.8 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xd3d3d3, roughness: 0.8 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
@@ -279,7 +279,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     ceilingTexture.wrapS = THREE.RepeatWrapping;
     ceilingTexture.wrapT = THREE.RepeatWrapping;
     ceilingTexture.repeat.set(20, 20);
-    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, color: 0xffffff });
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, color: 0xdcdcdc });
     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
     ceiling.position.y = wallHeight;
     ceiling.rotation.x = Math.PI / 2;
@@ -394,7 +394,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     scene.add(backAisle);
 
     // Light Fixtures
-    const lightFixtureMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const lightFixtureMaterial = new THREE.MeshBasicMaterial({ color: 0xffffe0 });
     const lightFixtureGeometry = new THREE.BoxGeometry(mainAisleLength * 0.9, 0.2, 0.5);
     const lightY = wallHeight - 1;
 
@@ -404,7 +404,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
         fixture.rotation.y = Math.PI / 2;
         scene.add(fixture);
 
-        const pointLight = new THREE.PointLight(0xfff8e7, 18000, 60, 1.0);
+        const pointLight = new THREE.PointLight(0xfff8e7, 10000, 50, 0.8);
         pointLight.position.set(x, lightY - 1, 0);
         scene.add(pointLight);
     });
@@ -412,7 +412,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
     backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
-    const backAisleLight = new THREE.PointLight(0xfff8e7, 18000, 60, 1.0);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 10000, 50, 0.8);
     backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
@@ -420,7 +420,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     // Products
     productMeshes.current = products.map(product => {
       const productGeometry = new THREE.BoxGeometry(...product.size);
-      const placeholderMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(Math.random() * 0.5 + 0.5) });
+      const placeholderMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xcccccc).multiplyScalar(Math.random() * 0.5 + 0.5) });
       const productMesh = new THREE.Mesh(productGeometry, placeholderMaterial);
       productMesh.position.fromArray(product.position);
       productMesh.userData = product;
