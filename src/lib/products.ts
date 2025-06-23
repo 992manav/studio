@@ -1,0 +1,70 @@
+import type { Product } from './types';
+
+export const products: Product[] = [
+  {
+    id: 1,
+    name: 'Great Value Milk',
+    price: 3.5,
+    description: 'Fresh and nutritious whole milk. A household essential.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Groceries',
+    position: [-8, 1.5, -5],
+    size: [1, 3, 2],
+  },
+  {
+    id: 2,
+    name: 'Equate Ibuprofen',
+    price: 8.98,
+    description: 'Pain reliever and fever reducer. 200mg tablets.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Pharmacy',
+    position: [-8, 1.5, 0],
+    size: [1, 3, 2],
+  },
+  {
+    id: 3,
+    name: 'Marketside Pizza',
+    price: 5.0,
+    description: 'Delicious pepperoni pizza, ready to bake.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Groceries',
+    position: [-8, 1.5, 5],
+    size: [1, 3, 2],
+  },
+  {
+    id: 4,
+    name: 'onn. 50" TV',
+    price: 198.0,
+    description: '50" Class 4K UHD (2160P) LED Roku Smart TV.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Electronics',
+    position: [8, 2.5, -10],
+    size: [0.5, 5, 8],
+  },
+  {
+    id: 5,
+    name: 'Hanes T-Shirt',
+    price: 6.0,
+    description: 'Comfortable and durable 100% cotton crewneck t-shirt.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Apparel',
+    position: [8, 1.5, 0],
+    size: [2, 3, 2],
+  },
+  {
+    id: 6,
+    name: 'Ozark Trail Tent',
+    price: 49.99,
+    description: '4-person dome tent, perfect for camping trips.',
+    image: 'https://placehold.co/400x400.png',
+    category: 'Outdoors',
+    position: [8, 2, 10],
+    size: [3, 4, 3],
+  },
+];
+
+export const trendingProducts: string[] = [
+  'onn. 50" TV',
+  'Marketside Pizza',
+  'Great Value Milk',
+];
