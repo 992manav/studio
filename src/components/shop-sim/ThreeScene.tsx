@@ -48,6 +48,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x111827); // Dark background for the scene
+    scene.fog = new THREE.Fog(0x111827, 20, 70);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -58,27 +59,32 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
     directionalLight.position.set(10, 20, 5);
     directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
+    const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+    scene.add(hemisphereLight);
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(100, 100);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x4a5568 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
 
     // Avatar
-    const avatarGeometry = new THREE.CapsuleGeometry(0.5, 1, 4, 16);
+    const avatarGeometry = new THREE.CylinderGeometry(0.5, 0.5, 2, 32);
     const avatarMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color });
     const avatar = new THREE.Mesh(avatarGeometry, avatarMaterial);
     avatar.position.set(0, 1, 15);
@@ -88,16 +94,42 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     camera.position.set(0, 4, 20);
     camera.lookAt(avatar.position);
 
+    // Aisles
+    const aisleMaterial = new THREE.MeshStandardMaterial({ color: 0x6B7280 });
+    
+    const aisles = [
+      { position: new THREE.Vector3(-10, 1.5, 0), size: new THREE.Vector3(2, 3, 25) },
+      { position: new THREE.Vector3(10, 1.5, 0), size: new THREE.Vector3(2, 3, 25) },
+      { position: new THREE.Vector3(0, 1.5, -18), size: new THREE.Vector3(15, 3, 2) },
+    ];
+
+    aisles.forEach(data => {
+      const aisleGeometry = new THREE.BoxGeometry(data.size.x, data.size.y, data.size.z);
+      const aisle = new THREE.Mesh(aisleGeometry, aisleMaterial);
+      aisle.position.copy(data.position);
+      aisle.receiveShadow = true;
+      aisle.castShadow = true;
+      scene.add(aisle);
+    });
 
     // Products
+    const textureLoader = new THREE.TextureLoader();
     productMeshes.current = products.map(product => {
       const productGeometry = new THREE.BoxGeometry(...product.size);
-      const productMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(Math.random() * 0xffffff) });
-      const productMesh = new THREE.Mesh(productGeometry, productMaterial);
+      const placeholderMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(Math.random() * 0.5 + 0.5) });
+      const productMesh = new THREE.Mesh(productGeometry, placeholderMaterial);
       productMesh.position.fromArray(product.position);
       productMesh.userData = product;
       productMesh.castShadow = true;
+      productMesh.receiveShadow = true;
       scene.add(productMesh);
+      
+      textureLoader.load(product.image, (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        productMesh.material = new THREE.MeshStandardMaterial({ map: texture });
+        (productMesh.material as THREE.Material).needsUpdate = true;
+      });
+
       return productMesh;
     });
 
@@ -165,9 +197,24 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
   useEffect(() => {
     if (avatarRef.current) {
-      (avatarRef.current.material as THREE.MeshStandardMaterial).color.set(avatarConfig.color);
+      const material = avatarRef.current.material as THREE.MeshStandardMaterial;
+      if (avatarConfig.texture) {
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load(avatarConfig.texture, (texture) => {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          texture.wrapS = THREE.RepeatWrapping;
+          texture.repeat.set(1, 1);
+          material.map = texture;
+          material.color.set(0xffffff); // Use white to not tint the texture
+          material.needsUpdate = true;
+        });
+      } else {
+        material.map = null;
+        material.color.set(avatarConfig.color);
+        material.needsUpdate = true;
+      }
     }
-  }, [avatarConfig.color]);
+  }, [avatarConfig.texture, avatarConfig.color]);
 
   return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
 };

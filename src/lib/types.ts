@@ -15,4 +15,5 @@ export interface CartItem extends Product {
 
 export interface AvatarConfig {
   color: string;
+  texture: string | null;
 }
