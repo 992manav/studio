@@ -209,7 +209,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x301934, roughness: 0.5, metalness: 0.1 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.5, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -595,3 +595,4 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     
 
     
+
