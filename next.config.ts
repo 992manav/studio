@@ -39,7 +39,25 @@ const nextConfig: NextConfig = {
         hostname: 'www.walmart.com',
         port: '',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'target.scene7.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'm.media-amazon.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'store.storeimages.cdn-apple.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
