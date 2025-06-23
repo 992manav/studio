@@ -1,7 +1,7 @@
 import type { Product } from './types';
 
 // Shelf positions based on a larger store layout
-// Main Aisles (length 40) at x = -16, -8, 8, 16. Products at x +/- 0.75
+// Main Aisles (length 40) at x = -16, -8, 8, 16. Products at x +/- 0.75 or x +/- 1.25 etc.
 // Back Aisle (length 40) at z = -22. Products at z +/- 0.75
 // Shelf tops (y): ~0.025, 0.87, 1.71, 2.55, 3.39. Add half of product height.
 
@@ -130,6 +130,28 @@ export const products: Product[] = [
     size: [0.8, 0.5, 0.8],
     hint: 'chicken wrap package'
   },
+  {
+    id: 25,
+    name: 'Great Value Bread',
+    price: 2.24,
+    description: 'Classic white sandwich bread.',
+    image: 'https://source.unsplash.com/400x400/?bread-loaf',
+    category: 'Groceries',
+    position: [-15.25, 0.87 + 0.25, -2],
+    size: [0.5, 0.5, 1],
+    hint: 'bread loaf'
+  },
+  {
+    id: 26,
+    name: 'Honey Nut Cheerios',
+    price: 4.12,
+    description: 'A family size box of whole grain oat cereal.',
+    image: 'https://source.unsplash.com/400x400/?cereal-box',
+    category: 'Groceries',
+    position: [-15.25, 1.71 + 0.4, -6],
+    size: [0.8, 0.8, 0.3],
+    hint: 'cereal box'
+  },
 
 
   // Aisle at x=-8: More Groceries & Snacks
@@ -154,6 +176,28 @@ export const products: Product[] = [
     position: [-8.75, 0.025 + sodaCaseSize[1]/2, 10],
     size: sodaCaseSize,
     hint: 'dr pepper case'
+  },
+  {
+    id: 27,
+    name: 'Lays Classic Chips',
+    price: 3.50,
+    description: 'A party size bag of classic potato chips.',
+    image: 'https://source.unsplash.com/400x400/?chips-bag',
+    category: 'Groceries',
+    position: [-7.25, 1.71 + 0.5, 5],
+    size: [0.8, 1, 0.4],
+    hint: 'potato chips'
+  },
+  {
+    id: 28,
+    name: 'Oreo Cookies',
+    price: 3.78,
+    description: 'A family size pack of classic Oreo cookies.',
+    image: 'https://source.unsplash.com/400x400/?oreo-cookies',
+    category: 'Groceries',
+    position: [-7.25, 0.87 + 0.15, 2],
+    size: [0.6, 0.3, 0.2],
+    hint: 'cookie package'
   },
 
 
@@ -212,6 +256,28 @@ export const products: Product[] = [
     position: [8.75, 0.87 + 0.4, -5],
     size: [1, 0.8, 1],
     hint: 'grill box'
+  },
+  {
+    id: 29,
+    name: 'Mainstays Pillow',
+    price: 9.99,
+    description: 'A standard size soft and supportive bed pillow.',
+    image: 'https://source.unsplash.com/400x400/?pillow',
+    category: 'Home Goods',
+    position: [7.25, 2.55 + 0.25, 5],
+    size: [1.2, 0.5, 0.8],
+    hint: 'bed pillow'
+  },
+  {
+    id: 30,
+    name: 'Oster Blender',
+    price: 24.96,
+    description: 'A powerful 6-speed kitchen blender.',
+    image: 'https://source.unsplash.com/400x400/?kitchen-blender',
+    category: 'Home Goods',
+    position: [7.25, 0.025 + 0.4, -8],
+    size: [0.6, 0.8, 0.6],
+    hint: 'blender box'
   },
 
 
@@ -281,6 +347,28 @@ export const products: Product[] = [
     position: [16.75, 0.87 + 0.6, -6],
     size: [1.5, 1.2, 1.2],
     hint: 'beverage cooler'
+  },
+  {
+    id: 31,
+    name: 'Colgate Toothpaste',
+    price: 3.49,
+    description: 'Cavity protection fluoride toothpaste.',
+    image: 'https://source.unsplash.com/400x400/?toothpaste',
+    category: 'Personal Care',
+    position: [15.25, 1.71 + 0.1, 15],
+    size: [0.4, 0.2, 0.15],
+    hint: 'toothpaste box'
+  },
+  {
+    id: 32,
+    name: 'Banana Boat Sunscreen',
+    price: 7.97,
+    description: 'SPF 50 broad spectrum sport sunscreen lotion.',
+    image: 'https://source.unsplash.com/400x400/?sunscreen',
+    category: 'Outdoors',
+    position: [15.25, 1.71 + 0.4, -9],
+    size: [0.3, 0.8, 0.3],
+    hint: 'sunscreen bottle'
   },
 
 
@@ -362,6 +450,28 @@ export const products: Product[] = [
     size: [1, 1, 1],
     hint: 'basketball'
   },
+  {
+    id: 33,
+    name: 'PlayStation 5',
+    price: 499.99,
+    description: 'The Sony PlayStation 5 console.',
+    image: 'https://source.unsplash.com/400x400/?playstation-console',
+    category: 'Electronics',
+    position: [-15, 0.87 + 0.7, -21.25],
+    size: [1.2, 1.4, 0.6],
+    hint: 'console box'
+  },
+  {
+    id: 34,
+    name: 'Wilson Football',
+    price: 19.99,
+    description: 'Official size and weight NFL football.',
+    image: 'https://source.unsplash.com/400x400/?football',
+    category: 'Sporting Goods',
+    position: [17, 1.71 + 0.3, -21.25],
+    size: [0.6, 0.6, 1],
+    hint: 'american football'
+  },
 
   // Add soda display products
   ...sodaDisplayProducts
@@ -376,5 +486,8 @@ export const trendingProducts: string[] = [
   'Apple AirPods',
   'Barbie Dreamhouse',
   'Pepsi 12-Pack',
-  'Mtn Dew 12-Pack'
+  'Mtn Dew 12-Pack',
+  'PlayStation 5',
+  'Lays Classic Chips',
+  'Wilson Football'
 ];
