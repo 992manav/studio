@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useCallback } from 'react';
@@ -168,8 +169,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xe2f2fc); // Light blueish-gray to simulate bright store
-    scene.fog = new THREE.Fog(0xe2f2fc, 60, 150);
+    scene.background = new THREE.Color(0xdde2e6); // Neutral gray background
+    scene.fog = new THREE.Fog(0xdde2e6, 70, 160);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -183,32 +184,44 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
-    scene.add(ambientLight);
+    const textureLoader = new THREE.TextureLoader();
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    directionalLight.position.set(20, 30, 10);
-    directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
-    scene.add(directionalLight);
-    
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xcccccc, 2.0);
+    // Lighting
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7)); 
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x888888, 1.5);
     scene.add(hemisphereLight);
+    
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight.position.set(-30, 40, 20);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 4096;
+    directionalLight.shadow.mapSize.height = 4096;
+    directionalLight.shadow.camera.near = 1;
+    directionalLight.shadow.camera.far = 150;
+    directionalLight.shadow.camera.left = -80;
+    directionalLight.shadow.camera.right = 80;
+    directionalLight.shadow.camera.top = 80;
+    directionalLight.shadow.camera.bottom = -80;
+    directionalLight.shadow.bias = -0.0005;
+    scene.add(directionalLight);
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.2, metalness: 0.1 });
+    const floorTexture = textureLoader.load('https://source.unsplash.com/1024x1024/?white-floor-tiles');
+    floorTexture.colorSpace = THREE.SRGBColorSpace;
+    floorTexture.wrapS = THREE.RepeatWrapping;
+    floorTexture.wrapT = THREE.RepeatWrapping;
+    floorTexture.repeat.set(75, 75);
+    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, roughness: 0.3, metalness: 0.0 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
 
-    // Walls
+    // Walls & Ceiling
     const wallHeight = 20;
     const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.9 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.8 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
@@ -233,18 +246,57 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     frontWall.receiveShadow = true;
     scene.add(frontWall);
 
+    // Walmart Blue Stripe
+    const stripeHeight = 1.5;
+    const stripeY = wallHeight - 5;
+    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0x0071ce });
+    const stripeGeoH = new THREE.PlaneGeometry(wallSize, stripeHeight);
+    const stripeGeoV = new THREE.PlaneGeometry(wallSize, stripeHeight);
+
+    const backStripe = new THREE.Mesh(stripeGeoH, stripeMaterial);
+    backStripe.position.set(0, stripeY, -wallSize / 2 + 0.01);
+    scene.add(backStripe);
+    
+    const frontStripe = new THREE.Mesh(stripeGeoH, stripeMaterial);
+    frontStripe.position.set(0, stripeY, wallSize / 2 - 0.01);
+    frontStripe.rotation.y = Math.PI;
+    scene.add(frontStripe);
+
+    const leftStripe = new THREE.Mesh(stripeGeoV, stripeMaterial);
+    leftStripe.position.set(-wallSize / 2 + 0.01, stripeY, 0);
+    leftStripe.rotation.y = Math.PI / 2;
+    scene.add(leftStripe);
+
+    const rightStripe = new THREE.Mesh(stripeGeoV, stripeMaterial);
+    rightStripe.position.set(wallSize / 2 - 0.01, stripeY, 0);
+    rightStripe.rotation.y = -Math.PI / 2;
+    scene.add(rightStripe);
+    
+    // Ceiling
+    const ceilingGeometry = new THREE.PlaneGeometry(150, 150);
+    const ceilingTexture = textureLoader.load('https://source.unsplash.com/2048x2048/?warehouse-ceiling|metal-grid');
+    ceilingTexture.colorSpace = THREE.SRGBColorSpace;
+    ceilingTexture.wrapS = THREE.RepeatWrapping;
+    ceilingTexture.wrapT = THREE.RepeatWrapping;
+    ceilingTexture.repeat.set(20, 20);
+    const ceilingMaterial = new THREE.MeshStandardMaterial({ map: ceilingTexture, color: 0xffffff });
+    const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
+    ceiling.position.y = wallHeight;
+    ceiling.rotation.x = Math.PI / 2;
+    scene.add(ceiling);
+
     // Avatar
     const avatar = new THREE.Group();
     const avatarMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color });
 
     // --- Define proportions ---
     const legRadius = 0.1;
-    const legLength = 0.7; // Cylindrical part length
-    const legCapsuleHeight = legLength + 2 * legRadius; // Total height of leg capsule
+    const legLength = 0.7;
+    const legCapsuleHeight = legLength + 2 * legRadius; 
 
     const torsoRadius = 0.2;
-    const torsoLength = 0.2; // Cylindrical part length
-    const torsoCapsuleHeight = torsoLength + 2 * torsoRadius; // Total height of torso capsule
+    const torsoLength = 0.2;
+    const torsoCapsuleHeight = torsoLength + 2 * torsoRadius; 
 
     const neckHeight = 0.1;
     const neckRadius = 0.07;
@@ -252,7 +304,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const headRadius = 0.15;
 
     const armRadius = 0.06;
-    const armLength = 0.6; // Cylindrical part length
+    const armLength = 0.6;
 
     // --- Create body parts ---
     const legGeo = new THREE.CapsuleGeometry(legRadius, legLength, 4, 8);
@@ -262,7 +314,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const neckGeo = new THREE.CylinderGeometry(neckRadius, neckRadius, neckHeight, 16);
 
     // --- Position body parts ---
-    // Start from the floor (y=0) and build up
     const legY = legCapsuleHeight / 2;
     const torsoY = legCapsuleHeight + torsoCapsuleHeight / 2;
     const neckY = legCapsuleHeight + torsoCapsuleHeight;
@@ -342,8 +393,31 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     backAisle.position.set(0, 0, -22);
     scene.add(backAisle);
 
+    // Light Fixtures
+    const lightFixtureMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const lightFixtureGeometry = new THREE.BoxGeometry(mainAisleLength * 0.9, 0.2, 0.5);
+    const lightY = wallHeight - 1;
+
+    mainAislePositions.forEach(x => {
+        const fixture = new THREE.Mesh(lightFixtureGeometry, lightFixtureMaterial);
+        fixture.position.set(x, lightY, 0);
+        fixture.rotation.y = Math.PI / 2;
+        scene.add(fixture);
+
+        const pointLight = new THREE.PointLight(0xfff8e7, 30000, 60, 1.2);
+        pointLight.position.set(x, lightY - 1, 0);
+        scene.add(pointLight);
+    });
+
+    const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
+    backAisleFixture.position.set(0, lightY, -22);
+    scene.add(backAisleFixture);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 30000, 60, 1.2);
+    backAisleLight.position.set(0, lightY - 1, -22);
+    scene.add(backAisleLight);
+
+
     // Products
-    const textureLoader = new THREE.TextureLoader();
     productMeshes.current = products.map(product => {
       const productGeometry = new THREE.BoxGeometry(...product.size);
       const placeholderMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xffffff).multiplyScalar(Math.random() * 0.5 + 0.5) });
@@ -385,10 +459,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
       const forward = new THREE.Vector3();
       avatarRef.current.getWorldDirection(forward);
 
-      if (keysPressed.current['w']) {
+      if (keysPressed.current['s']) {
         avatarRef.current.position.addScaledVector(forward, moveSpeed);
       }
-      if (keysPressed.current['s']) {
+      if (keysPressed.current['w']) {
         avatarRef.current.position.addScaledVector(forward, -moveSpeed);
       }
       if (keysPressed.current['a']) {
@@ -462,3 +536,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
   return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
 };
+
+    
+    
