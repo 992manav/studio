@@ -187,11 +187,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7)); 
-    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x888888, 1.5);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6)); 
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0x888888, 0.8);
     scene.add(hemisphereLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4);
     directionalLight.position.set(-30, 40, 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -404,7 +404,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
         fixture.rotation.y = Math.PI / 2;
         scene.add(fixture);
 
-        const pointLight = new THREE.PointLight(0xfff8e7, 30000, 60, 1.2);
+        const pointLight = new THREE.PointLight(0xfff8e7, 18000, 60, 1.0);
         pointLight.position.set(x, lightY - 1, 0);
         scene.add(pointLight);
     });
@@ -412,7 +412,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
     backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
-    const backAisleLight = new THREE.PointLight(0xfff8e7, 30000, 60, 1.2);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 18000, 60, 1.0);
     backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
