@@ -12,10 +12,10 @@ interface ThreeSceneProps {
   cart: CartItem[];
 }
 
-function createAisle(length: number, shelves: number, height: number, width: number): THREE.Group {
+function createAisle(length: number, shelves: number, height: number, width: number, supportColor: THREE.ColorRepresentation): THREE.Group {
   const group = new THREE.Group();
-  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xd3d3d3, metalness: 0.1, roughness: 0.8 });
-  const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x4682b4, metalness: 0.5, roughness: 0.5 });
+  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.1, roughness: 0.8 });
+  const supportMaterial = new THREE.MeshStandardMaterial({ color: supportColor, metalness: 0.5, roughness: 0.5 });
   const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, roughness: 0.8 });
 
   const shelfThickness = 0.05;
@@ -189,11 +189,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xdddddd, 0.3)); 
-    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x888888, 0.4);
+    scene.add(new THREE.AmbientLight(0xaaaaaa, 0.2)); 
+    const hemisphereLight = new THREE.HemisphereLight(0xeeeeee, 0x888888, 0.3);
     scene.add(hemisphereLight);
     
-    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.2);
+    const directionalLight = new THREE.DirectionalLight(0xeeeeff, 0.15);
     directionalLight.position.set(-30, 40, 20);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 4096;
@@ -209,7 +209,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.5, metalness: 0.1 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x301934, roughness: 0.5, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -218,7 +218,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     // Walls & Ceiling
     const wallHeight = 20;
     const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xd3d3d3, roughness: 0.8 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xffffe0, roughness: 0.8 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
@@ -246,7 +246,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     // Walmart Blue Stripe
     const stripeHeight = 1.5;
     const stripeY = wallHeight - 5;
-    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xff6347 }); // Tomato/coral color
+    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xff00ff }); // Magenta
     const stripeGeoH = new THREE.PlaneGeometry(wallSize, stripeHeight);
     const stripeGeoV = new THREE.PlaneGeometry(wallSize, stripeHeight);
 
@@ -381,16 +381,17 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     const aisleShelves = 5;
     const mainAisleLength = 40;
     const backAisleLength = 40;
+    const aisleColors = [0xff0000, 0xffa500, 0x00ff00, 0x0000ff, 0xee82ee]; // Red, Orange, Green, Blue, Violet
 
     const mainAislePositions = [-16, -8, 8, 16];
-    mainAislePositions.forEach(x => {
-        const aisle = createAisle(mainAisleLength, aisleShelves, aisleHeight, aisleWidth);
+    mainAislePositions.forEach((x, index) => {
+        const aisle = createAisle(mainAisleLength, aisleShelves, aisleHeight, aisleWidth, aisleColors[index % aisleColors.length]);
         aisle.position.set(x, 0, 0);
         aisle.rotation.y = Math.PI / 2;
         scene.add(aisle);
     });
     
-    const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth);
+    const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth, aisleColors[4]);
     backAisle.position.set(0, 0, -22);
     scene.add(backAisle);
 
@@ -405,7 +406,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
         fixture.rotation.y = Math.PI / 2;
         scene.add(fixture);
 
-        const pointLight = new THREE.PointLight(0xfff8e7, 10000, 50, 0.8);
+        const pointLight = new THREE.PointLight(0xfff8e7, 8000, 40, 0.7);
         pointLight.position.set(x, lightY - 1, 0);
         scene.add(pointLight);
     });
@@ -413,7 +414,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, cart }) 
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength * 0.9, 0.2, 0.5), lightFixtureMaterial);
     backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
-    const backAisleLight = new THREE.PointLight(0xfff8e7, 10000, 50, 0.8);
+    const backAisleLight = new THREE.PointLight(0xfff8e7, 8000, 40, 0.7);
     backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
