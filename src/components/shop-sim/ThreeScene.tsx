@@ -12,7 +12,7 @@ interface ThreeSceneProps {
 
 function createAisle(length: number, shelves: number, height: number, width: number): THREE.Group {
   const group = new THREE.Group();
-  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.5, roughness: 0.5 });
+  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xe5e5e5, metalness: 0.2, roughness: 0.6 });
   const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.5, roughness: 0.5 });
   const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.8 });
 
@@ -168,8 +168,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x111827); // Dark background for the scene
-    scene.fog = new THREE.Fog(0x111827, 40, 120);
+    scene.background = new THREE.Color(0xe2f2fc); // Light blueish-gray to simulate bright store
+    scene.fog = new THREE.Fog(0xe2f2fc, 60, 150);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -184,24 +184,54 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     rendererRef.current = renderer;
 
     // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.0);
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
     scene.add(ambientLight);
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.5);
-    directionalLight.position.set(10, 20, 5);
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    directionalLight.position.set(20, 30, 10);
     directionalLight.castShadow = true;
     directionalLight.shadow.mapSize.width = 2048;
     directionalLight.shadow.mapSize.height = 2048;
     scene.add(directionalLight);
-    const hemisphereLight = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+    
+    const hemisphereLight = new THREE.HemisphereLight(0xffffff, 0xcccccc, 2.0);
     scene.add(hemisphereLight);
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
+    const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.2, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
     scene.add(floor);
+
+    // Walls
+    const wallHeight = 20;
+    const wallSize = 150;
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.9 });
+
+    const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
+    backWall.position.set(0, wallHeight / 2, -wallSize / 2);
+    backWall.receiveShadow = true;
+    scene.add(backWall);
+
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
+    leftWall.position.set(-wallSize / 2, wallHeight / 2, 0);
+    leftWall.rotation.y = Math.PI / 2;
+    leftWall.receiveShadow = true;
+    scene.add(leftWall);
+
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
+    rightWall.position.set(wallSize / 2, wallHeight / 2, 0);
+    rightWall.rotation.y = -Math.PI / 2;
+    rightWall.receiveShadow = true;
+    scene.add(rightWall);
+    
+    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
+    frontWall.position.set(0, wallHeight / 2, wallSize / 2);
+    frontWall.rotation.y = Math.PI;
+    frontWall.receiveShadow = true;
+    scene.add(frontWall);
 
     // Avatar
     const avatar = new THREE.Group();
@@ -356,10 +386,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
       avatarRef.current.getWorldDirection(forward);
 
       if (keysPressed.current['w']) {
-        avatarRef.current.position.addScaledVector(forward, -moveSpeed);
+        avatarRef.current.position.addScaledVector(forward, moveSpeed);
       }
       if (keysPressed.current['s']) {
-        avatarRef.current.position.addScaledVector(forward, moveSpeed);
+        avatarRef.current.position.addScaledVector(forward, -moveSpeed);
       }
       if (keysPressed.current['a']) {
         avatarRef.current.rotation.y += rotateSpeed;
