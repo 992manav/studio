@@ -13,9 +13,9 @@ interface ThreeSceneProps {
 
 function createAisle(length: number, shelves: number, height: number, width: number): THREE.Group {
   const group = new THREE.Group();
-  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xe5e5e5, metalness: 0.2, roughness: 0.6 });
-  const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.5, roughness: 0.5 });
-  const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xe0e0e0, roughness: 0.8 });
+  const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.1, roughness: 0.8 });
+  const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x4682b4, metalness: 0.5, roughness: 0.5 });
+  const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.8 });
 
   const shelfThickness = 0.05;
   const supportWidth = 0.1;
@@ -169,8 +169,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Scene setup
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xdde2e6); // Neutral gray background
-    scene.fog = new THREE.Fog(0xdde2e6, 70, 160);
+    scene.background = new THREE.Color(0x87ceeb); // A pleasant sky blue
+    scene.fog = new THREE.Fog(0x87ceeb, 70, 160);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -207,12 +207,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
 
     // Floor
     const floorGeometry = new THREE.PlaneGeometry(150, 150);
-    const floorTexture = textureLoader.load('https://source.unsplash.com/1024x1024/?white-floor-tiles');
+    const floorTexture = textureLoader.load('https://source.unsplash.com/1024x1024/?terrazzo-floor');
     floorTexture.colorSpace = THREE.SRGBColorSpace;
     floorTexture.wrapS = THREE.RepeatWrapping;
     floorTexture.wrapT = THREE.RepeatWrapping;
     floorTexture.repeat.set(75, 75);
-    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, roughness: 0.3, metalness: 0.0 });
+    const floorMaterial = new THREE.MeshStandardMaterial({ map: floorTexture, roughness: 0.5, metalness: 0.0 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
     floor.receiveShadow = true;
@@ -221,7 +221,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     // Walls & Ceiling
     const wallHeight = 20;
     const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf5f5f5, roughness: 0.8 });
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f8ff, roughness: 0.8 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
@@ -249,7 +249,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick }) => {
     // Walmart Blue Stripe
     const stripeHeight = 1.5;
     const stripeY = wallHeight - 5;
-    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0x0071ce });
+    const stripeMaterial = new THREE.MeshBasicMaterial({ color: 0xff6347 }); // Tomato/coral color
     const stripeGeoH = new THREE.PlaneGeometry(wallSize, stripeHeight);
     const stripeGeoV = new THREE.PlaneGeometry(wallSize, stripeHeight);
 
