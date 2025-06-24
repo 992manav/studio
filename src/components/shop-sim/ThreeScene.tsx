@@ -688,7 +688,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 74);
+    camera.position.set(0, 4, 86);
     camera.lookAt(avatar.position);
 
     // NPCs
@@ -727,7 +727,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Shopping Cart
     const cartModel = createShoppingCart();
-    const cartOffset = new THREE.Vector3(0, 0, 1.5);
+    const cartOffset = new THREE.Vector3(0, 0, -1.5);
     const worldOffset = cartOffset.applyQuaternion(avatar.quaternion);
     const cartPosition = avatar.position.clone().add(worldOffset);
     cartPosition.y = 0;
@@ -911,7 +911,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       });
 
       // Cart follows avatar
-      const cartOffset = new THREE.Vector3(0, 0, 1.5); // Pushed back from avatar
+      const cartOffset = new THREE.Vector3(0, 0, -1.5); // Pushed in front of avatar
       const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
       const cartTargetPosition = avatarRef.current.position.clone().add(worldOffset);
       cartTargetPosition.y = 0; // Keep cart on the floor
