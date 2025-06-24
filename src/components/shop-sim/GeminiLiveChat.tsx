@@ -33,12 +33,12 @@ export const GeminiLiveChat = () => {
   const handleUserQuery = useCallback(async (query: string) => {
     if (!query || isThinking) return;
 
-    // As soon as we get a query, update the state to stop listening
     setIsListening(false);
-
-    const userMessage = { role: 'user' as const, content: query };
-    setChatHistory(prev => [...prev, userMessage]);
     setIsThinking(true);
+    
+    const userMessage = { role: 'user' as const, content: query };
+    const newHistoryWithUser = [...chatHistory, userMessage];
+    setChatHistory(newHistoryWithUser);
     
     try {
       const cartItems = cart.map((item) => item.name);
@@ -48,29 +48,26 @@ export const GeminiLiveChat = () => {
         userQuery: query,
         cartItems,
         productCatalog,
-        // We pass the *new* history to the AI, since state update is async
-        chatHistory: [...chatHistory, userMessage],
+        chatHistory: newHistoryWithUser,
       });
 
       const modelMessage = { role: 'model' as const, content: result.response };
-      setChatHistory(prev => [...prev, modelMessage]);
+      setChatHistory([...newHistoryWithUser, modelMessage]);
 
     } catch (e) {
       console.error(e);
       const errorMessage = { role: 'model' as const, content: "Sorry, I'm having trouble connecting right now. Please try again later." };
-      setChatHistory(prev => [...prev, errorMessage]);
+      setChatHistory([...newHistoryWithUser, errorMessage]);
     } finally {
         setIsThinking(false);
     }
-  }, [cart, isThinking, chatHistory]);
+  }, [cart, isThinking, chatHistory, toast]);
 
   useEffect(() => {
     if (!isMounted || !('webkitSpeechRecognition' in window)) {
       return;
     }
     
-    // This function will be called by the recognition instance.
-    // It needs to be stable or the useEffect will re-run constantly.
     const onResult = (event: any) => {
         const transcript = event.results[event.results.length - 1][0].transcript;
         if (transcript) {
@@ -79,6 +76,7 @@ export const GeminiLiveChat = () => {
     };
     
     if (recognitionRef.current) {
+        // If the instance exists, just update the callback to avoid stale closures
         recognitionRef.current.onresult = onResult;
         return;
     }
@@ -87,7 +85,6 @@ export const GeminiLiveChat = () => {
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
-
     recognition.onresult = onResult;
     
     recognition.onerror = (event: any) => {
