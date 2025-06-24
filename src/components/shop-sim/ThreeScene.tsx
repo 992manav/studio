@@ -8,12 +8,6 @@ import { npcs as allNpcs } from '@/lib/npcs';
 import type { Product, CartItem, Npc } from '@/lib/types';
 import { useGame } from '@/contexts/GameContext';
 
-interface ThreeSceneProps {
-  onProductClick: (product: Product) => void;
-  onNpcClick: (npc: Npc) => void;
-  cart: CartItem[];
-}
-
 function createAisle(length: number, shelves: number, height: number, width: number): THREE.Group {
   const group = new THREE.Group();
   const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.1, roughness: 0.8 });
@@ -253,6 +247,67 @@ function createCharacter(materials: {
   return group;
 }
 
+function createFacadeSign(width: number, height: number): THREE.Mesh {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+    if (!context) return new THREE.Mesh();
+
+    const canvasWidth = 1024;
+    const canvasHeight = Math.round((height / width) * canvasWidth);
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
+    // Blue background with brick texture
+    context.fillStyle = '#0071ce'; // Walmart Blue
+    context.fillRect(0, 0, canvasWidth, canvasHeight);
+    context.fillStyle = 'rgba(0,0,0,0.1)';
+    for(let i=0; i < 100; i++) {
+        context.fillRect(Math.random() * canvasWidth, Math.random() * canvasHeight, 60, 2);
+        context.fillRect(Math.random() * canvasWidth, Math.random() * canvasHeight, 2, 40);
+    }
+
+
+    // "ShopSim" Text
+    context.font = `bold ${canvasHeight * 0.6}px Arial`;
+    context.fillStyle = 'white';
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    context.shadowOffsetX = 3;
+    context.shadowOffsetY = 3;
+    context.shadowBlur = 5;
+    context.fillText('ShopSim', canvasWidth / 2 - (canvasWidth * 0.1), canvasHeight / 2);
+    context.shadowColor = 'transparent';
+
+
+    // Yellow Spark Logo
+    context.strokeStyle = '#ffc220'; // Walmart Yellow
+    context.lineWidth = canvasHeight * 0.08;
+    context.lineCap = 'round';
+    const sparkX = canvasWidth * 0.8;
+    const sparkY = canvasHeight / 2;
+    const sparkRadius = canvasHeight * 0.25;
+
+    for (let i = 0; i < 6; i++) {
+        const angle = (i * 60 * Math.PI) / 180;
+        const startX = sparkX + Math.cos(angle) * (sparkRadius * 0.2);
+        const startY = sparkY + Math.sin(angle) * (sparkRadius * 0.2);
+        const endX = sparkX + Math.cos(angle) * sparkRadius;
+        const endY = sparkY + Math.sin(angle) * sparkRadius;
+        context.beginPath();
+        context.moveTo(startX, startY);
+        context.lineTo(endX, endY);
+        context.stroke();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const material = new THREE.MeshStandardMaterial({ map: texture, metalness: 0.1, roughness: 0.8 });
+    const geometry = new THREE.BoxGeometry(width, height, 0.3);
+    const signMesh = new THREE.Mesh(geometry, material);
+    signMesh.castShadow = true;
+    return signMesh;
+}
+
 function createHangingSign(text: string, size: { width: number; height: number }): THREE.Group {
   const group = new THREE.Group();
 
@@ -409,50 +464,113 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const wallHeight = 20;
     const wallSize = 150;
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.9 });
-    const fasciaMaterial = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.9 });
-    const fasciaHeight = 6;
-
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallSize / 2);
     backWall.receiveShadow = true;
     scene.add(backWall);
-    const backFascia = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, fasciaHeight), fasciaMaterial);
-    backFascia.position.set(0, wallHeight - fasciaHeight / 2, -wallSize / 2 + 0.01);
-    scene.add(backFascia);
-
 
     const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
     leftWall.position.set(-wallSize / 2, wallHeight / 2, 0);
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     scene.add(leftWall);
-    const leftFascia = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, fasciaHeight), fasciaMaterial);
-    leftFascia.position.set(-wallSize / 2 + 0.01, wallHeight - fasciaHeight / 2, 0);
-    leftFascia.rotation.y = Math.PI / 2;
-    scene.add(leftFascia);
-
 
     const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
     rightWall.position.set(wallSize / 2, wallHeight / 2, 0);
     rightWall.rotation.y = -Math.PI / 2;
     rightWall.receiveShadow = true;
     scene.add(rightWall);
-    const rightFascia = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, fasciaHeight), fasciaMaterial);
-    rightFascia.position.set(wallSize / 2 - 0.01, wallHeight - fasciaHeight / 2, 0);
-    rightFascia.rotation.y = -Math.PI / 2;
-    scene.add(rightFascia);
     
-    const frontWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
-    frontWall.position.set(0, wallHeight / 2, wallSize / 2);
-    frontWall.rotation.y = Math.PI;
-    frontWall.receiveShadow = true;
-    scene.add(frontWall);
-    const frontFascia = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, fasciaHeight), fasciaMaterial);
-    frontFascia.position.set(0, wallHeight - fasciaHeight / 2, wallSize / 2 - 0.01);
-    frontFascia.rotation.y = Math.PI;
-    scene.add(frontFascia);
+    // Exterior Facade
+    const doorWidth = 20;
+    const doorHeight = 6;
+    const facadeDepth = 1.0;
 
+    const wallShape = new THREE.Shape();
+    wallShape.moveTo(-wallSize / 2, 0);
+    wallShape.lineTo(wallSize / 2, 0);
+    wallShape.lineTo(wallSize / 2, wallHeight);
+    wallShape.lineTo(-wallSize / 2, wallHeight);
+    wallShape.lineTo(-wallSize / 2, 0);
+
+    const doorPath = new THREE.Path();
+    doorPath.moveTo(-doorWidth / 2, 0);
+    doorPath.lineTo(doorWidth / 2, 0);
+    doorPath.lineTo(doorWidth / 2, doorHeight);
+    doorPath.lineTo(-doorWidth / 2, doorHeight);
+    doorPath.lineTo(-doorWidth / 2, 0);
+    wallShape.holes.push(doorPath);
+
+    const extrudeSettings = { depth: facadeDepth, bevelEnabled: false };
+    const facadeGeometry = new THREE.ExtrudeGeometry(wallShape, extrudeSettings);
+    const facadeMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.9, metalness: 0.2 });
+    const frontFacade = new THREE.Mesh(facadeGeometry, facadeMaterial);
+    frontFacade.position.set(0, 0, wallSize / 2 - facadeDepth);
+    frontFacade.receiveShadow = true;
+    frontFacade.castShadow = true;
+    scene.add(frontFacade);
+
+    // Glass doors
+    const glassMaterial = new THREE.MeshPhysicalMaterial({
+      color: 0x333333,
+      transmission: 0.9,
+      roughness: 0.1,
+      metalness: 0.2,
+      transparent: true,
+      opacity: 0.8,
+    });
+    const doorGeometry = new THREE.BoxGeometry(doorWidth, doorHeight, 0.2);
+    const glassDoors = new THREE.Mesh(doorGeometry, glassMaterial);
+    glassDoors.position.set(0, doorHeight / 2, wallSize / 2 - facadeDepth/2);
+    scene.add(glassDoors);
+
+    // Facade Sign
+    const signWidth = 60;
+    const signHeight = 10;
+    const facadeSign = createFacadeSign(signWidth, signHeight);
+    facadeSign.position.set(0, wallHeight - 10, wallSize / 2 + 0.1);
+    scene.add(facadeSign);
+
+    // Exterior Ground
+    const sidewalkGeometry = new THREE.PlaneGeometry(wallSize, 12);
+    const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.6 });
+    const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
+    sidewalk.rotation.x = -Math.PI / 2;
+    sidewalk.position.set(0, 0.01, wallSize/2 + 6);
+    sidewalk.receiveShadow = true;
+    scene.add(sidewalk);
+
+    const roadGeometry = new THREE.PlaneGeometry(wallSize, 50);
+    const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 });
+    const road = new THREE.Mesh(roadGeometry, roadMaterial);
+    road.rotation.x = -Math.PI / 2;
+    road.position.set(0, 0, wallSize/2 + 12 + 25);
+    road.receiveShadow = true;
+    scene.add(road);
+
+    // Crosswalk
+    const stripeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
+    const stripeWidth = 1.5;
+    const stripeLength = 12;
+    const stripeGeo = new THREE.BoxGeometry(stripeWidth, 0.05, stripeLength);
+    for (let i = -15; i < 15; i++) {
+        const stripe = new THREE.Mesh(stripeGeo, stripeMaterial);
+        stripe.position.set(i * (stripeWidth + 2), 0.02, wallSize/2 + 6);
+        stripe.castShadow = false;
+        stripe.receiveShadow = true;
+        scene.add(stripe);
+    }
+
+    // Bollards
+    const bollardGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 16);
+    const bollardMat = new THREE.MeshStandardMaterial({ color: '#0071ce', metalness: 0.4, roughness: 0.6 });
+    for(let i=0; i<4; i++) {
+        const bollard = new THREE.Mesh(bollardGeo, bollardMat);
+        bollard.position.set(-15 + i * 10, 1.5/2, wallSize/2 + 2);
+        bollard.castShadow = true;
+        scene.add(bollard);
+    }
     
     // Ceiling
     const ceilingGeometry = new THREE.PlaneGeometry(150, 150);
