@@ -489,6 +489,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
   const [hasCart, setHasCart] = useState(false);
+  const [hintMessage, setHintMessage] = useState('');
 
   const sceneRef = useRef<THREE.Scene>();
   const cameraRef = useRef<THREE.PerspectiveCamera>();
@@ -500,6 +501,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const productMeshesRef = useRef<THREE.Mesh[]>([]);
   const npcMeshesRef = useRef<THREE.Group[]>([]);
   const collectibleCartsRef = useRef<THREE.Group[]>([]);
+  const hintMessageRef = useRef('');
   const npcAnimationData = useRef<{
     model: THREE.Group;
     npcData: Npc;
@@ -512,6 +514,29 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const clock = useRef(new THREE.Clock());
   const animationLoopId = useRef<number>();
 
+  const takeCart = useCallback((cartToTake: THREE.Group) => {
+    if (!sceneRef.current || !avatarRef.current || !cartItemsGroupRef.current) return;
+
+    setHasCart(true);
+
+    // Remove static cart from scene and refs
+    sceneRef.current.remove(cartToTake);
+    collectibleCartsRef.current = collectibleCartsRef.current.filter(c => c !== cartToTake);
+
+    // Create and attach player cart
+    const playerCart = createShoppingCart();
+    cartRef.current = playerCart;
+    playerCart.add(cartItemsGroupRef.current);
+    sceneRef.current.add(playerCart);
+    
+    // Position it correctly right away
+    const cartOffset = new THREE.Vector3(0, 0, -1.5);
+    const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
+    const cartPosition = avatarRef.current.position.clone().add(worldOffset);
+    cartPosition.y = 0;
+    playerCart.position.copy(cartPosition);
+    playerCart.quaternion.copy(avatarRef.current.quaternion);
+  }, []);
 
   const onPointerClick = useCallback((event: MouseEvent) => {
     if (!mountRef.current || !cameraRef.current || !sceneRef.current || !avatarRef.current) return;
@@ -535,26 +560,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             if (clickedCartGroup.userData.isCollectibleCart) {
                 const distance = avatarRef.current.position.distanceTo(clickedCartGroup.position);
                 if (distance < 4) { // Interaction distance
-                    setHasCart(true);
-
-                    // Remove static cart from scene and refs
-                    sceneRef.current.remove(clickedCartGroup);
-                    collectibleCartsRef.current = collectibleCartsRef.current.filter(c => c !== clickedCartGroup);
-
-                    // Create and attach player cart
-                    const playerCart = createShoppingCart();
-                    cartRef.current = playerCart;
-                    playerCart.add(cartItemsGroupRef.current!);
-                    sceneRef.current.add(playerCart);
-                    
-                    // Position it correctly right away
-                    const cartOffset = new THREE.Vector3(0, 0, -1.5);
-                    const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
-                    const cartPosition = avatarRef.current.position.clone().add(worldOffset);
-                    cartPosition.y = 0;
-                    playerCart.position.copy(cartPosition);
-                    playerCart.quaternion.copy(avatarRef.current.quaternion);
-
+                    takeCart(clickedCartGroup as THREE.Group);
                     return; // Stop further processing this click
                 }
             }
@@ -587,7 +593,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         onProductClick(product);
       }
     }
-  }, [onProductClick, onNpcClick, hasCart]);
+  }, [onProductClick, onNpcClick, hasCart, takeCart]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -974,8 +980,27 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Event Listeners
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key) {
-        keysPressed.current[event.key.toLowerCase()] = true;
+      if (!event.key) return;
+      const key = event.key.toLowerCase();
+      keysPressed.current[key] = true;
+
+      if (key === 'e' && !hasCart) {
+        if (!avatarRef.current || collectibleCartsRef.current.length === 0) return;
+
+        let closestCart: THREE.Group | null = null;
+        let minDistance = Infinity;
+
+        collectibleCartsRef.current.forEach(cart => {
+          const distance = avatarRef.current!.position.distanceTo(cart.position);
+          if (distance < minDistance) {
+            minDistance = distance;
+            closestCart = cart;
+          }
+        });
+
+        if (closestCart && minDistance < 4) { // Interaction distance
+          takeCart(closestCart);
+        }
       }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
@@ -986,7 +1011,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    mountRef.current.addEventListener('click', onPointerClick);
+    mountRef.current?.addEventListener('click', onPointerClick);
 
     // Animation loop
     const animate = () => {
@@ -1014,6 +1039,35 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       }
       if (keysPressed.current['d']) {
         avatarRef.current.rotation.y -= rotateSpeed * delta;
+      }
+
+      // Check for cart interaction hint
+      if (!hasCart && avatarRef.current) {
+        const closestCart = collectibleCartsRef.current.reduce(
+          (closest, cart) => {
+            const distance = avatarRef.current!.position.distanceTo(cart.position);
+            if (distance < (closest?.distance ?? Infinity)) {
+              return { cart, distance };
+            }
+            return closest;
+          },
+          null as { cart: THREE.Group; distance: number } | null
+        );
+
+        let newHint = '';
+        if (closestCart && closestCart.distance < 4) {
+          newHint = "Press 'E' to take cart";
+        }
+        
+        if (newHint !== hintMessageRef.current) {
+          hintMessageRef.current = newHint;
+          setHintMessage(newHint);
+        }
+      } else {
+        if (hintMessageRef.current !== '') {
+          hintMessageRef.current = '';
+          setHintMessage('');
+        }
       }
 
       // NPC Movement
@@ -1094,7 +1148,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       }
       rendererRef.current?.dispose();
     };
-  }, [onPointerClick, onNpcClick, avatarConfig]);
+  }, [onPointerClick, onNpcClick, avatarConfig, takeCart, hasCart]);
 
   useEffect(() => {
     if (!cartItemsGroupRef.current) return;
@@ -1173,7 +1227,18 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     }
   }, [avatarConfig.texture, avatarConfig.color]);
 
-  return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
+  return (
+    <div className="relative w-full h-full">
+      <div ref={mountRef} className="w-full h-full cursor-pointer" />
+      {hintMessage && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
+          <p className="font-semibold text-lg">
+            Press <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">E</kbd> to take cart
+          </p>
+        </div>
+      )}
+    </div>
+  );
 };
 interface ThreeSceneProps {
   onProductClick: (product: Product | number) => void;
