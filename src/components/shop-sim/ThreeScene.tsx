@@ -59,10 +59,21 @@ function createAisle(length: number, shelves: number, height: number, width: num
 
 function createShoppingCart(): THREE.Group {
   const cart = new THREE.Group();
-  const material = new THREE.MeshStandardMaterial({ color: 0x888888, metalness: 0.8, roughness: 0.4 });
   const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true, transparent: true, opacity: 0.3 });
 
-  // Basket
+  // Blue plastic basket insert
+  const blueBasketMaterial = new THREE.MeshStandardMaterial({
+      color: "#0071ce", // Walmart blue
+      roughness: 0.7,
+      metalness: 0.1
+  });
+  const blueBasketGeo = new THREE.BoxGeometry(0.95, 0.5, 0.6);
+  const blueBasket = new THREE.Mesh(blueBasketGeo, blueBasketMaterial);
+  blueBasket.position.y = 0.75;
+  blueBasket.position.z = -0.05;
+  cart.add(blueBasket);
+
+  // Basket (Wireframe part)
   const basketPoints = [
     new THREE.Vector3(-0.4, 0.5, -0.6), // bottom front left
     new THREE.Vector3(0.4, 0.5, -0.6),  // bottom front right
@@ -397,6 +408,16 @@ function createSecurityGate(): THREE.Group {
   return gate;
 }
 
+function createProduceBin(width: number, depth: number, height: number): THREE.Mesh {
+  const material = new THREE.MeshStandardMaterial({ color: 0x966F33, roughness: 0.8, metalness: 0 }); // "Wood" color
+  const geometry = new THREE.BoxGeometry(width, height, depth);
+  const bin = new THREE.Mesh(geometry, material);
+  bin.castShadow = true;
+  bin.receiveShadow = true;
+  return bin;
+}
+
+
 export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
@@ -484,7 +505,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
     
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(-50, 60, 30);
@@ -641,6 +662,19 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
+    // Produce Bins
+    const produceBin1 = createProduceBin(8, 4, 1);
+    produceBin1.position.set(-12, 0.5, 30);
+    scene.add(produceBin1);
+
+    const produceBin2 = createProduceBin(8, 4, 1);
+    produceBin2.position.set(0, 0.5, 30);
+    scene.add(produceBin2);
+
+    const produceBin3 = createProduceBin(8, 4, 1);
+    produceBin3.position.set(12, 0.5, 30);
+    scene.add(produceBin3);
+
     // Player Avatar
     const playerMaterials = {
         skin: new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 }),
@@ -651,7 +685,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     };
     const avatar = createCharacter(playerMaterials);
     avatar.position.set(0, 0, 80);
-    avatar.rotation.y = 0;
+    avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
     camera.position.set(0, 4, 86);
