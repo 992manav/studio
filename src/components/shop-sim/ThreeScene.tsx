@@ -832,7 +832,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 86);
+    camera.position.set(0, 4, 74);
     camera.lookAt(avatar.position);
 
     // NPCs
@@ -1116,7 +1116,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 3, 6);
+      const cameraOffset = new THREE.Vector3(0, 3, -6);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
       cameraRef.current.position.lerp(cameraPosition, 0.1);
       
