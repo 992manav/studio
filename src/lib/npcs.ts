@@ -73,9 +73,10 @@ export const npcs: Npc[] = [
   {
     id: 6,
     name: 'Marcus',
-    personality: 'A serious-looking man in a suit, seems to be on a very specific mission, possibly for his boss. He is efficient and direct.',
+    personality: 'A helpful store employee, ensuring shelves are stocked.',
     position: [0, 0, 10],
     color: '#34495e',
+    isEmployee: true,
     path: [
         [-12, 0, 10],
         [-12, 0, -15],
@@ -88,9 +89,10 @@ export const npcs: Npc[] = [
   {
     id: 7,
     name: 'Chloe',
-    personality: 'A tech enthusiast, excitedly looking for the latest gadgets and electronics. She\'s friendly and loves to talk about new tech.',
+    personality: 'A friendly employee in the electronics department, ready to answer questions.',
     position: [0, 0, -18],
     color: '#00bcd4',
+    isEmployee: true,
     path: [
       [-18, 0, -21],
       [18, 0, -21],
@@ -101,9 +103,10 @@ export const npcs: Npc[] = [
   {
     id: 8,
     name: 'Ben',
-    personality: 'A new dad, visibly tired and a bit frazzled. He\'s on a mission for diapers, wipes, and lots of coffee.',
+    personality: 'A helpful employee working the front of the store, keeping things tidy.',
     position: [12, 0, 10],
     color: '#795548',
+    isEmployee: true,
     path: [
       [12, 0, 18],
       [12, 0, -18],

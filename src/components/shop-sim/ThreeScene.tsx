@@ -145,7 +145,7 @@ function createCharacter(materials: {
   shirt: THREE.Material;
   pants: THREE.Material;
   shoes: THREE.Material;
-}): THREE.Group {
+}, config: { isEmployee?: boolean } = {}): THREE.Group {
   const group = new THREE.Group();
 
   const head = new THREE.Mesh(
@@ -193,6 +193,43 @@ function createCharacter(materials: {
   torso.name = "torso";
   torso.position.y = 1.2;
   group.add(torso);
+
+  if (config.isEmployee) {
+    const vestMaterial = new THREE.MeshStandardMaterial({ color: 0x0071ce, roughness: 0.7, metalness: 0.1 });
+    const vestWidth = 0.37;
+    const vestHeight = 0.52;
+    const vestDepth = 0.02;
+    const torsoDepth = 0.2;
+
+    const backPanel = new THREE.Mesh(
+        new THREE.BoxGeometry(vestWidth, vestHeight, vestDepth),
+        vestMaterial
+    );
+    backPanel.position.set(0, 1.2, -torsoDepth / 2 - vestDepth/2);
+    backPanel.castShadow = true;
+    backPanel.receiveShadow = true;
+    group.add(backPanel);
+    
+    const frontPanelWidth = vestWidth / 2 - 0.02; // Small gap in the middle
+    
+    const leftPanel = new THREE.Mesh(
+        new THREE.BoxGeometry(frontPanelWidth, vestHeight, vestDepth),
+        vestMaterial
+    );
+    leftPanel.position.set(-(vestWidth/4), 1.2, torsoDepth / 2 + vestDepth/2);
+    leftPanel.castShadow = true;
+    leftPanel.receiveShadow = true;
+    group.add(leftPanel);
+    
+    const rightPanel = new THREE.Mesh(
+        new THREE.BoxGeometry(frontPanelWidth, vestHeight, vestDepth),
+        vestMaterial
+    );
+    rightPanel.position.set((vestWidth/4), 1.2, torsoDepth / 2 + vestDepth/2);
+    rightPanel.castShadow = true;
+    rightPanel.receiveShadow = true;
+    group.add(rightPanel);
+  }
 
   const hips = new THREE.Mesh(
     new THREE.BoxGeometry(0.35, 0.2, 0.2),
@@ -916,7 +953,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // NPCs
     npcAnimationData.current = allNpcs.map(npcData => {
-        const shirtColor = new THREE.Color(npcData.color);
+        let shirtColor;
+        if (npcData.isEmployee) {
+          shirtColor = new THREE.Color(0xdddddd); // Neutral shirt for employees
+        } else {
+          shirtColor = new THREE.Color(npcData.color);
+        }
         const pantsColor = new THREE.Color(npcData.color).multiplyScalar(0.5);
         const hairColors = [0x222222, 0xaf8f6d, 0x553311, 0xdbb888, 0xcc4444, 0x666666];
 
@@ -927,7 +969,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             pants: new THREE.MeshStandardMaterial({ color: pantsColor, roughness: 0.8 }),
             shoes: new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.8 }),
         };
-        const npcAvatar = createCharacter(materials);
+        const npcAvatar = createCharacter(materials, { isEmployee: !!npcData.isEmployee });
         
         npcAvatar.position.fromArray(npcData.position);
         npcAvatar.userData = { id: npcData.id };
@@ -1214,7 +1256,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 3, -6);
+      const cameraOffset = new THREE.Vector3(0, 3, 6);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
       cameraRef.current.position.lerp(cameraPosition, 0.1);
       

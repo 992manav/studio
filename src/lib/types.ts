@@ -26,6 +26,7 @@ export interface Npc {
   position: [number, number, number];
   color: string;
   path?: [number, number, number][];
+  isEmployee?: boolean;
 }
 
 export interface ChatMessage {
