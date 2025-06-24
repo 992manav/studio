@@ -277,6 +277,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     pauseTimer: number;
   }[]>([]);
   const clock = useRef(new THREE.Clock());
+  const animationLoopId = useRef<number>();
 
 
   const onPointerClick = useCallback((event: MouseEvent) => {
@@ -588,11 +589,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Animation loop
     const animate = () => {
+      animationLoopId.current = requestAnimationFrame(animate);
+
       if (!avatarRef.current || !cameraRef.current || !rendererRef.current || !sceneRef.current || !cartRef.current) {
-        requestAnimationFrame(animate);
         return;
       }
-      requestAnimationFrame(animate);
 
       const delta = clock.current.getDelta();
       const moveSpeed = 5.0; // units per second
@@ -678,12 +679,16 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     window.addEventListener('resize', handleResize);
 
     return () => {
+      if (animationLoopId.current) {
+        cancelAnimationFrame(animationLoopId.current);
+      }
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       mountRef.current?.removeEventListener('click', onPointerClick);
-      if (rendererRef.current) {
-        mountRef.current?.removeChild(renderer.domElement);
+      if (rendererRef.current && mountRef.current) {
+        mountRef.current.removeChild(renderer.domElement);
+        renderer.dispose();
       }
     };
   }, [onPointerClick]);
