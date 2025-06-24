@@ -408,6 +408,73 @@ function createSecurityGate(): THREE.Group {
   return gate;
 }
 
+function createCar(color: THREE.ColorRepresentation): THREE.Group {
+  const car = new THREE.Group();
+  const mainMaterial = new THREE.MeshStandardMaterial({ color, metalness: 0.8, roughness: 0.4 });
+  const windowMaterial = new THREE.MeshStandardMaterial({ color: 0x222222, metalness: 0.9, roughness: 0.2, transparent: true, opacity: 0.8 });
+  const wheelMaterial = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.8 });
+
+  // Body
+  const bodyGeo = new THREE.BoxGeometry(2, 0.8, 4.5);
+  const body = new THREE.Mesh(bodyGeo, mainMaterial);
+  body.position.y = 0.6;
+  car.add(body);
+
+  // Roof
+  const roofGeo = new THREE.BoxGeometry(1.8, 0.7, 3);
+  const roof = new THREE.Mesh(roofGeo, mainMaterial);
+  roof.position.y = 1.3;
+  roof.position.z = -0.2;
+  car.add(roof);
+
+  // Windows
+  const sideWindowGeo = new THREE.PlaneGeometry(2.8, 0.5);
+  const leftWindow = new THREE.Mesh(sideWindowGeo, windowMaterial);
+  leftWindow.position.set(-0.91, 1.3, -0.2);
+  leftWindow.rotation.y = -Math.PI / 2;
+  car.add(leftWindow);
+  const rightWindow = new THREE.Mesh(sideWindowGeo, windowMaterial);
+  rightWindow.position.set(0.91, 1.3, -0.2);
+  rightWindow.rotation.y = Math.PI / 2;
+  car.add(rightWindow);
+
+  const frontWindowGeo = new THREE.PlaneGeometry(1.7, 0.6);
+  const frontWindow = new THREE.Mesh(frontWindowGeo, windowMaterial);
+  frontWindow.position.set(0, 1.3, -1.7);
+  frontWindow.rotation.x = -Math.PI / 9;
+  car.add(frontWindow);
+
+  const backWindowGeo = new THREE.PlaneGeometry(1.7, 0.6);
+  const backWindow = new THREE.Mesh(backWindowGeo, windowMaterial);
+  backWindow.position.set(0, 1.3, 1.3);
+  backWindow.rotation.x = Math.PI / 9;
+  car.add(backWindow);
+
+  // Wheels
+  const wheelGeo = new THREE.CylinderGeometry(0.35, 0.35, 0.3, 16);
+  wheelGeo.rotateZ(Math.PI / 2);
+
+  const createWheel = (x: number, z: number) => {
+    const wheel = new THREE.Mesh(wheelGeo, wheelMaterial);
+    wheel.position.set(x, 0.35, z);
+    car.add(wheel);
+  };
+  createWheel(-1, 1.5);
+  createWheel(1, 1.5);
+  createWheel(-1, -1.6);
+  createWheel(1, -1.6);
+
+  car.traverse(child => {
+      if (child instanceof THREE.Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+      }
+  });
+
+  return car;
+}
+
+
 function createProduceBin(width: number, depth: number, height: number): THREE.Mesh {
   const material = new THREE.MeshStandardMaterial({ color: 0x966F33, roughness: 0.8, metalness: 0 }); // "Wood" color
   const geometry = new THREE.BoxGeometry(width, height, depth);
@@ -488,7 +555,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xeeeeee);
-    scene.fog = new THREE.Fog(0xeeeeee, 80, 180);
+    scene.fog = new THREE.Fog(0xeeeeee, 50, 250);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -614,7 +681,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     facadeSign.position.set(0, wallHeight - 10, wallSize / 2 + 0.1);
     scene.add(facadeSign);
 
-    // Exterior Ground
+    // Exterior Ground & Parking Lot
     const sidewalkGeometry = new THREE.PlaneGeometry(wallSize, 12);
     const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.6 });
     const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
@@ -622,27 +689,58 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     sidewalk.position.set(0, 0.01, wallSize/2 + 6);
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
+    
+    const parkingLotDepth = 80;
+    const parkingLotGeometry = new THREE.PlaneGeometry(wallSize, parkingLotDepth);
+    const parkingLotMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
+    const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
+    parkingLot.rotation.x = -Math.PI / 2;
+    parkingLot.position.set(0, 0.01, wallSize/2 + 12 + parkingLotDepth / 2);
+    parkingLot.receiveShadow = true;
+    scene.add(parkingLot);
 
-    const roadGeometry = new THREE.PlaneGeometry(wallSize, 50);
-    const roadMaterial = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 });
-    const road = new THREE.Mesh(roadGeometry, roadMaterial);
-    road.rotation.x = -Math.PI / 2;
-    road.position.set(0, 0, wallSize/2 + 12 + 25);
-    road.receiveShadow = true;
-    scene.add(road);
+    // Parking Lines & Cars
+    const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const lineLength = 5.0;
+    const lineGeo = new THREE.BoxGeometry(0.1, 0.03, lineLength);
+    const parkingSpaceWidth = 3.5;
+    
+    const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
-    // Crosswalk
-    const stripeMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
-    const stripeWidth = 1.5;
-    const stripeLength = 12;
-    const stripeGeo = new THREE.BoxGeometry(stripeWidth, 0.05, stripeLength);
-    for (let i = -15; i < 15; i++) {
-        const stripe = new THREE.Mesh(stripeGeo, stripeMaterial);
-        stripe.position.set(i * (stripeWidth + 2), 0.02, wallSize/2 + 6);
-        stripe.castShadow = false;
-        stripe.receiveShadow = true;
-        scene.add(stripe);
+    const createParkingRow = (zPos: number, direction: number) => {
+        for (let i = -18; i <= 18; i++) {
+            const line = new THREE.Mesh(lineGeo, lineMaterial);
+            line.position.set(i * parkingSpaceWidth, 0.02, zPos);
+            scene.add(line);
+
+            if (i < 18 && Math.random() > 0.4) { // 60% chance of car
+                const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
+                const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
+                car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
+                car.rotation.y = Math.PI/2 * direction + (Math.random() - 0.5) * 0.1;
+                scene.add(car);
+            }
+        }
+    };
+    
+    const firstRowZ = wallSize / 2 + 12 + 8;
+    const secondRowZ = firstRowZ + 18;
+    const thirdRowZ = secondRowZ + 18;
+
+    createParkingRow(firstRowZ, 1);
+    createParkingRow(secondRowZ, -1);
+    createParkingRow(thirdRowZ, 1);
+    
+    // Scattered shopping carts in parking lot
+    for(let i=0; i<8; i++) {
+      const cart = createShoppingCart();
+      const x = (Math.random() - 0.5) * 120;
+      const z = wallSize/2 + 15 + Math.random() * 50;
+      cart.position.set(x, 0, z);
+      cart.rotation.y = Math.random() * Math.PI * 2;
+      scene.add(cart);
     }
+
 
     // Bollards
     const bollardGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 16);
