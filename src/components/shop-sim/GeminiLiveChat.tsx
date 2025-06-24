@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useRef, useCallback } from 'react';
@@ -26,6 +27,13 @@ export const GeminiLiveChat = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   
+  // Use a ref to keep track of the latest chat history for the API call,
+  // preventing stale closures in the handleUserQuery callback.
+  const chatHistoryRef = useRef(chatHistory);
+  useEffect(() => {
+    chatHistoryRef.current = chatHistory;
+  }, [chatHistory]);
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -37,7 +45,7 @@ export const GeminiLiveChat = () => {
     setIsThinking(true);
     
     const userMessage = { role: 'user' as const, content: query };
-    const newHistoryWithUser = [...chatHistory, userMessage];
+    const newHistoryWithUser = [...chatHistoryRef.current, userMessage];
     setChatHistory(newHistoryWithUser);
     
     try {
@@ -52,16 +60,16 @@ export const GeminiLiveChat = () => {
       });
 
       const modelMessage = { role: 'model' as const, content: result.response };
-      setChatHistory([...newHistoryWithUser, modelMessage]);
+      setChatHistory(prevHistory => [...prevHistory, modelMessage]);
 
     } catch (e) {
-      console.error(e);
+      console.error("Live Chat API failed:", e);
       const errorMessage = { role: 'model' as const, content: "Sorry, I'm having trouble connecting right now. Please try again later." };
-      setChatHistory([...newHistoryWithUser, errorMessage]);
+      setChatHistory(prevHistory => [...prevHistory, errorMessage]);
     } finally {
         setIsThinking(false);
     }
-  }, [cart, isThinking, chatHistory, toast]);
+  }, [cart, isThinking, toast]); // Removed chatHistory dependency
 
   useEffect(() => {
     if (!isMounted || !('webkitSpeechRecognition' in window)) {
@@ -75,46 +83,43 @@ export const GeminiLiveChat = () => {
         }
     };
     
-    if (recognitionRef.current) {
-        // If the instance exists, just update the callback to avoid stale closures
-        recognitionRef.current.onresult = onResult;
-        return;
+    // Only create the recognition instance once.
+    if (!recognitionRef.current) {
+        const recognition = new window.webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onerror = (event: any) => {
+            if (event.error === 'no-speech' || event.error === 'aborted') {
+              setIsListening(false);
+              return;
+            }
+
+            let errorMessage = "An unknown error occurred with voice recognition.";
+            if (event.error === 'network') {
+                errorMessage = "Network error with voice recognition. Please check your connection.";
+            } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
+            }
+            
+            toast({
+                variant: "destructive",
+                title: "Voice Chat Error",
+                description: errorMessage,
+            });
+            setIsListening(false);
+        };
+
+        recognition.onend = () => {
+            setIsListening(false);
+        }
+        recognitionRef.current = recognition;
     }
 
-    const recognition = new window.webkitSpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
-    recognition.onresult = onResult;
-    
-    recognition.onerror = (event: any) => {
-        console.error('Speech recognition error', event.error);
-        
-        if (event.error === 'no-speech' || event.error === 'aborted') {
-          setIsListening(false);
-          return;
-        }
+    // Always update the onresult callback to avoid stale closures.
+    recognitionRef.current.onresult = onResult;
 
-        let errorMessage = "An unknown error occurred with voice recognition.";
-        if (event.error === 'network') {
-            errorMessage = "Network error with voice recognition. Please check your connection.";
-        } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-            errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
-        }
-        
-        toast({
-            variant: "destructive",
-            title: "Voice Chat Error",
-            description: errorMessage,
-        });
-        setIsListening(false);
-    };
-
-    recognition.onend = () => {
-        setIsListening(false);
-    }
-
-    recognitionRef.current = recognition;
   }, [isMounted, handleUserQuery, toast]);
   
   useEffect(() => {
