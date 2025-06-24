@@ -349,6 +349,54 @@ function createHangingSign(text: string, size: { width: number; height: number }
   return group;
 }
 
+function createSecurityGate(): THREE.Group {
+  const gate = new THREE.Group();
+  const material = new THREE.MeshStandardMaterial({
+    color: 0xcccccc,
+    metalness: 0.9,
+    roughness: 0.1,
+  });
+
+  // Base
+  const baseGeo = new THREE.CylinderGeometry(0.2, 0.25, 0.1, 24);
+  const base = new THREE.Mesh(baseGeo, material);
+  base.position.y = 0.05;
+  gate.add(base);
+
+  // Post
+  const postGeo = new THREE.CylinderGeometry(0.08, 0.08, 1.2, 16);
+  const post = new THREE.Mesh(postGeo, material);
+  post.position.y = 0.1 + 0.6;
+  gate.add(post);
+  
+  // Sensor box on top
+  const boxGeo = new THREE.BoxGeometry(0.3, 0.15, 0.2);
+  const box = new THREE.Mesh(boxGeo, material);
+  box.position.y = 1.3;
+  gate.add(box);
+
+  // Swinging Arm
+  const arm = new THREE.Group();
+  arm.name = 'gateArm';
+  arm.position.y = 0.9;
+  gate.add(arm);
+
+  const armGeo = new THREE.CylinderGeometry(0.05, 0.05, 3.5, 12);
+  const armBar = new THREE.Mesh(armGeo, material);
+  armBar.rotation.z = Math.PI / 2;
+  armBar.position.x = 3.5 / 2;
+  arm.add(armBar);
+
+  gate.traverse(child => {
+    if (child instanceof THREE.Mesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+    }
+  });
+
+  return gate;
+}
+
 export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
@@ -524,6 +572,19 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const glassDoors = new THREE.Mesh(doorGeometry, glassMaterial);
     glassDoors.position.set(0, doorHeight / 2, wallSize / 2 - facadeDepth/2);
     scene.add(glassDoors);
+
+    // Entrance Gates
+    const gateLeft = createSecurityGate();
+    gateLeft.position.set(-4, 0, 72);
+    const leftArm = gateLeft.getObjectByName('gateArm');
+    if (leftArm) leftArm.rotation.y = -Math.PI / 8; // Slightly open
+    scene.add(gateLeft);
+
+    const gateRight = createSecurityGate();
+    gateRight.position.set(4, 0, 72);
+    const rightArm = gateRight.getObjectByName('gateArm');
+    if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
+    scene.add(gateRight);
 
     // Facade Sign
     const signWidth = 60;
