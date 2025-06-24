@@ -43,16 +43,18 @@ stockShelf({ name: 'Honey Nut Cheerios', price: 4.12, description: 'A family siz
 stockShelf({ name: 'Quaker Oats', price: 3.88, description: 'Old fashioned rolled oats.', image: 'https://i5.walmartimages.com/seo/Quaker-Old-Fashioned-Rolled-Oats-42-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.6, 0.8, 0.6], hint: 'oats container' }, [aisle1XLeft, shelfY.top, aisleZStart + 8], 15, 'z');
 stockShelf({ name: 'Campbell\'s Tomato Soup', price: 1.50, description: 'Classic condensed tomato soup.', image: 'https://i5.walmartimages.com/seo/Campbell-s-Condensed-Tomato-Soup-10-75-oz-Can_a5264875-9c86-455b-8041-e4a89966d11a.2a4729424686411f185a2195e7c8441d.jpeg', category: 'Groceries', size: [0.3, 0.5, 0.3], hint: 'soup can' }, [aisle1XLeft, shelfY.high, aisleZStart], 40, 'z');
 stockShelf({ name: 'Progresso Chicken Noodle', price: 2.50, description: 'Ready-to-serve chicken noodle soup.', image: 'https://i5.walmartimages.com/seo/Progresso-Traditional-Chicken-Noodle-Soup-19-oz_72591669-e092-4424-850c-e2f7596895e6.3986427303310d54c0e0e377668b9415.jpeg', category: 'Groceries', size: [0.4, 0.6, 0.4], hint: 'soup can' }, [aisle1XLeft, shelfY.high, aisleZStart + 15], 20, 'z');
-stockShelf({ name: 'Spaghetti Pasta', price: 1.28, description: 'A box of classic spaghetti.', image: 'https://i5.walmartimages.com/seo/Great-Value-Spaghetti-Pasta-16-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 0.2, 0.4], hint: 'pasta box' }, [aisle1XLeft, shelfY.mid, aisleZStart], 30, 'z');
-stockShelf({ name: 'Marinara Sauce', price: 2.14, description: 'A jar of traditional marinara sauce.', image: 'https://i5.walmartimages.com/seo/Great-Value-Marinara-Pasta-Sauce-24-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.4, 0.7, 0.4], hint: 'sauce jar' }, [aisle1XLeft, shelfY.mid, aisleZStart + 15], 30, 'z');
+stockShelf({ name: 'Spaghetti Pasta', price: 1.28, description: 'A box of classic spaghetti.', image: 'https://i5.walmartimages.com/seo/Great-Value-Spaghetti-Pasta-16-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 0.2, 0.4], hint: 'pasta box' }, [aisle1XLeft, shelfY.mid, aisleZStart], 30, 'z');
+stockShelf({ name: 'Marinara Sauce', price: 2.14, description: 'A jar of traditional marinara sauce.', image: 'https://i5.walmartimages.com/seo/Great-Value-Marinara-Pasta-Sauce-24-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.4, 0.7, 0.4], hint: 'sauce jar' }, [aisle1XLeft, shelfY.mid, aisleZStart + 15], 30, 'z');
 stockShelf({ name: 'Great Value Milk', price: 3.5, description: 'Fresh and nutritious whole milk.', image: 'https://i5.walmartimages.com/seo/Great-Value-Whole-Milk-Gallon-128-fl-oz_5f8a1e1b-1e0c-4a4b-9c3c-8b6b8d9f6e0a.7c4b3e9c5e7c8b6b8d9f6e0a.jpeg', category: 'Groceries', size: [0.5, 1, 0.5], hint: 'milk carton' }, [aisle1XLeft, shelfY.low, aisleZStart], 25, 'z');
 stockShelf({ name: 'Tropicana Orange Juice', price: 4.20, description: 'No-pulp orange juice.', image: 'https://i5.walmartimages.com/seo/Tropicana-Pure-Premium-Original-No-Pulp-Orange-Juice-52-fl-oz_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.5, 0.8, 0.5], hint: 'juice carton' }, [aisle1XLeft, shelfY.low, aisleZStart + 15], 20, 'z');
 stockShelf({ name: 'Aquafina Water 24-pack', price: 5.99, description: 'A 24-pack of purified drinking water.', image: 'https://i5.walmartimages.com/seo/Aquafina-Purified-Drinking-Water-16-9-oz-24-Pack-Bottles_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [1.5, 0.8, 1], hint: 'water case' }, [aisle1XLeft, shelfY.bottom, aisleZStart], 10, 'z');
+stockShelf({ name: 'Folgers Coffee', price: 9.98, description: 'Classic medium roast ground coffee.', image: 'https://i5.walmartimages.com/seo/Folgers-Classic-Roast-Medium-Roast-Ground-Coffee-22-6-oz-Canister_f54c9a5b-98e3-4f96-b9a5-59b5b2a0c6a5.e4f4a3e74e6484a8a5f4a4b4a3a5f4a5.jpeg', category: 'Groceries', size: [0.6, 0.8, 0.6], hint: 'coffee can' }, [aisle1XLeft, shelfY.mid, aisleZStart + 28], 15, 'z');
+
 
 // Right Side (Snacks, Bread, Eggs)
 stockShelf({ name: 'Lays Classic Chips', price: 3.50, description: 'A party size bag of classic potato chips.', image: 'https://i5.walmartimages.com/seo/Lay-s-Classic-Potato-Chips-Party-Size-13-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 1, 0.4], hint: 'potato chips' }, [aisle1XRight, shelfY.top, aisleZStart], 20, 'z');
-stockShelf({ name: 'Doritos Nacho Cheese', price: 3.50, description: 'A party size bag of Doritos.', image: 'https://i5.walmartimages.com/seo/Doritos-Nacho-Cheese-Flavored-Tortilla-Chips-Party-Size-15-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 1, 0.4], hint: 'tortilla chips' }, [aisle1XRight, shelfY.top, aisleZStart + 10], 20, 'z');
-stockShelf({ name: 'Oreo Cookies', price: 3.78, description: 'A family size pack of classic Oreo cookies.', image: 'https://i5.walmartimages.com/seo/Oreo-Chocolate-Sandwich-Cookies-Family-Size-19-1-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart], 40, 'z');
+stockShelf({ name: 'Doritos Nacho Cheese', price: 3.50, description: 'A party size bag of Doritos.', image: 'https://i5.walmartimages.com/seo/Doritos-Nacho-Cheese-Flavored-Tortilla-Chips-Party-Size-15-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 1, 0.4], hint: 'tortilla chips' }, [aisle1XRight, shelfY.top, aisleZStart + 10], 20, 'z');
+stockShelf({ name: 'Oreo Cookies', price: 3.78, description: 'A family size pack of classic Oreo cookies.', image: 'https://i5.walmartimages.com/seo/Oreo-Chocolate-Sandwich-Cookies-Family-Size-19-1-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart], 40, 'z');
 stockShelf({ name: 'Chips Ahoy!', price: 3.78, description: 'A family size pack of chocolate chip cookies.', image: 'https://i5.walmartimages.com/seo/Chips-Ahoy-Original-Chocolate-Chip-Cookies-Family-Size-18-2-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart + 10], 40, 'z');
 stockShelf({ name: 'Great Value Bread', price: 2.24, description: 'Classic white sandwich bread.', image: 'https://i5.walmartimages.com/seo/Great-Value-White-Bread-20-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.5, 0.5, 1], hint: 'bread loaf' }, [aisle1XRight, shelfY.mid, aisleZStart], 20, 'z');
 stockShelf({ name: 'Jif Peanut Butter', price: 3.20, description: 'Creamy peanut butter.', image: 'https://i5.walmartimages.com/seo/Jif-Creamy-Peanut-Butter-16-oz-Jar_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.5, 0.6, 0.5], hint: 'peanut butter jar' }, [aisle1XRight, shelfY.mid, aisleZStart + 22], 20, 'z');
@@ -73,6 +75,7 @@ stockShelf({ name: 'Mtn Dew 12-Pack', price: 5.98, description: 'A 12-pack of Mt
 stockShelf({ name: 'Mtn Dew 12-Pack', price: 5.98, description: 'A 12-pack of Mtn Dew soda.', image: 'https://i5.walmartimages.com/seo/Mountain-Dew-Soda-12-Pack-12-fl-oz-Cans_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: sodaCaseSize, hint: 'mountain dew case' }, [aisle2XLeft, shelfY.low, aisleZStart + 12], 12, 'z');
 stockShelf({ name: 'Monster Energy Drink', price: 2.20, description: '16 fl oz can of green Monster energy.', image: 'https://i5.walmartimages.com/seo/Monster-Energy-Green-Original-Energy-Drink-16-fl-oz-Can_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.3, 0.7, 0.3], hint: 'energy drink can' }, [aisle2XLeft, shelfY.mid, aisleZStart], 40, 'z');
 stockShelf({ name: 'Gatorade Variety Pack', price: 12.00, description: 'A pack of assorted Gatorade flavors.', image: 'https://i5.walmartimages.com/seo/Gatorade-Thirst-Quencher-Variety-Pack-20-fl-oz-12-Pack_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [1.2, 0.9, 0.8], hint: 'gatorade pack' }, [aisle2XRight, shelfY.mid, aisleZStart], 10, 'z');
+stockShelf({ name: 'Red Bull', price: 2.50, description: '8.4 fl oz can of Red Bull energy drink.', image: 'https://i5.walmartimages.com/seo/Red-Bull-Energy-Drink-8-4-fl-oz_dc8a8b5e-3d5f-4d3b-9a8f-0a5f5d8e7e1f.1f0f0e0f8c3b9b4a4c6e9d6d5d8e7e1f.jpeg', category: 'Groceries', size: [0.2, 0.6, 0.2], hint: 'energy drink can' }, [aisle2XLeft, shelfY.mid, aisleZStart + 15], 50, 'z');
 
 
 // --- AISLE 3: Home Goods (x = 8) ---
@@ -86,6 +89,8 @@ stockShelf({ name: 'Mainstays Bath Towel', price: 4.97, description: 'Soft and a
 stockShelf({ name: 'T-fal Cookware Set', price: 69.99, description: '18-piece nonstick cookware set.', image: 'https://i5.walmartimages.com/seo/T-fal-Initiatives-Nonstick-Cookware-Set-18-Piece-Black_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [1.5, 1.2, 1.5], hint: 'cookware set box' }, [aisle3XRight, shelfY.top, aisleZStart], 6, 'z');
 stockShelf({ name: 'George Foreman Grill', price: 29.99, description: 'Classic plate grill for 2 servings.', image: 'https://i5.walmartimages.com/seo/George-Foreman-2-Serving-Classic-Plate-Grill-and-Panini-Press-Black-GR10B_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [1, 0.8, 1], hint: 'grill box' }, [aisle3XRight, shelfY.high, aisleZStart], 12, 'z');
 stockShelf({ name: 'Oster Blender', price: 24.96, description: 'A powerful 6-speed kitchen blender.', image: 'https://i5.walmartimages.com/seo/Oster-6-Speed-Blender-Black-006878_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [0.6, 0.8, 0.6], hint: 'blender box' }, [aisle3XRight, shelfY.mid, aisleZStart], 18, 'z');
+stockShelf({ name: 'Hefty Trash Bags', price: 8.99, description: '30-gallon large trash bags, 40 count.', image: 'https://i5.walmartimages.com/seo/Hefty-Strong-Large-Trash-Bags-30-Gallon-40-Count_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [0.8, 0.8, 0.3], hint: 'trash bags box' }, [aisle3XLeft, shelfY.high, aisleZStart + 20], 20, 'z');
+stockShelf({ name: 'Febreze Air Freshener', price: 2.97, description: 'Linen & Sky scent air freshener spray.', image: 'https://i5.walmartimages.com/seo/Febreze-AIR-Air-Refresher-Linen-Sky-Scent-8-8-oz_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [0.3, 0.8, 0.3], hint: 'air freshener' }, [aisle3XRight, shelfY.top, aisleZStart + 12], 30, 'z');
 
 
 // --- AISLE 4: Pharmacy, Personal Care, Apparel (x = 16) ---
@@ -99,7 +104,8 @@ stockShelf({ name: 'Colgate Toothpaste', price: 3.49, description: 'Cavity prote
 stockShelf({ name: 'Banana Boat Sunscreen', price: 7.97, description: 'SPF 50 broad spectrum sport sunscreen lotion.', image: 'https://i5.walmartimages.com/seo/Banana-Boat-Sport-Ultra-SPF-50-Sunscreen-Lotion-8-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Personal Care', size: [0.3, 0.8, 0.3], hint: 'sunscreen bottle' }, [aisle4XRight, shelfY.low, aisleZStart + 15], 30, 'z');
 stockShelf({ name: 'Hanes T-Shirt', price: 6.0, description: 'Comfortable 100% cotton crewneck t-shirt.', image: 'https://i5.walmartimages.com/seo/Hanes-Men-s-ComfortSoft-Short-Sleeve-T-Shirt-White-XL_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Apparel', size: [0.8, 0.1, 1], hint: 'folded shirt' }, [aisle4XLeft, shelfY.mid, aisleZStart], 20, 'z');
 stockShelf({ name: 'Wrangler Mens Jeans', price: 19.98, description: 'Regular fit straight leg jeans for men.', image: 'https://i5.walmartimages.com/seo/Wrangler-Men-s-Regular-Fit-Jeans-Medium-Wash-34x32_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Apparel', size: [0.8, 0.1, 1], hint: 'folded jeans' }, [aisle4XLeft, shelfY.high, aisleZStart], 20, 'z');
-
+stockShelf({ name: 'Secret Deodorant', price: 5.47, description: 'Invisible solid antiperspirant and deodorant.', image: 'https://i5.walmartimages.com/seo/Secret-Outlast-XTend-Invisible-Solid-Antiperspirant-Deodorant-Completely-Clean-2-6-oz_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Personal Care', size: [0.4, 0.6, 0.2], hint: 'deodorant stick' }, [aisle4XRight, shelfY.high, aisleZStart], 30, 'z');
+stockShelf({ name: 'Hanes Mens Socks', price: 10.98, description: '12-pack of white crew socks.', image: 'https://i5.walmartimages.com/seo/Hanes-Men-s-Crew-Socks-12-Pack_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Apparel', size: [0.8, 0.2, 0.6], hint: 'packaged socks' }, [aisle4XLeft, shelfY.bottom, aisleZStart], 30, 'z');
 
 // --- Back Aisle: Electronics, Toys, Sporting Goods (z = -22) ---
 const backAisleZBack = -22.75;
@@ -115,6 +121,7 @@ stockShelf({ name: 'Spalding Basketball', price: 15.88, description: 'Official s
 stockShelf({ name: 'Wilson Football', price: 19.99, description: 'Official size NFL football.', image: 'https://i5.walmartimages.com/seo/Wilson-NFL-Official-Size-Football_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Sporting Goods', size: [0.5, 0.5, 0.8], hint: 'american football' }, [aisleXStart + 20, shelfY.low, backAisleZFront], 15, 'x');
 stockShelf({ name: 'Ozark Trail Tent', price: 49.99, description: '4-person dome tent.', image: 'https://i5.walmartimages.com/seo/Ozark-Trail-4-Person-Dome-Tent_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Outdoors', size: [1, 1, 1], hint: 'camping tent package' }, [aisleXStart + 30, shelfY.top, backAisleZBack], 5, 'x');
 stockShelf({ name: 'Coleman Cooler', price: 24.98, description: '48-Quart Performance 3-Day Cooler.', image: 'https://i5.walmartimages.com/seo/Coleman-Performance-48-Quart-Cooler-Blue_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Outdoors', size: [1.5, 1.2, 1.2], hint: 'beverage cooler' }, [aisleXStart + 30, shelfY.bottom, backAisleZBack], 5, 'x');
+stockShelf({ name: 'Nintendo Switch', price: 299.00, description: 'Nintendo Switch with Neon Blue and Neon Red Joy-Con.', image: 'https://i5.walmartimages.com/seo/Nintendo-Switch-w-Neon-Blue-Neon-Red-Joy-Con_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Electronics', size: [1, 0.6, 0.4], hint: 'console box' }, [aisleXStart, shelfY.high, backAisleZBack + 15], 10, 'x');
 
 
 // --- Center Pallet Displays ---
@@ -158,6 +165,29 @@ for (let i = 0; i < 3; i++) { // height
         ],
         size: sodaCaseSize,
         hint: 'mountain dew case',
+      });
+    }
+  }
+}
+const waterCaseSize: [number, number, number] = [1.5, 0.8, 1];
+const waterStackPos = { x: -4, y: waterCaseSize[1] / 2, z: 0 };
+for (let i = 0; i < 5; i++) { // height
+  for (let j = 0; j < 4; j++) { // width
+    for (let k = 0; k < 3; k++) { // depth
+        products.push({
+        id: currentId++,
+        name: 'Aquafina Water (Display)',
+        price: 5.99,
+        description: 'A 24-pack of purified drinking water.',
+        image: 'https://i5.walmartimages.com/seo/Aquafina-Purified-Drinking-Water-16-9-oz-24-Pack-Bottles_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg',
+        category: 'Groceries',
+        position: [
+          waterStackPos.x + j * waterCaseSize[0],
+          waterCaseSize[1] / 2 + i * waterCaseSize[1],
+          waterStackPos.z + k * waterCaseSize[2],
+        ],
+        size: waterCaseSize,
+        hint: 'water case',
       });
     }
   }
