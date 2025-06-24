@@ -580,8 +580,16 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
 
     // Event Listeners
-    const handleKeyDown = (event: KeyboardEvent) => { keysPressed.current[event.key.toLowerCase()] = true; };
-    const handleKeyUp = (event: KeyboardEvent) => { keysPressed.current[event.key.toLowerCase()] = false; };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key) {
+        keysPressed.current[event.key.toLowerCase()] = true;
+      }
+    };
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key) {
+        keysPressed.current[event.key.toLowerCase()] = false;
+      }
+    };
     
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
