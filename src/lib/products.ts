@@ -1,3 +1,4 @@
+
 import type { Product } from './types';
 
 export const products: Product[] = [];
@@ -55,8 +56,8 @@ stockShelf({ name: 'Folgers Coffee', price: 9.98, description: 'Classic medium r
 stockShelf({ name: 'Lays Classic Chips', price: 3.50, description: 'A party size bag of classic potato chips.', image: 'https://i5.walmartimages.com/seo/Lay-s-Classic-Potato-Chips-Party-Size-13-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 1, 0.4], hint: 'potato chips' }, [aisle1XRight, shelfY.top, aisleZStart], 20, 'z');
 stockShelf({ name: 'Doritos Nacho Cheese', price: 3.50, description: 'A party size bag of Doritos.', image: 'https://i5.walmartimages.com/seo/Doritos-Nacho-Cheese-Flavored-Tortilla-Chips-Party-Size-15-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.8, 1, 0.4], hint: 'tortilla chips' }, [aisle1XRight, shelfY.top, aisleZStart + 10], 20, 'z');
 stockShelf({ name: 'Oreo Cookies', price: 3.78, description: 'A family size pack of classic Oreo cookies.', image: 'https://i5.walmartimages.com/seo/Oreo-Chocolate-Sandwich-Cookies-Family-Size-19-1-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart], 40, 'z');
-stockShelf({ name: 'Chips Ahoy!', price: 3.78, description: 'A family size pack of chocolate chip cookies.', image: 'https://i5.walmartimages.com/seo/Chips-Ahoy-Original-Chocolate-Chip-Cookies-Family-Size-18-2-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart + 10], 40, 'z');
-stockShelf({ name: 'Great Value Bread', price: 2.24, description: 'Classic white sandwich bread.', image: 'https://i5.walmartimages.com/seo/Great-Value-White-Bread-20-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.5, 0.5, 1], hint: 'bread loaf' }, [aisle1XRight, shelfY.mid, aisleZStart], 20, 'z');
+stockShelf({ name: 'Chips Ahoy!', price: 3.78, description: 'A family size pack of chocolate chip cookies.', image: 'https://i5.walmartimages.com/seo/Chips-Ahoy-Original-Chocolate-Chip-Cookies-Family-Size-18-2-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart + 10], 40, 'z');
+stockShelf({ name: 'Great Value Bread', price: 2.24, description: 'Classic white sandwich bread.', image: 'https://i5.walmartimages.com/seo/Great-Value-White-Bread-20-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.5, 0.5, 1], hint: 'bread loaf' }, [aisle1XRight, shelfY.mid, aisleZStart], 20, 'z');
 stockShelf({ name: 'Jif Peanut Butter', price: 3.20, description: 'Creamy peanut butter.', image: 'https://i5.walmartimages.com/seo/Jif-Creamy-Peanut-Butter-16-oz-Jar_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.5, 0.6, 0.5], hint: 'peanut butter jar' }, [aisle1XRight, shelfY.mid, aisleZStart + 22], 20, 'z');
 stockShelf({ name: 'Great Value Eggs', price: 2.50, description: 'One dozen Grade A large eggs.', image: 'https://i5.walmartimages.com/seo/Great-Value-Large-White-Eggs-12-Count_6a2e4f9e-3b3d-4f8d-9e4d-2e4f9e3b3d4f.6a2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [1, 0.4, 0.5], hint: 'egg carton' }, [aisle1XRight, shelfY.low, aisleZStart], 20, 'z');
 stockShelf({ name: 'Kraft Singles Cheese', price: 4.50, description: 'American cheese slices.', image: 'https://i5.walmartimages.com/seo/Kraft-Singles-American-Cheese-Slices-16-ct-12-0-oz-Package_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.6, 0.2, 0.6], hint: 'cheese package' }, [aisle1XRight, shelfY.low, aisleZStart + 22], 20, 'z');
@@ -231,7 +232,7 @@ addProducePile({
     category: 'Produce',
     size: [0.3, 0.3, 0.3],
     hint: 'red apple'
-}, [0, binSurfaceY, 30], [binPileSize[0]/2, binPileSize[1]], 40);
+}, [-2, binSurfaceY, 30], [3.5, binPileSize[1]], 40);
 
 addProducePile({
     name: 'Navel Orange',
@@ -241,7 +242,7 @@ addProducePile({
     category: 'Produce',
     size: [0.3, 0.3, 0.3],
     hint: 'orange fruit'
-}, [4, binSurfaceY, 30], [binPileSize[0]/2, binPileSize[1]], 40);
+}, [2, binSurfaceY, 30], [3.5, binPileSize[1]], 40);
 
 // Bin 3: Pineapples
 addProducePile({
@@ -269,3 +270,5 @@ export const trendingProducts: string[] = [
   'Tide Laundry Detergent',
   'Coca-Cola 12-Pack',
 ];
+
+    
