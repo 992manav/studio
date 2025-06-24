@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import * as THREE from 'three';
 import { products } from '@/lib/products';
 import { npcs as allNpcs } from '@/lib/npcs';
@@ -488,6 +488,7 @@ function createProduceBin(width: number, depth: number, height: number): THREE.M
 export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
+  const [hasCart, setHasCart] = useState(false);
 
   const sceneRef = useRef<THREE.Scene>();
   const cameraRef = useRef<THREE.PerspectiveCamera>();
@@ -496,8 +497,9 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const cartRef = useRef<THREE.Group>();
   const cartItemsGroupRef = useRef<THREE.Group>();
   const keysPressed = useRef<{ [key: string]: boolean }>({});
-  const productMeshes = useRef<THREE.Mesh[]>([]);
-  const npcMeshes = useRef<THREE.Group[]>([]);
+  const productMeshesRef = useRef<THREE.Mesh[]>([]);
+  const npcMeshesRef = useRef<THREE.Group[]>([]);
+  const collectibleCartsRef = useRef<THREE.Group[]>([]);
   const npcAnimationData = useRef<{
     model: THREE.Group;
     npcData: Npc;
@@ -512,7 +514,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
 
   const onPointerClick = useCallback((event: MouseEvent) => {
-    if (!mountRef.current || !cameraRef.current) return;
+    if (!mountRef.current || !cameraRef.current || !sceneRef.current || !avatarRef.current) return;
     
     const pointer = new THREE.Vector2();
     pointer.x = (event.clientX / mountRef.current.clientWidth) * 2 - 1;
@@ -520,9 +522,47 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(pointer, cameraRef.current);
+
+    // Check for collectible cart click
+    if (!hasCart) {
+        const cartIntersects = raycaster.intersectObjects(collectibleCartsRef.current, true);
+        if (cartIntersects.length > 0) {
+            let clickedCartGroup = cartIntersects[0].object;
+            while(clickedCartGroup.parent && !clickedCartGroup.userData.isCollectibleCart) {
+                clickedCartGroup = clickedCartGroup.parent;
+            }
+
+            if (clickedCartGroup.userData.isCollectibleCart) {
+                const distance = avatarRef.current.position.distanceTo(clickedCartGroup.position);
+                if (distance < 4) { // Interaction distance
+                    setHasCart(true);
+
+                    // Remove static cart from scene and refs
+                    sceneRef.current.remove(clickedCartGroup);
+                    collectibleCartsRef.current = collectibleCartsRef.current.filter(c => c !== clickedCartGroup);
+
+                    // Create and attach player cart
+                    const playerCart = createShoppingCart();
+                    cartRef.current = playerCart;
+                    playerCart.add(cartItemsGroupRef.current!);
+                    sceneRef.current.add(playerCart);
+                    
+                    // Position it correctly right away
+                    const cartOffset = new THREE.Vector3(0, 0, -1.5);
+                    const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
+                    const cartPosition = avatarRef.current.position.clone().add(worldOffset);
+                    cartPosition.y = 0;
+                    playerCart.position.copy(cartPosition);
+                    playerCart.quaternion.copy(avatarRef.current.quaternion);
+
+                    return; // Stop further processing this click
+                }
+            }
+        }
+    }
     
-    // Check for NPC clicks first
-    const npcIntersects = raycaster.intersectObjects(npcMeshes.current, true);
+    // Check for NPC clicks
+    const npcIntersects = raycaster.intersectObjects(npcMeshesRef.current, true);
     if (npcIntersects.length > 0) {
       let clickedNpcGroup = npcIntersects[0].object;
       while (clickedNpcGroup.parent && !clickedNpcGroup.userData.id) {
@@ -539,7 +579,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     }
 
     // Then check for product clicks
-    const productIntersects = raycaster.intersectObjects(productMeshes.current);
+    const productIntersects = raycaster.intersectObjects(productMeshesRef.current);
     if (productIntersects.length > 0) {
       const clickedObject = productIntersects[0].object;
       const product = clickedObject.userData as Product;
@@ -547,7 +587,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         onProductClick(product);
       }
     }
-  }, [onProductClick, onNpcClick]);
+  }, [onProductClick, onNpcClick, hasCart]);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -733,12 +773,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     
     // Scattered shopping carts in parking lot
     for(let i=0; i<8; i++) {
-      const cart = createShoppingCart();
+      const cartModel = createShoppingCart();
       const x = (Math.random() - 0.5) * 120;
       const z = wallSize/2 + 15 + Math.random() * 50;
-      cart.position.set(x, 0, z);
-      cart.rotation.y = Math.random() * Math.PI * 2;
-      scene.add(cart);
+      cartModel.position.set(x, 0, z);
+      cartModel.rotation.y = Math.random() * Math.PI * 2;
+      scene.add(cartModel);
     }
 
 
@@ -820,24 +860,28 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             pauseTimer: 0
         };
     });
-    npcMeshes.current = npcAnimationData.current.map(data => data.model);
+    npcMeshesRef.current = npcAnimationData.current.map(data => data.model);
 
 
-    // Shopping Cart
-    const cartModel = createShoppingCart();
-    const cartOffset = new THREE.Vector3(0, 0, -1.5);
-    const worldOffset = cartOffset.applyQuaternion(avatar.quaternion);
-    const cartPosition = avatar.position.clone().add(worldOffset);
-    cartPosition.y = 0;
-    cartModel.position.copy(cartPosition);
-    cartModel.quaternion.copy(avatar.quaternion);
-    scene.add(cartModel);
-    cartRef.current = cartModel;
+    // Cart Corral
+    const collectibleCarts: THREE.Group[] = [];
+    const corralX = -15;
+    const corralZ = 78;
+    for (let i = 0; i < 2; i++) {
+      for (let j = 0; j < 4; j++) {
+        const cartModel = createShoppingCart();
+        cartModel.position.set(corralX + i * 1.5, 0, corralZ + j * 2.5);
+        cartModel.rotation.y = Math.PI / 2;
+        cartModel.userData = { isCollectibleCart: true };
+        scene.add(cartModel);
+        collectibleCarts.push(cartModel);
+      }
+    }
+    collectibleCartsRef.current = collectibleCarts;
+
 
     // This group will hold the product meshes inside the cart.
-    const itemsGroup = new THREE.Group();
-    cartItemsGroupRef.current = itemsGroup;
-    cartModel.add(itemsGroup);
+    cartItemsGroupRef.current = new THREE.Group();
 
     // Aisles
     const aisleHeight = 3.5;
@@ -883,7 +927,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
 
     // Products
-    productMeshes.current = products.map(product => {
+    productMeshesRef.current = products.map(product => {
       const productGeometry = new THREE.BoxGeometry(...product.size);
       const placeholderMaterial = new THREE.MeshStandardMaterial({ color: new THREE.Color(0xcccccc).multiplyScalar(Math.random() * 0.5 + 0.5) });
       const productMesh = new THREE.Mesh(productGeometry, placeholderMaterial);
@@ -948,7 +992,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const animate = () => {
       animationLoopId.current = requestAnimationFrame(animate);
 
-      if (!avatarRef.current || !cameraRef.current || !rendererRef.current || !sceneRef.current || !cartRef.current) {
+      if (!avatarRef.current || !cameraRef.current || !rendererRef.current || !sceneRef.current) {
         return;
       }
 
@@ -1009,12 +1053,14 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       });
 
       // Cart follows avatar
-      const cartOffset = new THREE.Vector3(0, 0, -1.5); // Pushed in front of avatar
-      const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
-      const cartTargetPosition = avatarRef.current.position.clone().add(worldOffset);
-      cartTargetPosition.y = 0; // Keep cart on the floor
-      cartRef.current.position.lerp(cartTargetPosition, 0.15);
-      cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
+      if (hasCart && cartRef.current) {
+        const cartOffset = new THREE.Vector3(0, 0, -1.5); // Pushed in front of avatar
+        const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
+        const cartTargetPosition = avatarRef.current.position.clone().add(worldOffset);
+        cartTargetPosition.y = 0; // Keep cart on the floor
+        cartRef.current.position.lerp(cartTargetPosition, 0.15);
+        cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
+      }
 
       const cameraOffset = new THREE.Vector3(0, 3, 6);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
@@ -1044,9 +1090,9 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       window.removeEventListener('keyup', handleKeyUp);
       mountRef.current?.removeEventListener('click', onPointerClick);
       if (rendererRef.current && mountRef.current) {
-        mountRef.current.removeChild(renderer.domElement);
+        mountRef.current.removeChild(rendererRef.current.domElement);
       }
-      renderer.dispose();
+      rendererRef.current?.dispose();
     };
   }, [onPointerClick, onNpcClick, avatarConfig]);
 
