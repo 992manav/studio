@@ -71,50 +71,6 @@ export const npcs: Npc[] = [
     ]
   },
   {
-    id: 6,
-    name: 'Marcus',
-    personality: 'A helpful store employee, ensuring shelves are stocked.',
-    position: [0, 0, 10],
-    color: '#34495e',
-    isEmployee: true,
-    path: [
-        [-12, 0, 10],
-        [-12, 0, -15],
-        [0, 0, -20],
-        [12, 0, -15],
-        [12, 0, 10],
-        [0, 0, 10],
-    ]
-  },
-  {
-    id: 7,
-    name: 'Chloe',
-    personality: 'A friendly employee in the electronics department, ready to answer questions.',
-    position: [0, 0, -18],
-    color: '#00bcd4',
-    isEmployee: true,
-    path: [
-      [-18, 0, -21],
-      [18, 0, -21],
-      [18, 0, -20],
-      [-18, 0, -20],
-    ]
-  },
-  {
-    id: 8,
-    name: 'Ben',
-    personality: 'A helpful employee working the front of the store, keeping things tidy.',
-    position: [12, 0, 10],
-    color: '#795548',
-    isEmployee: true,
-    path: [
-      [12, 0, 18],
-      [12, 0, -18],
-      [-12, 0, -18],
-      [-12, 0, 18],
-    ]
-  },
-  {
     id: 9,
     name: 'Olivia',
     personality: 'A cheerful foodie and home chef, browsing for unique and high-quality ingredients. She\'s patient and observant.',
@@ -139,5 +95,102 @@ export const npcs: Npc[] = [
       [16, 0, -15],
       [16, 0, 15],
     ]
-  }
+  },
+  // NEW EMPLOYEES
+  {
+    id: 11,
+    name: 'Maria (Greeter)',
+    personality: 'A warm and welcoming employee at the entrance.',
+    position: [10, 0, 70],
+    color: '#34495e',
+    isEmployee: true,
+    path: [
+        [10, 0, 70],
+        [-10, 0, 70],
+    ]
+  },
+  {
+    id: 12,
+    name: 'Rick (Greeter)',
+    personality: 'A helpful employee keeping the entrance area tidy.',
+    position: [-10, 0, 70],
+    color: '#795548',
+    isEmployee: true,
+    path: [
+        [-10, 0, 70],
+        [10, 0, 70],
+    ]
+  },
+  {
+    id: 13,
+    name: 'James (Groceries)',
+    personality: 'Diligently stocking cereal and soup in the grocery aisle.',
+    position: [-16, 0, 0],
+    color: '#00bcd4',
+    isEmployee: true,
+    path: [
+        [-16, 0, -18],
+        [-16, 0, 18],
+    ]
+  },
+  {
+    id: 14,
+    name: 'Linda (Groceries)',
+    personality: 'Restocking snacks and drinks, always with a smile.',
+    position: [-8, 0, 10],
+    color: '#607d8b',
+    isEmployee: true,
+    path: [
+        [-8, 0, -15],
+        [-8, 0, 15],
+    ]
+  },
+    {
+    id: 15,
+    name: 'Robert (Home Goods)',
+    personality: 'Neatly folding towels and organizing kitchenware.',
+    position: [8, 0, 5],
+    color: '#cddc39',
+    isEmployee: true,
+    path: [
+        [8, 0, -18],
+        [8, 0, 18],
+    ]
+  },
+  {
+    id: 16,
+    name: 'Patricia (Apparel)',
+    personality: 'Helping customers find the right size jeans.',
+    position: [16, 0, 0],
+    color: '#ffc107',
+    isEmployee: true,
+    path: [
+        [16, 0, -15],
+        [16, 0, 15],
+    ]
+  },
+    {
+    id: 17,
+    name: 'Susan (Electronics)',
+    personality: 'Expert on the latest video games and toys.',
+    position: [-10, 0, -21],
+    color: '#4caf50',
+    isEmployee: true,
+    path: [
+        [-15, 0, -21],
+        [15, 0, -21],
+    ]
+  },
+   {
+    id: 18,
+    name: 'Mike (Electronics)',
+    personality: 'An employee helping customers in the electronics section.',
+    position: [10, 0, -21],
+    color: '#f44336',
+    isEmployee: true,
+    path: [
+      [15, 0, -21],
+      [-15, 0, -21],
+    ]
+  },
 ];
