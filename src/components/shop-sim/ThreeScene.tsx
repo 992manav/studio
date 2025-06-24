@@ -651,7 +651,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     };
     const avatar = createCharacter(playerMaterials);
     avatar.position.set(0, 0, 80);
-    avatar.rotation.y = Math.PI;
+    avatar.rotation.y = 0;
     scene.add(avatar);
     avatarRef.current = avatar;
     camera.position.set(0, 4, 86);
