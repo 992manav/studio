@@ -319,42 +319,119 @@ function createFacadeSign(width: number, height: number): THREE.Mesh {
     return signMesh;
 }
 
-function createHangingSign(text: string, size: { width: number; height: number }): THREE.Group {
+function createHangingSign(
+  config: {
+    header?: string;
+    items?: string[];
+    largeText?: string;
+    icon?: 'shirt' | 'arrow-right';
+  },
+  size: { width: number; height: number }
+): THREE.Group {
   const group = new THREE.Group();
-
   const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d');
-  if (!context) return group;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return group;
 
   const canvasWidth = 512;
-  const canvasHeight = 256;
+  const canvasHeight = (size.height / size.width) * canvasWidth;
   canvas.width = canvasWidth;
   canvas.height = canvasHeight;
 
-  context.fillStyle = '#0071ce'; // Walmart Blue
-  context.fillRect(0, 0, canvasWidth, canvasHeight);
+  // If we have items, it's an aisle sign (blue header, white body)
+  if (config.items) {
+    // Blue Header
+    ctx.fillStyle = '#0071ce';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight * 0.3);
 
-  context.font = 'bold 48px Arial';
-  context.fillStyle = 'white';
-  context.textAlign = 'center';
-  context.textBaseline = 'middle';
-  context.fillText(text.toUpperCase(), canvasWidth / 2, canvasHeight / 2);
-  
+    // Header Text
+    ctx.fillStyle = 'white';
+    ctx.font = `bold ${canvasHeight * 0.15}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(config.header || '', canvasWidth / 2, canvasHeight * 0.15);
+
+    // White Body
+    ctx.fillStyle = 'white';
+    ctx.fillRect(0, canvasHeight * 0.3, canvasWidth, canvasHeight * 0.7);
+
+    // Items Text
+    ctx.fillStyle = '#333333';
+    ctx.font = `500 ${canvasHeight * 0.1}px Arial`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    const itemStartY = canvasHeight * 0.35;
+    const itemLineHeight = canvasHeight * 0.15;
+    config.items.forEach((item, index) => {
+      ctx.fillText(item, canvasWidth * 0.1, itemStartY + index * itemLineHeight);
+    });
+  } else {
+    // Otherwise, it's a category sign (all blue)
+    ctx.fillStyle = '#0071ce';
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    ctx.fillStyle = 'white';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    if (config.icon === 'shirt') {
+      ctx.font = `bold ${canvasHeight * 0.25}px Arial`;
+      ctx.fillText(config.largeText || '', canvasWidth / 2, canvasHeight * 0.65);
+      
+      // Draw a simple T-shirt icon
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = canvasHeight * 0.04;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      // Body
+      ctx.moveTo(canvasWidth * 0.35, canvasHeight * 0.3);
+      ctx.lineTo(canvasWidth * 0.65, canvasHeight * 0.3);
+      ctx.lineTo(canvasWidth * 0.65, canvasHeight * 0.5);
+      ctx.lineTo(canvasWidth * 0.35, canvasHeight * 0.5);
+      ctx.closePath();
+      // Sleeves
+      ctx.moveTo(canvasWidth * 0.35, canvasHeight * 0.3);
+      ctx.lineTo(canvasWidth * 0.25, canvasHeight * 0.2);
+      ctx.moveTo(canvasWidth * 0.65, canvasHeight * 0.3);
+      ctx.lineTo(canvasWidth * 0.75, canvasHeight * 0.2);
+      // Neck
+      ctx.moveTo(canvasWidth * 0.45, canvasHeight * 0.3);
+      ctx.quadraticCurveTo(canvasWidth * 0.5, canvasHeight * 0.2, canvasWidth * 0.55, canvasHeight * 0.3);
+      ctx.stroke();
+
+    } else if (config.icon === 'arrow-right') {
+        ctx.font = `bold ${canvasHeight * 0.3}px Arial`;
+        ctx.fillText(config.largeText || '', canvasWidth / 2, canvasHeight * 0.4);
+
+        // Draw arrow
+        ctx.beginPath();
+        ctx.moveTo(canvasWidth * 0.7, canvasHeight * 0.65);
+        ctx.lineTo(canvasWidth * 0.7, canvasHeight * 0.85);
+        ctx.lineTo(canvasWidth * 0.85, canvasHeight * 0.75);
+        ctx.closePath();
+        ctx.fill();
+    } else {
+       ctx.font = `bold ${canvasHeight * 0.4}px Arial`;
+       ctx.fillText(config.largeText || '', canvasWidth / 2, canvasHeight / 2);
+    }
+  }
+
   const texture = new THREE.CanvasTexture(canvas);
   const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
   const geometry = new THREE.PlaneGeometry(size.width, size.height);
   const signMesh = new THREE.Mesh(geometry, material);
   group.add(signMesh);
 
-  const poleGeo = new THREE.CylinderGeometry(0.1, 0.1, 15, 8);
-  const poleMat = new THREE.MeshStandardMaterial({ color: 0x999999, metalness: 0.8 });
+  const poleGeo = new THREE.CylinderGeometry(0.05, 0.05, 15, 8);
+  const poleMat = new THREE.MeshStandardMaterial({ color: 0xcccccc, metalness: 0.8 });
   
   const pole1 = new THREE.Mesh(poleGeo, poleMat);
-  pole1.position.set(-size.width / 2 + 0.3, size.height / 2, 0);
+  pole1.position.set(-size.width / 2 + 0.2, size.height / 2, 0);
   group.add(pole1);
 
   const pole2 = new THREE.Mesh(poleGeo, poleMat);
-  pole2.position.set(size.width / 2 - 0.3, size.height / 2, 0);
+  pole2.position.set(size.width / 2 - 0.2, size.height / 2, 0);
   group.add(pole2);
 
   return group;
@@ -830,11 +907,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         shoes: new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 }),
     };
     const avatar = createCharacter(playerMaterials);
-    avatar.position.set(0, 0, 76);
-    avatar.rotation.y = 0;
+    avatar.position.set(0, 0, 80);
+    avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 82);
+    camera.position.set(0, 4, 86);
     camera.lookAt(avatar.position.clone().add(new THREE.Vector3(0, 1, 0)));
 
     // NPCs
@@ -956,28 +1033,48 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Aisle Signage
     const signY = 10;
-    const signSize = { width: 10, height: 5 };
+    const aisleSignSize = { width: 6, height: 8 };
+    const categorySignSize = { width: 10, height: 6 };
 
-    const checkoutSign = createHangingSign("CHECKOUT", signSize);
-    checkoutSign.position.set(0, signY, 30);
+    const checkoutSign = createHangingSign({ largeText: 'CHECKOUT' }, { width: 12, height: 4});
+    checkoutSign.position.set(0, signY, 40);
     scene.add(checkoutSign);
-    
-    const grocerySign = createHangingSign("GROCERIES", signSize);
-    grocerySign.position.set(-12, signY, 0);
-    scene.add(grocerySign);
 
-    const homeGoodsSign = createHangingSign("HOME GOODS", signSize);
-    homeGoodsSign.position.set(8, signY, 0);
-    scene.add(homeGoodsSign);
+    const groceryAisleSign = createHangingSign({
+        header: 'A1 / A2',
+        items: ['Cereal', 'Snacks', 'Pasta', 'Soup'],
+    }, aisleSignSize);
+    groceryAisleSign.position.set(-16, signY, 22);
+    scene.add(groceryAisleSign);
 
-    const apparelSign = createHangingSign("APPAREL", signSize);
-    apparelSign.position.set(16, signY, 0);
-    scene.add(apparelSign);
-    
-    const electronicsSign = createHangingSign("ELECTRONICS", signSize);
-    electronicsSign.position.set(0, signY, -22);
-    electronicsSign.rotation.y = Math.PI / 2;
-    scene.add(electronicsSign);
+    const drinksAisleSign = createHangingSign({
+        header: 'A3',
+        items: ['Soda', 'Juice', 'Water', 'Energy Drinks'],
+    }, aisleSignSize);
+    drinksAisleSign.position.set(-8, signY, 22);
+    scene.add(drinksAisleSign);
+
+    const homeGoodsAisleSign = createHangingSign({
+        header: 'B1 / B2',
+        items: ['Kitchen', 'Bath', 'Cleaning', 'Paper Goods'],
+    }, aisleSignSize);
+    homeGoodsAisleSign.position.set(8, signY, 22);
+    scene.add(homeGoodsAisleSign);
+
+    const apparelAisleSign = createHangingSign({
+        largeText: 'Apparel',
+        icon: 'shirt',
+    }, categorySignSize);
+    apparelAisleSign.position.set(16, signY, 22);
+    scene.add(apparelAisleSign);
+
+    const electronicsAisleSign = createHangingSign({
+        header: 'C1 / C2',
+        items: ['TVs', 'Gaming', 'Audio', 'Toys'],
+    }, aisleSignSize);
+    electronicsAisleSign.position.set(0, signY, -18);
+    electronicsAisleSign.rotation.y = Math.PI / 2;
+    scene.add(electronicsAisleSign);
 
 
     // Event Listeners
@@ -1117,7 +1214,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 3, 6);
+      const cameraOffset = new THREE.Vector3(0, 3, -6);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
       cameraRef.current.position.lerp(cameraPosition, 0.1);
       
