@@ -650,10 +650,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         shoes: new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 }),
     };
     const avatar = createCharacter(playerMaterials);
-    avatar.position.set(0, 0, 45);
+    avatar.position.set(0, 0, 80);
+    avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 51);
+    camera.position.set(0, 4, 86);
     camera.lookAt(avatar.position);
 
     // NPCs
@@ -996,3 +997,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
   return <div ref={mountRef} className="w-full h-full cursor-pointer" />;
 };
+interface ThreeSceneProps {
+  onProductClick: (product: Product | number) => void;
+  onNpcClick: (npc: Npc) => void;
+  cart: CartItem[];
+}
