@@ -830,11 +830,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         shoes: new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 }),
     };
     const avatar = createCharacter(playerMaterials);
-    avatar.position.set(0, 0, 80);
-    avatar.rotation.y = Math.PI;
+    avatar.position.set(0, 0, 76);
+    avatar.rotation.y = 0;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 86);
+    camera.position.set(0, 4, 82);
     camera.lookAt(avatar.position.clone().add(new THREE.Vector3(0, 1, 0)));
 
     // NPCs
@@ -1006,9 +1006,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
-      if (event.key) {
-        keysPressed.current[event.key.toLowerCase()] = false;
-      }
+      if (!event.key) return;
+      keysPressed.current[event.key.toLowerCase()] = false;
     };
     
     window.addEventListener('keydown', handleKeyDown);
