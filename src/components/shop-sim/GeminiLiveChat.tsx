@@ -7,6 +7,7 @@ import { products as allProducts } from '@/lib/products';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, Loader2, Mic, MicOff, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 // Extend the Window interface for webkitSpeechRecognition
 declare global {
@@ -23,6 +24,7 @@ export const GeminiLiveChat = () => {
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model'; content: string }[]>([]);
   const recognitionRef = useRef<any>(null); // SpeechRecognition instance
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   
   useEffect(() => {
     setIsMounted(true);
@@ -30,6 +32,9 @@ export const GeminiLiveChat = () => {
 
   const handleUserQuery = useCallback(async (query: string) => {
     if (!query || isThinking) return;
+
+    // As soon as we get a query, update the state to stop listening
+    setIsListening(false);
 
     const userMessage = { role: 'user' as const, content: query };
     setChatHistory(prev => [...prev, userMessage]);
@@ -43,6 +48,7 @@ export const GeminiLiveChat = () => {
         userQuery: query,
         cartItems,
         productCatalog,
+        // We pass the *new* history to the AI, since state update is async
         chatHistory: [...chatHistory, userMessage],
       });
 
@@ -56,42 +62,63 @@ export const GeminiLiveChat = () => {
     } finally {
         setIsThinking(false);
     }
-  }, [cart, chatHistory, isThinking]);
+  }, [cart, isThinking, chatHistory]);
 
   useEffect(() => {
     if (!isMounted || !('webkitSpeechRecognition' in window)) {
       return;
     }
+    
+    // This function will be called by the recognition instance.
+    // It needs to be stable or the useEffect will re-run constantly.
+    const onResult = (event: any) => {
+        const transcript = event.results[event.results.length - 1][0].transcript;
+        if (transcript) {
+            handleUserQuery(transcript.trim());
+        }
+    };
+    
     if (recognitionRef.current) {
-        return; // Already initialized
+        recognitionRef.current.onresult = onResult;
+        return;
     }
 
     const recognition = new window.webkitSpeechRecognition();
-    recognition.continuous = false; // Process single commands
+    recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = 'en-US';
 
-    recognition.onresult = (event: any /* SpeechRecognitionEvent */) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-       if (transcript) {
-        handleUserQuery(transcript.trim());
-      }
-    };
+    recognition.onresult = onResult;
     
     recognition.onerror = (event: any) => {
         console.error('Speech recognition error', event.error);
-        if (isListening) setIsListening(false);
+        
+        if (event.error === 'no-speech' || event.error === 'aborted') {
+          setIsListening(false);
+          return;
+        }
+
+        let errorMessage = "An unknown error occurred with voice recognition.";
+        if (event.error === 'network') {
+            errorMessage = "Network error with voice recognition. Please check your connection.";
+        } else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            errorMessage = "Microphone access denied. Please allow microphone access in your browser settings.";
+        }
+        
+        toast({
+            variant: "destructive",
+            title: "Voice Chat Error",
+            description: errorMessage,
+        });
+        setIsListening(false);
     };
 
     recognition.onend = () => {
-        if (isListening) {
-             // Keep listening if the user wants to
-            recognition.start();
-        }
+        setIsListening(false);
     }
 
     recognitionRef.current = recognition;
-  }, [isMounted, isListening, handleUserQuery]);
+  }, [isMounted, handleUserQuery, toast]);
   
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -103,12 +130,21 @@ export const GeminiLiveChat = () => {
   }, [chatHistory, isThinking]);
 
   const handleMicClick = () => {
-    const newIsListening = !isListening;
-    setIsListening(newIsListening);
-    if (newIsListening) {
-      recognitionRef.current?.start();
+    if (isListening) {
+        recognitionRef.current?.stop();
     } else {
-      recognitionRef.current?.stop();
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch (e) {
+        console.error("Could not start recognition:", e);
+        toast({
+          variant: "destructive",
+          title: "Voice Chat Error",
+          description: "Could not start voice recognition. Please try again.",
+        });
+        setIsListening(false);
+      }
     }
   };
   
@@ -134,7 +170,7 @@ export const GeminiLiveChat = () => {
       </h3>
       <ScrollArea className="flex-grow pr-4 -mr-4 mb-4" ref={scrollAreaRef}>
         <div className="space-y-4">
-            {chatHistory.length === 0 && !isListening && (
+            {chatHistory.length === 0 && !isListening && !isThinking && (
                 <div className="text-center text-muted-foreground py-10">
                     <Bot size={48} className="mx-auto mb-2" />
                     <p>Click the mic to start talking to your shopping assistant.</p>
