@@ -39,7 +39,7 @@ export default function Home() {
     <GameProvider>
       <LiveAPIProvider url={uri} apiKey={API_KEY}>
         <div className="streaming-console">
-          <SidePanel />
+          {/* <SidePanel /> */}
           <main>
             <div className="main-app-area">
               <ShopSim />
