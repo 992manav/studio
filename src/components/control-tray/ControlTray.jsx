@@ -1,4 +1,14 @@
 import cn from "classnames";
+import {
+  Mic,
+  MicOff,
+  Pause,
+  Play,
+  ScreenShare,
+  ScreenShareOff,
+  Video,
+  VideoOff,
+} from "lucide-react";
 import { memo, useEffect, useRef, useState } from "react";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import { useScreenCapture } from "../../hooks/use-screen-capture";
@@ -9,14 +19,14 @@ import "./control-tray.css";
 
 // Media stream toggle button
 const MediaStreamButton = memo(
-  ({ isStreaming, onIcon, offIcon, start, stop }) =>
+  ({ isStreaming, OnIcon, OffIcon, start, stop }) =>
     isStreaming ? (
       <button className="action-button" onClick={stop}>
-        <span className="material-symbols-outlined">{onIcon}</span>
+        <OnIcon />
       </button>
     ) : (
       <button className="action-button" onClick={start}>
-        <span className="material-symbols-outlined">{offIcon}</span>
+        <OffIcon />
       </button>
     )
 );
@@ -132,11 +142,7 @@ function ControlTray({
           className={cn("action-button mic-button")}
           onClick={() => setMuted(!muted)}
         >
-          {!muted ? (
-            <span className="material-symbols-outlined filled">mic</span>
-          ) : (
-            <span className="material-symbols-outlined filled">mic_off</span>
-          )}
+          {!muted ? <Mic /> : <MicOff />}
         </button>
 
         <div className="action-button no-action outlined">
@@ -149,15 +155,15 @@ function ControlTray({
               isStreaming={screenCapture.isStreaming}
               start={changeStreams(screenCapture)}
               stop={changeStreams()}
-              onIcon="cancel_presentation"
-              offIcon="present_to_all"
+              OnIcon={ScreenShareOff}
+              OffIcon={ScreenShare}
             />
             <MediaStreamButton
               isStreaming={webcam.isStreaming}
               start={changeStreams(webcam)}
               stop={changeStreams()}
-              onIcon="videocam_off"
-              offIcon="videocam"
+              OnIcon={VideoOff}
+              OffIcon={Video}
             />
           </>
         )}
@@ -171,9 +177,7 @@ function ControlTray({
             className={cn("action-button connect-toggle", { connected })}
             onClick={connected ? disconnect : connect}
           >
-            <span className="material-symbols-outlined filled">
-              {connected ? "pause" : "play_arrow"}
-            </span>
+            {connected ? <Pause /> : <Play />}
           </button>
         </div>
         <span className="text-indicator">Streaming</span>
