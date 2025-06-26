@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { MultimodalLiveClient } from "../lib/multimodel-live-client";
 import { AudioStreamer } from "../lib/audio-streamer";
-import { audioContext } from "../lib/utils";
+import { audioContext } from "../lib/utils.js";
 import VolMeterWorket from "../lib/worklets/vol-meter";
 
 export function useLiveAPI({ url, apiKey }) {

@@ -1,4 +1,4 @@
-import { audioContext } from "./utils";
+import { audioContext } from "./utils.js";
 import AudioRecordingWorklet from "./worklets/audio-processing";
 import VolMeterWorket from "./worklets/vol-meter";
 import { createWorketFromSrc } from "./audioworklet-registry";
