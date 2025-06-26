@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, Loader2, Mic, MicOff, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import AudioPulse from '@/components/audio-pulse/AudioPulse';
 
 // Extend the Window interface for webkitSpeechRecognition
 declare global {
@@ -22,10 +23,12 @@ export const GeminiLiveChat = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model'; content: string }[]>([]);
   const recognitionRef = useRef<any>(null); // SpeechRecognition instance
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   // Use a ref to keep track of the latest chat history for the API call,
   // preventing stale closures in the handleUserQuery callback.
@@ -36,6 +39,8 @@ export const GeminiLiveChat = () => {
 
   useEffect(() => {
     setIsMounted(true);
+    // Create audio element once mounted on client
+    audioRef.current = new Audio();
   }, []);
 
   const handleUserQuery = useCallback(async (query: string) => {
@@ -61,6 +66,12 @@ export const GeminiLiveChat = () => {
 
       const modelMessage = { role: 'model' as const, content: result.response };
       setChatHistory(prevHistory => [...prevHistory, modelMessage]);
+      
+      if (result.audioDataUri && audioRef.current) {
+          audioRef.current.src = result.audioDataUri;
+          audioRef.current.play();
+          setIsPlayingAudio(true);
+      }
 
     } catch (e) {
       console.error("Live Chat API failed:", e);
@@ -69,7 +80,17 @@ export const GeminiLiveChat = () => {
     } finally {
         setIsThinking(false);
     }
-  }, [cart, isThinking, toast]); // Removed chatHistory dependency
+  }, [cart, isThinking, toast]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+        const handleAudioEnd = () => setIsPlayingAudio(false);
+        audioRef.current.addEventListener('ended', handleAudioEnd);
+        return () => {
+            audioRef.current?.removeEventListener('ended', handleAudioEnd);
+        }
+    }
+  }, [audioRef]);
 
   useEffect(() => {
     if (!isMounted || !('webkitSpeechRecognition' in window)) {
@@ -164,6 +185,24 @@ export const GeminiLiveChat = () => {
     );
   }
 
+  let statusIndicator;
+  if (isThinking) {
+      statusIndicator = <p className="text-sm text-muted-foreground">Thinking...</p>;
+  } else if (isPlayingAudio) {
+      statusIndicator = (
+          <div className='flex items-center gap-2'>
+              <AudioPulse active={true} volume={0.8} hover={false} />
+              <p className="text-sm text-muted-foreground">Speaking...</p>
+          </div>
+      );
+  } else if (isListening) {
+      statusIndicator = <p className="text-sm text-muted-foreground">Listening...</p>;
+  } else if (chatHistory.length > 0) {
+      statusIndicator = <p className="text-sm text-muted-foreground">Mic is off</p>;
+  } else {
+      statusIndicator = <div className="h-5" />; // Placeholder to keep height consistent
+  }
+
   return (
     <div className="flex-shrink-0 flex flex-col h-full">
       <h3 className="text-xl font-semibold mb-3 flex items-center gap-2">
@@ -198,12 +237,12 @@ export const GeminiLiveChat = () => {
         </div>
       </ScrollArea>
        <div className="flex flex-col items-center flex-shrink-0">
-        <Button onClick={handleMicClick} size="lg" className="rounded-full w-16 h-16" variant={isListening ? 'destructive' : 'secondary'} disabled={isThinking}>
-          {isListening ? <MicOff size={28} /> : <Mic size={28} />}
-        </Button>
-         <p className="text-sm text-muted-foreground mt-2 h-5">
-            {isThinking ? "Thinking..." : isListening ? "Listening..." : (chatHistory.length > 0 ? "Mic is off" : "")}
-         </p>
+         <div className="h-10 flex items-center justify-center">
+            {statusIndicator}
+         </div>
+         <Button onClick={handleMicClick} size="lg" className="rounded-full w-16 h-16" variant={isListening ? 'destructive' : 'secondary'} disabled={isThinking || isPlayingAudio}>
+           {isListening ? <MicOff size={28} /> : <Mic size={28} />}
+         </Button>
       </div>
     </div>
   );

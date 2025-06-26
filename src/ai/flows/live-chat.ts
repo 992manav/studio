@@ -8,7 +8,9 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'genkit';
+import wav from 'wav';
 
 const LiveChatInputSchema = z.object({
   userQuery: z.string().describe("The user's spoken question or command."),
@@ -22,7 +24,8 @@ const LiveChatInputSchema = z.object({
 export type LiveChatInput = z.infer<typeof LiveChatInputSchema>;
 
 const LiveChatOutputSchema = z.object({
-  response: z.string().describe("The chatbot's response to the user."),
+  response: z.string().describe("The chatbot's text response to the user."),
+  audioDataUri: z.string().describe("The chatbot's audio response as a data URI."),
 });
 export type LiveChatOutput = z.infer<typeof LiveChatOutputSchema>;
 
@@ -34,7 +37,7 @@ export async function liveChat(input: LiveChatInput): Promise<LiveChatOutput> {
 const prompt = ai.definePrompt({
   name: 'liveChatPrompt',
   input: {schema: LiveChatInputSchema},
-  output: {schema: LiveChatOutputSchema},
+  output: {schema: z.object({response: z.string()})},
   prompt: `You are Gemini, a friendly and helpful voice-activated shopping assistant in a virtual store.
 Your goal is to help the user with their shopping. You have access to the user's current shopping cart and the entire product catalog.
 Use this information to answer questions about products, give recommendations based on their cart, and assist with any other shopping-related questions.
@@ -62,6 +65,33 @@ Gemini's response:
 `,
 });
 
+async function toWav(
+  pcmData: Buffer,
+  channels = 1,
+  rate = 24000,
+  sampleWidth = 2
+): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const writer = new wav.Writer({
+      channels,
+      sampleRate: rate,
+      bitDepth: sampleWidth * 8,
+    });
+
+    let bufs = [] as any[];
+    writer.on('error', reject);
+    writer.on('data', function (d) {
+      bufs.push(d);
+    });
+    writer.on('end', function () {
+      resolve(Buffer.concat(bufs).toString('base64'));
+    });
+
+    writer.write(pcmData);
+    writer.end();
+  });
+}
+
 const liveChatFlow = ai.defineFlow(
   {
     name: 'liveChatFlow',
@@ -69,7 +99,36 @@ const liveChatFlow = ai.defineFlow(
     outputSchema: LiveChatOutputSchema,
   },
   async (input) => {
-    const {output} = await prompt(input);
-    return output!;
+    const {output: textOutput} = await prompt(input);
+    if (!textOutput?.response) {
+      throw new Error('Failed to generate text response.');
+    }
+
+    const { media } = await ai.generate({
+      model: googleAI.model('gemini-2.5-flash-preview-tts'),
+      config: {
+        responseModalities: ['AUDIO'],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: 'Algenib' },
+          },
+        },
+      },
+      prompt: textOutput.response,
+    });
+
+    if (!media) {
+      throw new Error('no media returned from TTS');
+    }
+    const audioBuffer = Buffer.from(
+      media.url.substring(media.url.indexOf(',') + 1),
+      'base64'
+    );
+    const wavBase64 = await toWav(audioBuffer);
+
+    return {
+      response: textOutput.response,
+      audioDataUri: 'data:audio/wav;base64,' + wavBase64,
+    };
   }
 );
