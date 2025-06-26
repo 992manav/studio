@@ -22,6 +22,10 @@
   flex-shrink: 0;
 }
 
+.side-panel:not(.open) .top {
+  justify-content: center;
+}
+
 .side-panel .top h2 {
   font-weight: 600;
   font-size: 1.125rem;
@@ -29,10 +33,12 @@
   opacity: 0;
   transition: opacity 0.2s ease-in;
   white-space: nowrap;
+  display: none;
 }
 
 .side-panel.open .top h2 {
   opacity: 1;
+  display: block;
 }
 
 .side-panel .opener {
