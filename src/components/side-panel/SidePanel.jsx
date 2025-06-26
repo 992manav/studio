@@ -1,17 +1,21 @@
+"use client";
+
 import cn from "classnames";
 import { useEffect, useRef, useState } from "react";
-import { RiSidebarFoldLine, RiSidebarUnfoldLine } from "react-icons/ri";
-import Select from "react-select";
+import { PanelLeftClose, PanelLeftOpen, Send } from "lucide-react";
 import { useLiveAPIContext } from "../../contexts/LiveAPIContext";
 import { useLoggerStore } from "../../lib/store-logger";
 import Logger from "../logger/Logger";
 import "./side-panel.css";
-
-const filterOptions = [
-  { value: "conversations", label: "Conversations" },
-  { value: "tools", label: "Tool Use" },
-  { value: "none", label: "All" },
-];
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function SidePanel() {
   const { connected, client } = useLiveAPIContext();
@@ -21,8 +25,7 @@ export default function SidePanel() {
   const { log, logs } = useLoggerStore();
 
   const [textInput, setTextInput] = useState("");
-  const [selectedOption, setSelectedOption] = useState(null);
-  const inputRef = useRef(null);
+  const [filter, setFilter] = useState("none");
 
   // Scroll the log to the bottom when new logs come in
   useEffect(() => {
@@ -45,94 +48,73 @@ export default function SidePanel() {
   }, [client, log]);
 
   const handleSubmit = () => {
+    if (!textInput.trim()) return;
     client.send([{ text: textInput }]);
-
     setTextInput("");
-    if (inputRef.current) {
-      inputRef.current.innerText = "";
-    }
   };
 
   return (
     <div className={`side-panel ${open ? "open" : ""}`}>
       <header className="top">
         <h2>Console</h2>
-        {open ? (
-          <button className="opener" onClick={() => setOpen(false)}>
-            <RiSidebarFoldLine color="#b4b8bb" />
-          </button>
-        ) : (
-          <button className="opener" onClick={() => setOpen(true)}>
-            <RiSidebarUnfoldLine color="#b4b8bb" />
-          </button>
-        )}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="opener"
+          onClick={() => setOpen(!open)}
+        >
+          {open ? <PanelLeftClose /> : <PanelLeftOpen />}
+        </Button>
       </header>
-      <section className="indicators">
-        <Select
-          className="react-select"
-          classNamePrefix="react-select"
-          styles={{
-            control: (baseStyles) => ({
-              ...baseStyles,
-              background: "var(--Neutral-15)",
-              color: "var(--Neutral-90)",
-              minHeight: "33px",
-              maxHeight: "33px",
-              border: 0,
-            }),
-            option: (styles, { isFocused, isSelected }) => ({
-              ...styles,
-              backgroundColor: isFocused
-                ? "var(--Neutral-30)"
-                : isSelected
-                ? "var(--Neutral-20)"
-                : undefined,
-            }),
-          }}
-          defaultValue={selectedOption}
-          options={filterOptions}
-          onChange={(e) => {
-            setSelectedOption(e);
-          }}
-        />
+      <div className="indicators">
+        <Select value={filter} onValueChange={setFilter}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filter logs..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">All Logs</SelectItem>
+            <SelectItem value="conversations">Conversations</SelectItem>
+            <SelectItem value="tools">Tool Use</SelectItem>
+          </SelectContent>
+        </Select>
         <div className={cn("streaming-indicator", { connected })}>
-          {connected
-            ? `🔵${open ? " Streaming" : ""}`
-            : `⏸️${open ? " Paused" : ""}`}
+          {connected ? (
+            <>
+              <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              {open && "Streaming"}
+            </>
+          ) : (
+            <>
+              <span className="h-2 w-2 rounded-full bg-gray-500" />
+              {open && "Paused"}
+            </>
+          )}
         </div>
-      </section>
+      </div>
       <div className="side-panel-container" ref={loggerRef}>
-        <Logger filter={selectedOption?.value || "none"} />
+        <Logger filter={filter} />
       </div>
       <div className={cn("input-container", { disabled: !connected })}>
         <div className="input-content">
-          <textarea
-            className="input-area"
-            ref={inputRef}
+          <Input
+            placeholder="Type something..."
+            value={textInput}
+            onChange={(e) => setTextInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
-                e.stopPropagation();
                 handleSubmit();
               }
             }}
-            onChange={(e) => setTextInput(e.target.value)}
-            value={textInput}
-          ></textarea>
-          <span
-            className={cn("input-content-placeholder", {
-              hidden: textInput.length,
-            })}
-          >
-            Type&nbsp;something...
-          </span>
-
-          <button
-            className="send-button material-symbols-outlined filled"
+            disabled={!connected}
+          />
+          <Button
+            size="icon"
             onClick={handleSubmit}
+            disabled={!connected || !textInput.trim()}
           >
-            send
-          </button>
+            <Send className="h-4 w-4" />
+          </Button>
         </div>
       </div>
     </div>
