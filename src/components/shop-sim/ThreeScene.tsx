@@ -3,6 +3,8 @@
 
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { products } from '@/lib/products';
 import { npcs as allNpcs } from '@/lib/npcs';
 import type { Product, CartItem, Npc } from '@/lib/types';
@@ -613,6 +615,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const avatarRef = useRef<THREE.Group>();
   const cartRef = useRef<THREE.Group>();
   const cartItemsGroupRef = useRef<THREE.Group>();
+  const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshesRef = useRef<THREE.Mesh[]>([]);
   const npcMeshesRef = useRef<THREE.Group[]>([]);
@@ -728,6 +731,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
     rendererRef.current = renderer;
 
@@ -739,8 +744,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(-50, 60, 30);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 2048;
-    directionalLight.shadow.mapSize.height = 2048;
+    directionalLight.shadow.mapSize.width = 1024;
+    directionalLight.shadow.mapSize.height = 1024;
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 200;
     directionalLight.shadow.camera.left = -100;
@@ -870,12 +875,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
     const createParkingRow = (zPos: number, direction: number) => {
-        for (let i = -12; i <= 12; i++) {
+        for (let i = -10; i <= 10; i++) {
             const line = new THREE.Mesh(lineGeo, lineMaterial);
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 12 && Math.random() > 0.6) { // 40% chance of car
+            if (i < 10 && Math.random() > 0.7) { // 30% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -936,20 +941,48 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(produceBin3);
 
     // Player Avatar
-    const playerMaterials = {
-        skin: new THREE.MeshStandardMaterial({ color: 0xffdbac, roughness: 0.8 }),
-        hair: new THREE.MeshStandardMaterial({ color: 0x442200, roughness: 0.8 }),
-        shirt: new THREE.MeshStandardMaterial({ color: avatarConfig.color, roughness: 0.8 }),
-        pants: new THREE.MeshStandardMaterial({ color: 0x2e3a87, roughness: 0.8 }),
-        shoes: new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.8 }),
-    };
-    const avatar = createCharacter(playerMaterials);
-    avatar.position.set(0, 0, 80);
-    avatar.rotation.y = Math.PI;
-    scene.add(avatar);
-    avatarRef.current = avatar;
-    camera.position.set(0, 4, 86);
-    camera.lookAt(avatar.position.clone().add(new THREE.Vector3(0, 1, 0)));
+    const gltfLoader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/v1/decoders/');
+    gltfLoader.setDRACOLoader(dracoLoader);
+
+    gltfLoader.load(
+      'https://models.readyplayer.me/658034a781079e5a1989053c.glb',
+      (gltf) => {
+        const avatar = gltf.scene;
+        avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
+        avatar.position.set(0, 0, 80);
+        avatar.rotation.y = 0; // Face away from camera to see the back
+
+        avatar.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+
+        scene.add(avatar);
+        avatarRef.current = avatar;
+        
+        if (gltf.animations && gltf.animations.length) {
+          const mixer = new THREE.AnimationMixer(avatar);
+          const idleClip = gltf.animations.find(clip => clip.name.toLowerCase().includes('idle')) || gltf.animations[0];
+          if (idleClip) {
+            const action = mixer.clipAction(idleClip);
+            action.play();
+          }
+          mixerRef.current = mixer;
+        }
+        
+        camera.position.set(0, 2.2, 85);
+        const lookAtPosition = avatar.position.clone().add(new THREE.Vector3(0, 1.6, 0));
+        camera.lookAt(lookAtPosition);
+      },
+      undefined,
+      (error) => {
+        console.error('An error happened while loading the avatar model:', error);
+      }
+    );
 
     // NPCs
     npcAnimationData.current = allNpcs.map(npcData => {
@@ -1157,11 +1190,16 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const animate = () => {
       animationLoopId.current = requestAnimationFrame(animate);
 
+      const delta = clock.current.getDelta();
+
+      if (mixerRef.current) {
+        mixerRef.current.update(delta);
+      }
+      
       if (!avatarRef.current || !cameraRef.current || !rendererRef.current || !sceneRef.current) {
         return;
       }
 
-      const delta = clock.current.getDelta();
       const moveSpeed = 5.0; // units per second
       const rotateSpeed = 2.0; // radians per second
       
@@ -1256,11 +1294,11 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 3, 6);
+      const cameraOffset = new THREE.Vector3(0, 2.2, 4.5);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
       cameraRef.current.position.lerp(cameraPosition, 0.1);
       
-      const lookAtPosition = avatarRef.current.position.clone().add(new THREE.Vector3(0,1,0));
+      const lookAtPosition = avatarRef.current.position.clone().add(new THREE.Vector3(0,1.6,0));
       cameraRef.current.lookAt(lookAtPosition);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
@@ -1343,28 +1381,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   }, [cart]);
 
   useEffect(() => {
-    if (!avatarRef.current) return;
-    
-    const torso = avatarRef.current.getObjectByName("torso");
-    const leftArm = avatarRef.current.getObjectByName("leftArm");
-    const rightArm = avatarRef.current.getObjectByName("rightArm");
-
-    const shirtParts = [torso, leftArm, rightArm].filter((p): p is THREE.Mesh => p instanceof THREE.Mesh);
-
-    if (avatarConfig.texture) {
-      const textureLoader = new THREE.TextureLoader();
-      textureLoader.load(avatarConfig.texture, (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.wrapS = THREE.RepeatWrapping;
-        texture.wrapT = THREE.RepeatWrapping;
-        texture.repeat.set(2, 2);
-        const newMaterial = new THREE.MeshStandardMaterial({ map: texture, roughness: 0.8 });
-        shirtParts.forEach(part => part.material = newMaterial);
-      });
-    } else {
-      const newMaterial = new THREE.MeshStandardMaterial({ color: avatarConfig.color, roughness: 0.8 });
-      shirtParts.forEach(part => part.material = newMaterial);
-    }
+    // This effect is now only for custom texture application,
+    // which won't apply to the GLB model unless we specifically find and replace its materials.
+    // For now, we'll leave this so the AI texture generation doesn't break.
+    // A more advanced implementation could apply the texture to the GLB model's shirt material.
   }, [avatarConfig.texture, avatarConfig.color]);
 
   return (
@@ -1386,5 +1406,7 @@ interface ThreeSceneProps {
   cart: CartItem[];
 }
 
+
+    
 
     
