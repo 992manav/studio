@@ -30,7 +30,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
   }
 
   // Supports
-  const numSupports = Math.floor(length / 4) + 2;
+  const numSupports = Math.floor(length / 6) + 2;
   for (let i = 0; i < numSupports; i++) {
     const x = -length / 2 + i * (length / (numSupports - 1));
     const supportGeo = new THREE.BoxGeometry(supportWidth, height, supportDepth);
@@ -725,7 +725,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(mountRef.current.clientWidth, mountRef.current.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     mountRef.current.appendChild(renderer.domElement);
@@ -739,8 +739,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
     directionalLight.position.set(-50, 60, 30);
     directionalLight.castShadow = true;
-    directionalLight.shadow.mapSize.width = 4096;
-    directionalLight.shadow.mapSize.height = 4096;
+    directionalLight.shadow.mapSize.width = 2048;
+    directionalLight.shadow.mapSize.height = 2048;
     directionalLight.shadow.camera.near = 1;
     directionalLight.shadow.camera.far = 200;
     directionalLight.shadow.camera.left = -100;
@@ -870,12 +870,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
     const createParkingRow = (zPos: number, direction: number) => {
-        for (let i = -18; i <= 18; i++) {
+        for (let i = -12; i <= 12; i++) {
             const line = new THREE.Mesh(lineGeo, lineMaterial);
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 18 && Math.random() > 0.4) { // 60% chance of car
+            if (i < 12 && Math.random() > 0.6) { // 40% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -894,7 +894,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     createParkingRow(thirdRowZ, 1);
     
     // Scattered shopping carts in parking lot
-    for(let i=0; i<8; i++) {
+    for(let i=0; i<3; i++) {
       const cartModel = createShoppingCart();
       const x = (Math.random() - 0.5) * 120;
       const z = wallSize/2 + 15 + Math.random() * 50;
@@ -948,7 +948,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 74);
+    camera.position.set(0, 4, 86);
     camera.lookAt(avatar.position.clone().add(new THREE.Vector3(0, 1, 0)));
 
     // NPCs
@@ -1013,7 +1013,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Aisles
     const aisleHeight = 3.5;
     const aisleWidth = 1.5;
-    const aisleShelves = 5;
+    const aisleShelves = 4;
     const mainAisleLength = 40;
     const backAisleLength = 40;
 
@@ -1385,3 +1385,6 @@ interface ThreeSceneProps {
   onNpcClick: (npc: Npc) => void;
   cart: CartItem[];
 }
+
+
+    
