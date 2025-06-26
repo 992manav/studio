@@ -11,7 +11,6 @@ import { ProductDetailsDialog } from './ProductDetailsDialog';
 import { Wallet } from './Wallet';
 import { AvatarCustomizer } from './AvatarCustomizer';
 import { CustomerChatDialog } from './CustomerChatDialog';
-import { GeminiLiveChat } from './GeminiLiveChat';
 
 export default function ShopSim() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -82,9 +81,8 @@ export default function ShopSim() {
           <AvatarCustomizer />
         </div>
       </div>
-      <aside className="w-[400px] bg-card p-6 border-l border-border flex flex-col gap-6 shadow-lg z-10">
+      <aside className="w-[400px] bg-card p-6 border-l border-border flex flex-col shadow-lg z-10">
         <ShoppingCart onProductClick={handleProductClick} />
-        <GeminiLiveChat />
       </aside>
       <ProductDetailsDialog
         product={selectedProduct}

@@ -18,7 +18,7 @@ export const ShoppingCart = ({ onProductClick }: ShoppingCartProps) => {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div className="flex-shrink-0">
         <CardHeader className="p-0 mb-4">
           <CardTitle className="text-2xl font-bold flex items-center gap-2">
@@ -81,6 +81,6 @@ export const ShoppingCart = ({ onProductClick }: ShoppingCartProps) => {
           </Button>
         </div>
       )}
-    </>
+    </div>
   );
 };
