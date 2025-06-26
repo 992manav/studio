@@ -947,12 +947,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     gltfLoader.setDRACOLoader(dracoLoader);
 
     gltfLoader.load(
-      'https://models.readyplayer.me/658034a781079e5a1989053c.glb',
+      'https://models.readyplayer.me/668e718b518d8108a7051590.glb',
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
         avatar.position.set(0, 0, 80);
-        avatar.rotation.y = 0; // Face away from camera to see the back
+        avatar.rotation.y = Math.PI; // Face away from camera to see the back
 
         avatar.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
