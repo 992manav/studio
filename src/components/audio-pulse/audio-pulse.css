@@ -9,7 +9,7 @@
 }
 
 .audioPulse > div {
-  background-color: var(--Neutral-30);
+  background-color: hsl(var(--muted-foreground));
   border-radius: 1000px;
   width: 4px;
   min-height: 4px;
@@ -25,7 +25,7 @@
 }
 
 .audioPulse.active > div {
-  background-color: var(--Neutral-80);
+  background-color: hsl(var(--foreground));
 }
 
 @keyframes hover {

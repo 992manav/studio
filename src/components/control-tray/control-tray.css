@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--Neutral-20);
-  color: var(--Neutral-60);
+  background: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
   font-size: 1.25rem;
   line-height: 1.75rem;
   text-transform: lowercase;
@@ -13,18 +13,18 @@
   width: 48px;
   height: 48px;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0);
+  border: 1px solid transparent;
   user-select: none;
 }
 
 .action-button:focus {
-  border: 2px solid var(--Neutral-20);
-  outline: 2px solid var(--Neutral-80);
+  border: 2px solid hsl(var(--secondary));
+  outline: 2px solid hsl(var(--ring));
 }
 
 .action-button.outlined {
-  background: var(--Neutral-2);
-  border: 1px solid var(--Neutral-20);
+  background: hsl(var(--background));
+  border: 1px solid hsl(var(--border));
 }
 
 .action-button .no-action {
@@ -32,17 +32,19 @@
 }
 
 .action-button:hover {
-  background: rgba(0, 0, 0, 0);
-  border: 1px solid var(--Neutral-20);
+  background: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+  border: 1px solid hsl(var(--border));
 }
 
 .action-button.connected {
-  background: var(--Blue-800);
-  color: var(--Blue-500);
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 .action-button.connected:hover {
-  border: 1px solid var(--Blue-500);
+  border: 1px solid hsl(var(--primary));
+  opacity: 0.9;
 }
 
 @property --volume {
@@ -53,24 +55,25 @@
 
 .disabled .mic-button:before,
 .mic-button.disabled:before {
-  background: rgba(0, 0, 0, 0);
+  background: transparent;
 }
 
 .mic-button {
   position: relative;
-  background-color: var(--accent-red);
+  background-color: hsl(var(--destructive));
   z-index: 1;
-  color: black;
+  color: hsl(var(--destructive-foreground));
   transition: all 0.2s ease-in;
 }
 
 .mic-button:focus {
-  border: 2px solid var(--Neutral-20);
-  outline: 2px solid var(--Red-500);
+  border: 2px solid hsl(var(--border));
+  outline: 2px solid hsl(var(--destructive));
 }
 
 .mic-button:hover {
-  background-color: var(--Red-400);
+  background-color: hsl(var(--destructive));
+  opacity: 0.9;
 }
 
 .mic-button:before {
@@ -81,7 +84,7 @@
   display: block;
   content: "";
   opacity: 0.35;
-  background-color: var(--Red-500);
+  background-color: hsl(var(--destructive));
   width: calc(100% + var(--volume) * 2);
   height: calc(100% + var(--volume) * 2);
   border-radius: 24px;
@@ -89,13 +92,13 @@
 }
 
 .connect-toggle:focus {
-  border: 2px solid var(--Neutral-20);
-  outline: 2px solid var(--Neutral-80);
+  border: 2px solid hsl(var(--border));
+  outline: 2px solid hsl(var(--ring));
 }
 
 .connect-toggle:not(.connected) {
-  background-color: var(--Blue-500);
-  color: var(--Neutral-5);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 .control-tray {
@@ -112,9 +115,11 @@
 
 .control-tray .disabled .action-button,
 .control-tray .action-button.disabled {
-  background: rgba(0, 0, 0, 0);
-  border: 1px solid var(--Neutral-30, #404547);
-  color: var(--Neutral-30);
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  border: 1px solid hsl(var(--muted));
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .connection-container {
@@ -127,14 +132,14 @@
 
 .connection-container .connection-button-container {
   border-radius: 27px;
-  border: 1px solid var(--Neutral-30);
-  background: var(--Neutral-5);
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
   padding: 10px;
 }
 
 .connection-container .text-indicator {
   font-size: 11px;
-  color: var(--Blue-500);
+  color: hsl(var(--primary));
   user-select: none;
 }
 
@@ -143,8 +148,8 @@
 }
 
 .actions-nav {
-  background: var(--Neutral-5);
-  border: 1px solid var(--Neutral-30);
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
   border-radius: 27px;
   display: inline-flex;
   gap: 12px;
