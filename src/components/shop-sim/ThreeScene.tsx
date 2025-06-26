@@ -947,7 +947,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     gltfLoader.setDRACOLoader(dracoLoader);
 
     gltfLoader.load(
-      'https://models.readyplayer.me/668e718b518d8108a7051590.glb',
+      'https://models.readyplayer.me/65c891f7a0497597171c4c1a.glb',
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
@@ -1406,6 +1406,8 @@ interface ThreeSceneProps {
   cart: CartItem[];
 }
 
+
+    
 
     
 
