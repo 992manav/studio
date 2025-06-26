@@ -11,6 +11,7 @@ import { ProductDetailsDialog } from './ProductDetailsDialog';
 import { Wallet } from './Wallet';
 import { AvatarCustomizer } from './AvatarCustomizer';
 import { CustomerChatDialog } from './CustomerChatDialog';
+import { GeminiLiveChat } from './GeminiLiveChat';
 
 export default function ShopSim() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -69,8 +70,8 @@ export default function ShopSim() {
   };
 
   return (
-    <div className="flex h-screen w-full font-body bg-background text-foreground overflow-hidden">
-      <main className="flex-1 relative">
+    <div className="flex h-full w-full font-body bg-background text-foreground overflow-hidden">
+      <div className="flex-1 relative">
         <ThreeScene 
             onProductClick={handleProductClick} 
             onNpcClick={handleNpcClick}
@@ -80,9 +81,10 @@ export default function ShopSim() {
           <Wallet />
           <AvatarCustomizer />
         </div>
-      </main>
+      </div>
       <aside className="w-[400px] bg-card p-6 border-l border-border flex flex-col gap-6 shadow-lg z-10">
         <ShoppingCart onProductClick={handleProductClick} />
+        <GeminiLiveChat />
       </aside>
       <ProductDetailsDialog
         product={selectedProduct}
