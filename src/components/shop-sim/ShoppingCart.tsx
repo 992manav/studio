@@ -29,9 +29,7 @@ export const ShoppingCart = ({ onProductClick }: ShoppingCartProps) => {
       </div>
       
       <ScrollArea className="flex-grow pr-4 -mr-4">
-        {cart.length === 0 ? (
-          <div className="text-center text-muted-foreground py-10">Your cart is empty. Explore the store!</div>
-        ) : (
+        {cart.length > 0 && (
           <div className="space-y-4">
             {cart.map((item) => (
               <div key={item.id} className="flex items-start gap-4">
