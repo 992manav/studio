@@ -948,7 +948,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     avatar.rotation.y = Math.PI;
     scene.add(avatar);
     avatarRef.current = avatar;
-    camera.position.set(0, 4, 86);
+    camera.position.set(0, 4, 74);
     camera.lookAt(avatar.position.clone().add(new THREE.Vector3(0, 1, 0)));
 
     // NPCs
