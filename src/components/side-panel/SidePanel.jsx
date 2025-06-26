@@ -19,7 +19,7 @@ import {
 
 export default function SidePanel() {
   const { connected, client } = useLiveAPIContext();
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   const loggerRef = useRef(null);
   const loggerLastHeightRef = useRef(-1);
   const { log, logs } = useLoggerStore();
