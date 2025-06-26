@@ -81,9 +81,9 @@ export default function ShopSim() {
           <AvatarCustomizer />
         </div>
       </div>
-      <aside className="w-[400px] bg-card p-6 border-l border-border flex flex-col shadow-lg z-10">
+      {/* <aside className="w-[400px] bg-card p-6 border-l border-border flex flex-col shadow-lg z-10">
         <ShoppingCart onProductClick={handleProductClick} />
-      </aside>
+      </aside> */}
       <ProductDetailsDialog
         product={selectedProduct}
         isOpen={!!selectedProduct}
