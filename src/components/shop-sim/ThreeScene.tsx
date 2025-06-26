@@ -947,7 +947,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     gltfLoader.setDRACOLoader(dracoLoader);
 
     gltfLoader.load(
-      'https://models.readyplayer.me/65c891f7a0497597171c4c1a.glb',
+      'https://models.readyplayer.me/685dc0f835fff2860286b6eb.glb',
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
