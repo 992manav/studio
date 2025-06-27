@@ -952,7 +952,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
         avatar.position.set(0, 0, 80);
-        avatar.rotation.y = Math.PI; // Face away from camera to see the back
+        avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
@@ -974,7 +974,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
           mixerRef.current = mixer;
         }
         
-        camera.position.set(0, 2.2, 85);
+        // Set initial camera position to be behind the avatar
+        const cameraOffset = new THREE.Vector3(0, 2.2, -4.5);
+        avatar.updateMatrixWorld(); // Ensure matrix is updated
+        const cameraPosition = cameraOffset.applyMatrix4(avatar.matrixWorld);
+        camera.position.copy(cameraPosition);
+
         const lookAtPosition = avatar.position.clone().add(new THREE.Vector3(0, 1.6, 0));
         camera.lookAt(lookAtPosition);
       },
@@ -1294,7 +1299,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 2.2, 4.5);
+      const cameraOffset = new THREE.Vector3(0, 2.2, -4.5);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
       cameraRef.current.position.lerp(cameraPosition, 0.1);
       
@@ -1412,3 +1417,4 @@ interface ThreeSceneProps {
     
 
     
+
