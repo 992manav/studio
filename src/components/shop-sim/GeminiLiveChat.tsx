@@ -55,7 +55,9 @@ export const GeminiLiveChat = () => {
     
     try {
       const cartItems = cart.map((item) => item.name);
-      const productCatalog = allProducts.map(({ id, position, size, image, hint, ...rest }) => rest);
+      // We pass the full product catalog, excluding only the image and hint,
+      // to give the AI context about product details, price, and location.
+      const productCatalog = allProducts.map(({ image, hint, ...rest }) => rest);
       
       const result = await liveChat({
         userQuery: query,
