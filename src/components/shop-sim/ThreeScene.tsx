@@ -61,19 +61,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
 
 function createShoppingCart(): THREE.Group {
   const cart = new THREE.Group();
-  const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true, transparent: true, opacity: 0.3 });
-
-  // Blue plastic basket insert
-  const blueBasketMaterial = new THREE.MeshStandardMaterial({
-      color: "#0071ce", // Walmart blue
-      roughness: 0.7,
-      metalness: 0.1
-  });
-  const blueBasketGeo = new THREE.BoxGeometry(0.95, 0.5, 0.6);
-  const blueBasket = new THREE.Mesh(blueBasketGeo, blueBasketMaterial);
-  blueBasket.position.y = 0.75;
-  blueBasket.position.z = -0.05;
-  cart.add(blueBasket);
+  const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true, transparent: true, opacity: 0.5 });
 
   // Basket (Wireframe part)
   const basketPoints = [
@@ -1419,3 +1407,6 @@ interface ThreeSceneProps {
     
 
 
+
+
+    
