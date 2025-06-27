@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import type { CartItem, Product, AvatarConfig } from '@/lib/types';
 import { products as allProducts } from '@/lib/products';
 import { useToast } from "@/hooks/use-toast";
@@ -78,9 +78,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const getProductById = (id: number): Product | undefined => {
+  const getProductById = useCallback((id: number): Product | undefined => {
     return allProducts.find(p => p.id === id);
-  };
+  }, []);
 
   return (
     <GameContext.Provider

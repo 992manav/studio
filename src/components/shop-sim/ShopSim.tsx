@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import type { Product, Npc, ChatMessage } from '@/lib/types';
 import { useGame } from '@/contexts/GameContext';
 import { useToast } from '@/hooks/use-toast';
@@ -21,21 +21,21 @@ export default function ShopSim() {
   const [chatHistory, setChatHistory] = useState<ChatMessage[]>([]);
   const [isAiReplying, setIsAiReplying] = useState(false);
 
-  const handleProductClick = (product: Product | number) => {
+  const handleProductClick = useCallback((product: Product | number) => {
     const productData = typeof product === 'number' ? getProductById(product) : product;
     if (productData) {
       setSelectedProduct(productData);
     }
-  };
+  }, [getProductById]);
   
   const handleCloseDialog = () => {
     setSelectedProduct(null);
   };
   
-  const handleNpcClick = (npc: Npc) => {
+  const handleNpcClick = useCallback((npc: Npc) => {
     setChattingWith(npc);
     setChatHistory([]); // Reset history for new chat
-  };
+  }, []);
 
   const handleSendMessage = async (message: string) => {
     if (!chattingWith) return;
