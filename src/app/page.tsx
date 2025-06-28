@@ -7,6 +7,7 @@ import ShopSim from '@/components/shop-sim/ShopSim';
 import { LiveAPIProvider } from "@/contexts/LiveAPIContext";
 import SidePanel from "@/components/side-panel/SidePanel";
 import ControlTray from "@/components/control-tray/ControlTray";
+import RightPanel from "@/components/right-panel/RightPanel";
 import cn from "classnames";
 
 const API_KEY = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
@@ -60,6 +61,7 @@ export default function Home() {
               onVideoStreamChange={setVideoStream}
             />
           </main>
+          <RightPanel />
         </div>
       </LiveAPIProvider>
     </GameProvider>

@@ -2,11 +2,10 @@
 
 import { useGame } from '@/contexts/GameContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import { Trash2, Plus, Minus, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
+import { Trash2, Plus, Minus } from 'lucide-react';
 import type { Product } from '@/lib/types';
 
 interface ShoppingCartProps {
@@ -19,16 +18,12 @@ export const ShoppingCart = ({ onProductClick }: ShoppingCartProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-shrink-0">
-        <CardHeader className="p-0 mb-4">
-          <CardTitle className="text-2xl font-bold flex items-center gap-2">
-            <ShoppingCartIcon className="text-primary" />
-            Shopping Cart
-          </CardTitle>
-        </CardHeader>
-      </div>
-      
       <ScrollArea className="flex-grow pr-4 -mr-4">
+        {cart.length === 0 && (
+            <div className="text-center text-muted-foreground py-10">
+                <p>Your cart is empty.</p>
+            </div>
+        )}
         {cart.length > 0 && (
           <div className="space-y-4">
             {cart.map((item) => (

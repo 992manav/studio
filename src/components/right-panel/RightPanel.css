@@ -1,0 +1,48 @@
+.right-panel {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  width: 0px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  transition: width 0.2s ease-in-out;
+  border-left: 1px solid hsl(var(--border));
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.right-panel.open {
+  width: 350px;
+}
+
+.right-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.5rem;
+  border-bottom: 1px solid hsl(var(--border));
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+
+.right-panel .panel-header .toggle-button {
+    color: hsl(var(--muted-foreground));
+}
+
+.right-panel .panel-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  padding-left: 0.5rem;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  overflow: hidden;
+}
+
+.right-panel .panel-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 1rem;
+}
