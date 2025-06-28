@@ -1,13 +1,13 @@
 .right-panel {
   background: hsl(var(--card));
   color: hsl(var(--card-foreground));
-  width: 0px;
+  width: 48px;
   display: flex;
   flex-direction: column;
   height: 100vh;
   transition: width 0.2s ease-in-out;
   border-left: 1px solid hsl(var(--border));
-  overflow: hidden;
+  overflow-x: hidden;
   flex-shrink: 0;
 }
 
@@ -25,6 +25,10 @@
   gap: 0.5rem;
 }
 
+.right-panel:not(.open) .panel-header {
+  justify-content: center;
+}
+
 .right-panel .panel-header .toggle-button {
     color: hsl(var(--muted-foreground));
 }
@@ -34,10 +38,14 @@
   font-size: 1.125rem;
   padding-left: 0.5rem;
   white-space: nowrap;
-  display: flex;
+  display: none;
   align-items: center;
   gap: 0.5rem;
   overflow: hidden;
+}
+
+.right-panel.open .panel-title {
+  display: flex;
 }
 
 .right-panel .panel-content {
@@ -45,4 +53,10 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding: 1rem;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.right-panel:not(.open) .panel-content {
+  opacity: 0;
+  pointer-events: none;
 }
