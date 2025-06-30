@@ -89,12 +89,12 @@ stockShelf({ name: 'Red Bull', price: 2.50, description: '8.4 fl oz can of Red B
 // Right shelf is at x=[8, 8.75], center is 8.375
 const aisle3XLeft = 7.625;
 const aisle3XRight = 8.375;
-stockShelf({ name: 'Bounty Paper Towels', price: 15.99, description: 'Pack of 6 double rolls.', image: 'https://i5.walmartimages.com/seo/Bounty-Select-A-Size-Paper-Towels-White-6-Double-Rolls-12-Regular-Rolls_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [1.5, 1, 0.8], hint: 'paper towels pack' }, [aisle3XLeft, shelfY.mid, aisleZStart], 15, 'z');
-stockShelf({ name: 'Charmin Toilet Paper', price: 18.99, description: '18 mega rolls of ultra soft toilet paper.', image: 'https://i5.walmartimages.com/seo/Charmin-Ultra-Soft-Toilet-Paper-18-Mega-Rolls_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [1.5, 1.5, 1.5], hint: 'toilet paper pack' }, [aisle3XLeft, shelfY.bottom, aisleZStart], 10, 'z');
-stockShelf({ name: 'Tide Laundry Detergent', price: 12.99, description: 'Original scent liquid laundry detergent.', image: 'https://i5.walmartimages.com/seo/Tide-Original-Scent-Liquid-Laundry-Detergent-92-fl-oz-64-Loads_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [0.8, 1.2, 0.6], hint: 'detergent bottle' }, [aisle3XLeft, shelfY.low, aisleZStart], 20, 'z');
+stockShelf({ name: 'Bounty Paper Towels', price: 15.99, description: 'Pack of 6 double rolls.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR5mcSuu4pMo12ghImWxlHBJdtD73ieHpd5ZA&s', category: 'Home Goods', size: [1.5, 1, 0.8], hint: 'paper towels pack' }, [aisle3XLeft, shelfY.mid, aisleZStart], 15, 'z');
+stockShelf({ name: 'Charmin Toilet Paper', price: 18.99, description: '18 mega rolls of ultra soft toilet paper.', image: 'https://images-cdn.ubuy.co.in/648e91fd996b35343931902c-charmin-ultra-strong-toilet-paper-6.jpg', category: 'Home Goods', size: [1.5, 1.5, 1.5], hint: 'toilet paper pack' }, [aisle3XLeft, shelfY.bottom, aisleZStart], 10, 'z');
+stockShelf({ name: 'Tide Laundry Detergent', price: 12.99, description: 'Original scent liquid laundry detergent.', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTK-WADZvYD2Z0i9CQJ8PeAWmxdAGdA6--w1g&s', category: 'Home Goods', size: [0.8, 1.2, 0.6], hint: 'detergent bottle' }, [aisle3XLeft, shelfY.low, aisleZStart], 20, 'z');
 stockShelf({ name: 'Clorox Disinfecting Wipes', price: 4.99, description: 'Crisp lemon scent disinfecting wipes.', image: 'https://i5.walmartimages.com/seo/Clorox-Disinfecting-Wipes-Bleach-Free-Cleaning-Wipes-Crisp-Lemon-75-Wipes_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [0.5, 0.7, 0.5], hint: 'wipes container' }, [aisle3XLeft, shelfY.high, aisleZStart], 40, 'z');
 stockShelf({ name: 'Mainstays Bath Towel', price: 4.97, description: 'Soft and absorbent 100% cotton bath towel.', image: 'https://i5.walmartimages.com/seo/Mainstays-Bath-Towel-Blue-27-x-52-in_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [1, 0.2, 0.8], hint: 'folded towel' }, [aisle3XRight, shelfY.low, aisleZStart], 25, 'z');
-stockShelf({ name: 'T-fal Cookware Set', price: 69.99, description: '18-piece nonstick cookware set.', image: 'https://i5.walmartimages.com/seo/T-fal-Initiatives-Nonstick-Cookware-Set-18-Piece-Black_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [1.5, 1.2, 1.5], hint: 'cookware set box' }, [aisle3XRight, shelfY.top, aisleZStart], 8, 'z');
+stockShelf({ name: 'T-fal Cookware Set', price: 69.99, description: '18-piece nonstick cookware set.', image: 'https://www.kroger.com/product/images/xlarge/front/0003240606565', category: 'Home Goods', size: [1.5, 1.2, 1.5], hint: 'cookware set box' }, [aisle3XRight, shelfY.top, aisleZStart], 8, 'z');
 stockShelf({ name: 'George Foreman Grill', price: 29.99, description: 'Classic plate grill for 2 servings.', image: 'https://i5.walmartimages.com/seo/George-Foreman-2-Serving-Classic-Plate-Grill-and-Panini-Press-Black-GR10B_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [1, 0.8, 1], hint: 'grill box' }, [aisle3XRight, shelfY.high, aisleZStart], 15, 'z');
 stockShelf({ name: 'Oster Blender', price: 24.96, description: 'A powerful 6-speed kitchen blender.', image: 'https://i5.walmartimages.com/seo/Oster-6-Speed-Blender-Black-006878_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Home Goods', size: [0.6, 0.8, 0.6], hint: 'blender box' }, [aisle3XRight, shelfY.mid, aisleZStart], 20, 'z');
 stockShelf({ name: 'Hefty Trash Bags', price: 8.99, description: '30-gallon large trash bags, 40 count.', image: 'https://i5.walmartimages.com/seo/Hefty-Strong-Large-Trash-Bags-30-Gallon-40-Count_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [0.8, 0.8, 0.3], hint: 'trash bags box' }, [aisle3XLeft, shelfY.high, aisleZStart + 25], 25, 'z');
@@ -129,11 +129,11 @@ stockShelf({ name: 'onn. Bluetooth Speaker', price: 20.00, description: 'Portabl
 stockShelf({ name: 'LEGO Classic Bricks', price: 20.00, description: 'A box of 484 classic LEGO bricks.', image: 'https://target.scene7.com/is/image/Target/GUEST_4c7e3c7f-9e3b-4f8d-9e4d-2e4f9e3b3d4f?wid=488&hei=488&fmt=pjpeg', category: 'Toys', size: [1.2, 0.8, 0.5], hint: 'lego box' }, [aisleXStart, shelfY.low, backAisleZFront], 18, 'x');
 stockShelf({ name: 'Barbie Dreamhouse', price: 179.00, description: 'The ultimate dollhouse with 3 stories.', image: 'https://i5.walmartimages.com/seo/Barbie-Dreamhouse-Dollhouse-with-75-Accessories_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Toys', size: [2.5, 2.5, 1], hint: 'dollhouse box' }, [aisleXStart + 25, shelfY.top, backAisleZFront], 5, 'x');
 stockShelf({ name: 'Nerf Elite 2.0 Blaster', price: 14.97, description: 'Includes 16 Nerf Elite darts.', image: 'https://i5.walmartimages.com/seo/Nerf-Elite-2-0-Commander-RD-6-Blaster-16-Darts_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Toys', size: [1.5, 0.8, 0.4], hint: 'toy gun box' }, [aisleXStart, shelfY.mid, backAisleZFront], 15, 'x');
-stockShelf({ name: 'Spalding Basketball', price: 15.88, description: 'Official size street basketball.', image: 'https://i5.walmartimages.com/seo/Spalding-NBA-Street-Basketball-Official-Size-7-29-5-Inch_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Sporting Goods', size: [0.8, 0.8, 0.8], hint: 'basketball' }, [aisleXStart + 25, shelfY.mid, backAisleZFront], 20, 'x');
-stockShelf({ name: 'Wilson Football', price: 19.99, description: 'Official size NFL football.', image: 'https://i5.walmartimages.com/seo/Wilson-NFL-Official-Size-Football_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Sporting Goods', size: [0.5, 0.5, 0.8], hint: 'american football' }, [aisleXStart + 25, shelfY.low, backAisleZFront], 20, 'x');
-stockShelf({ name: 'Ozark Trail Tent', price: 49.99, description: '4-person dome tent.', image: 'https://i5.walmartimages.com/seo/Ozark-Trail-4-Person-Dome-Tent_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Outdoors', size: [1, 1, 1], hint: 'camping tent package' }, [aisleXStart + 40, shelfY.top, backAisleZBack], 8, 'x');
-stockShelf({ name: 'Coleman Cooler', price: 24.98, description: '48-Quart Performance 3-Day Cooler.', image: 'https://i5.walmartimages.com/seo/Coleman-Performance-48-Quart-Cooler-Blue_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Outdoors', size: [1.5, 1.2, 1.2], hint: 'beverage cooler' }, [aisleXStart + 40, shelfY.bottom, backAisleZBack], 8, 'x');
-stockShelf({ name: 'Nintendo Switch', price: 299.00, description: 'Nintendo Switch with Neon Blue and Neon Red Joy-Con.', image: 'https://i5.walmartimages.com/seo/Nintendo-Switch-w-Neon-Blue-Neon-Red-Joy-Con_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Electronics', size: [1, 0.6, 0.4], hint: 'console box' }, [aisleXStart + 15, shelfY.high, backAisleZBack], 15, 'x');
+stockShelf({ name: 'Spalding Basketball', price: 15.88, description: 'Official size street basketball.', image: 'https://m.media-amazon.com/images/I/91A90PxvHHL.jpg', category: 'Sporting Goods', size: [0.8, 0.8, 0.8], hint: 'basketball' }, [aisleXStart + 25, shelfY.mid, backAisleZFront], 20, 'x');
+stockShelf({ name: 'Wilson Football', price: 19.99, description: 'Official size NFL football.', image: 'https://m.media-amazon.com/images/I/71zW5vX+5eL._AC_UF894,1000_QL80_.jpg', category: 'Sporting Goods', size: [0.5, 0.5, 0.8], hint: 'american football' }, [aisleXStart + 25, shelfY.low, backAisleZFront], 20, 'x');
+stockShelf({ name: 'Ozark Trail Tent', price: 49.99, description: '4-person dome tent.', image: 'https://m.media-amazon.com/images/I/41kblBniEIL._UF894,1000_QL80_.jpg', category: 'Outdoors', size: [1, 1, 1], hint: 'camping tent package' }, [aisleXStart + 40, shelfY.top, backAisleZBack], 8, 'x');
+stockShelf({ name: 'Coleman Cooler', price: 24.98, description: '48-Quart Performance 3-Day Cooler.', image: 'https://m.media-amazon.com/images/I/81Aj3l4V-GL._UF894,1000_QL80_.jpg', category: 'Outdoors', size: [1.5, 1.2, 1.2], hint: 'beverage cooler' }, [aisleXStart + 40, shelfY.bottom, backAisleZBack], 8, 'x');
+stockShelf({ name: 'Nintendo Switch', price: 299.00, description: 'Nintendo Switch with Neon Blue and Neon Red Joy-Con.', image: 'https://m.media-amazon.com/images/I/41V5KQ500IL._UF894,1000_QL80_.jpg', category: 'Electronics', size: [1, 0.6, 0.4], hint: 'console box' }, [aisleXStart + 15, shelfY.high, backAisleZBack], 15, 'x');
 
 
 // --- Center Pallet Displays ---
@@ -146,7 +146,7 @@ for (let i = 0; i < 4; i++) { // height
         name: 'Pepsi 12-Pack (Display)',
         price: 5.98,
         description: 'A 12-pack of classic Pepsi cola.',
-        image: 'https://i5.walmartimages.com/seo/Pepsi-Soda-12-Pack-12-fl-oz-Cans_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg',
+        image: 'https://www.instacart.com/image-server/1864x1864/www.instacart.com/assets/domains/product-image/file/large_51a0ef1f-5477-49aa-97f9-5a51fa2b2210.png',
         category: 'Groceries',
         position: [
           pepsiStackPos.x + j * sodaCaseSize[0],
@@ -168,7 +168,7 @@ for (let i = 0; i < 3; i++) { // height
         name: 'Mtn Dew 12-Pack (Display)',
         price: 5.98,
         description: 'A 12-pack of Mtn Dew soda.',
-        image: 'https://i5.walmartimages.com/seo/Mountain-Dew-Soda-12-Pack-12-fl-oz-Cans_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg',
+        image: 'https://images.albertsons-media.com/is/image/ABS/108050448-C1N1?$ng-ecom-pdp-desktop$&defaultImage=Not_Available',
         category: 'Groceries',
         position: [
           dewStackPos.x + j * sodaCaseSize[0],
@@ -191,7 +191,7 @@ for (let i = 0; i < 5; i++) { // height
         name: 'Aquafina Water (Display)',
         price: 5.99,
         description: 'A 24-pack of purified drinking water.',
-        image: 'https://i5.walmartimages.com/seo/Aquafina-Purified-Drinking-Water-16-9-oz-24-Pack-Bottles_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg',
+        image: 'https://5.imimg.com/data5/WX/NX/CQ/GLADMIN-22143586/00012000504044-c1n1-thumbnail-e4a6b516c74c42558b163ce9f0162871-500x500-500x500.jpg',
         category: 'Groceries',
         position: [
           waterStackPos.x + j * waterCaseSize[0],
