@@ -588,6 +588,49 @@ function createProduceBin(width: number, depth: number, height: number): THREE.M
   return bin;
 }
 
+function createShelfLabel(text: string, size: { width: number; height: number }): THREE.Mesh {
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  if (!context) return new THREE.Mesh();
+
+  const resolutionMultiplier = 2; // For sharper text
+  const canvasWidth = size.width * 64 * resolutionMultiplier;
+  const canvasHeight = size.height * 64 * resolutionMultiplier;
+  canvas.width = canvasWidth;
+  canvas.height = canvasHeight;
+
+  context.fillStyle = 'hsl(220, 15%, 20%)'; // Dark background
+  // Rounded corners
+  context.beginPath();
+  const cornerRadius = 20 * resolutionMultiplier;
+  context.moveTo(cornerRadius, 0);
+  context.lineTo(canvasWidth - cornerRadius, 0);
+  context.quadraticCurveTo(canvasWidth, 0, canvasWidth, cornerRadius);
+  context.lineTo(canvasWidth, canvasHeight - cornerRadius);
+  context.quadraticCurveTo(canvasWidth, canvasHeight, canvasWidth - cornerRadius, canvasHeight);
+  context.lineTo(cornerRadius, canvasHeight);
+  context.quadraticCurveTo(0, canvasHeight, 0, canvasHeight - cornerRadius);
+  context.lineTo(0, cornerRadius);
+  context.quadraticCurveTo(0, 0, cornerRadius, 0);
+  context.closePath();
+  context.fill();
+
+
+  context.font = `bold ${canvasHeight * 0.5}px "Inter", sans-serif`;
+  context.fillStyle = 'white';
+  context.textAlign = 'center';
+  context.textBaseline = 'middle';
+  context.fillText(text, canvasWidth / 2, canvasHeight / 2);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.needsUpdate = true;
+  
+  const material = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.DoubleSide });
+  const geometry = new THREE.PlaneGeometry(size.width, size.height);
+  const labelMesh = new THREE.Mesh(geometry, material);
+  return labelMesh;
+}
+
 
 export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcClick, cart }) => {
   const mountRef = useRef<HTMLDivElement>(null);
@@ -1143,6 +1186,69 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     electronicsAisleSign.position.set(0, signY, -18);
     electronicsAisleSign.rotation.y = Math.PI / 2;
     scene.add(electronicsAisleSign);
+
+    // Shelf Labels
+    const aisle1XLeft = -16.75;
+    const aisle1XRight = -15.25;
+    const aisle4XLeft = 16.75;
+    const aisle4XRight = 15.25;
+    const backAisleZBack = -22.75;
+    const backAisleZFront = -21.25;
+    
+    const labelY = 4;
+    const labelSize = { width: 8, height: 0.75 };
+    const longLabelSize = { width: 12, height: 0.75 };
+    
+    const aisle1LabelsZ = [-10, 10];
+    const aisle1LeftLabels = ["Cereal & Breakfast", "Pasta & Sauces"];
+    const aisle1RightLabels = ["Snacks & Cookies", "Bakery & Dairy"];
+    aisle1LabelsZ.forEach((z, i) => {
+        const leftLabel = createShelfLabel(aisle1LeftLabels[i], labelSize);
+        leftLabel.position.set(aisle1XLeft, labelY, z);
+        leftLabel.rotation.y = Math.PI / 2;
+        scene.add(leftLabel);
+
+        const rightLabel = createShelfLabel(aisle1RightLabels[i], labelSize);
+        rightLabel.position.set(aisle1XRight, labelY, z);
+        rightLabel.rotation.y = -Math.PI / 2;
+        scene.add(rightLabel);
+    });
+    
+    const aisle2Label = createShelfLabel("Soda, Juice & Drinks", longLabelSize);
+    aisle2Label.position.set(-8, labelY, 0);
+    scene.add(aisle2Label);
+    
+    const aisle3Label = createShelfLabel("Home, Cleaning & Kitchen", longLabelSize);
+    aisle3Label.position.set(8, labelY, 0);
+    scene.add(aisle3Label);
+    
+    const apparelLabel = createShelfLabel("Apparel", labelSize);
+    apparelLabel.position.set(aisle4XLeft, labelY, 0);
+    apparelLabel.rotation.y = Math.PI / 2;
+    scene.add(apparelLabel);
+    
+    const personalCareLabel = createShelfLabel("Personal Care & Pharmacy", longLabelSize);
+    personalCareLabel.position.set(aisle4XRight, labelY, 0);
+    personalCareLabel.rotation.y = -Math.PI / 2;
+    scene.add(personalCareLabel);
+
+    const backAisleLabelY = 4;
+    const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
+    electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
+    scene.add(electronicsLabel);
+
+    const toysLabel = createShelfLabel("Toys & Games", labelSize);
+    toysLabel.position.set(10, backAisleLabelY, backAisleZFront);
+    scene.add(toysLabel);
+
+    const outdoorsLabel = createShelfLabel("Outdoors & Sporting Goods", longLabelSize);
+    outdoorsLabel.position.set(0, backAisleLabelY, backAisleZBack);
+    outdoorsLabel.rotation.y = Math.PI;
+    scene.add(outdoorsLabel);
+
+    const produceLabel = createShelfLabel("Fresh Produce", { width: 15, height: 1.2 });
+    produceLabel.position.set(0, 5, 28);
+    scene.add(produceLabel);
 
 
     // Event Listeners
