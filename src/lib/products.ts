@@ -34,6 +34,8 @@ const stockShelf = (baseProduct: Omit<Product, 'id' | 'position'>, startPos: [nu
 
 const aisleZStart = -18;
 const aisleXStart = -18;
+const backAisleZ = -40;
+
 
 // --- AISLE 1: Groceries (x = -16) ---
 // Left shelf is at x=[-16.75, -16], center is -16.375
@@ -117,11 +119,11 @@ stockShelf({ name: 'Wrangler Mens Jeans', price: 19.98, description: 'Regular fi
 stockShelf({ name: 'Secret Deodorant', price: 5.47, description: 'Invisible solid antiperspirant and deodorant.', image: 'https://i5.walmartimages.com/seo/Secret-Outlast-XTend-Invisible-Solid-Antiperspirant-Deodorant-Completely-Clean-2-6-oz_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Personal Care', size: [0.4, 0.6, 0.2], hint: 'deodorant stick' }, [aisle4XRight, shelfY.high, aisleZStart], 35, 'z');
 stockShelf({ name: 'Hanes Mens Socks', price: 10.98, description: '12-pack of white crew socks.', image: 'https://i5.walmartimages.com/seo/Hanes-Men-s-Crew-Socks-12-Pack_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Apparel', size: [0.8, 0.2, 0.6], hint: 'packaged socks' }, [aisle4XLeft, shelfY.bottom, aisleZStart], 35, 'z');
 
-// --- Back Aisle: Electronics, Toys, Sporting Goods (z = -30) ---
-// Back shelf is at z=[-30.75, -30], center is -30.375
-// Front shelf is at z=[-30, -29.25], center is -29.625
-const backAisleZBack = -30.375;
-const backAisleZFront = -29.625;
+// --- Back Aisle: Electronics, Toys, Sporting Goods (z = -40) ---
+// Back shelf is at z=[-40.75, -40], center is -40.375
+// Front shelf is at z=[-40, -39.25], center is -39.625
+const backAisleZBack = backAisleZ - 0.375;
+const backAisleZFront = backAisleZ + 0.375;
 stockShelf({ name: 'onn. 50" TV', price: 198.0, description: '50" Class 4K UHD LED Roku Smart TV.', image: 'https://i5.walmartimages.com/seo/onn-50-Class-4K-UHD-LED-Roku-Smart-TV-HDR-100012585_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Electronics', size: [4.5, 2.5, 0.2], hint: 'television box' }, [aisleXStart, shelfY.mid, backAisleZBack], 8, 'x');
 stockShelf({ name: 'PlayStation 5', price: 499.99, description: 'The Sony PlayStation 5 console.', image: 'https://m.media-amazon.com/images/I/619BkvKW35L._AC_SL1500_.jpg', category: 'Electronics', size: [1.2, 1.4, 0.6], hint: 'console box' }, [aisleXStart, shelfY.high, backAisleZBack], 10, 'x');
 stockShelf({ name: 'Apple AirPods', price: 129.00, description: '2nd Gen Apple AirPods w/ Charging Case.', image: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/MV7N2?wid=2000&hei=2000&fmt=jpeg&qlt=95&.v=1551489688005', category: 'Electronics', size: [0.3, 0.4, 0.3], hint: 'airpods box' }, [aisleXStart + 15, shelfY.low, backAisleZBack], 25, 'x');
@@ -137,7 +139,7 @@ stockShelf({ name: 'Nintendo Switch', price: 299.00, description: 'Nintendo Swit
 
 
 // --- Center Pallet Displays ---
-const pepsiStackPos = { x: -4, y: sodaCaseSize[1] / 2, z: 15 };
+const pepsiStackPos = { x: -10, y: sodaCaseSize[1] / 2, z: 45 };
 for (let i = 0; i < 4; i++) { // height
   for (let j = 0; j < 4; j++) { // width
     for (let k = 0; k < 3; k++) { // depth
@@ -159,7 +161,7 @@ for (let i = 0; i < 4; i++) { // height
     }
   }
 }
-const dewStackPos = { x: 2, y: sodaCaseSize[1] / 2, z: 15 };
+const dewStackPos = { x: 0, y: sodaCaseSize[1] / 2, z: 45 };
 for (let i = 0; i < 3; i++) { // height
   for (let j = 0; j < 3; j++) { // width
     for (let k = 0; k < 2; k++) { // depth
@@ -182,7 +184,7 @@ for (let i = 0; i < 3; i++) { // height
   }
 }
 const waterCaseSize: [number, number, number] = [1.5, 0.8, 1];
-const waterStackPos = { x: -4, y: waterCaseSize[1] / 2, z: 0 };
+const waterStackPos = { x: 10, y: waterCaseSize[1] / 2, z: 45 };
 for (let i = 0; i < 5; i++) { // height
   for (let j = 0; j < 4; j++) { // width
     for (let k = 0; k < 3; k++) { // depth
