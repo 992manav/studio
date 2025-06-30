@@ -1188,51 +1188,71 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(electronicsAisleSign);
 
     // Shelf Labels
+    const labelY = aisleHeight + 0.1; // Position labels just above the aisle structure
+    const labelSize = { width: 8, height: 0.4 };
+    const longLabelSize = { width: 12, height: 0.4 };
+
     const aisle1XLeft = -16.75;
     const aisle1XRight = -15.25;
+    const aisle2XLeft = -8.75;
+    const aisle2XRight = -7.25;
+    const aisle3XLeft = 8.75;
+    const aisle3XRight = 7.25;
     const aisle4XLeft = 16.75;
     const aisle4XRight = 15.25;
+
     const backAisleZBack = -22.75;
     const backAisleZFront = -21.25;
-    
-    const labelY = 4;
-    const labelSize = { width: 8, height: 0.75 };
-    const longLabelSize = { width: 12, height: 0.75 };
-    
+
     const aisle1LabelsZ = [-10, 10];
     const aisle1LeftLabels = ["Cereal & Breakfast", "Pasta & Sauces"];
     const aisle1RightLabels = ["Snacks & Cookies", "Bakery & Dairy"];
     aisle1LabelsZ.forEach((z, i) => {
         const leftLabel = createShelfLabel(aisle1LeftLabels[i], labelSize);
         leftLabel.position.set(aisle1XLeft, labelY, z);
-        leftLabel.rotation.y = Math.PI / 2;
+        leftLabel.rotation.y = -Math.PI / 2; // Faces -X
         scene.add(leftLabel);
 
         const rightLabel = createShelfLabel(aisle1RightLabels[i], labelSize);
         rightLabel.position.set(aisle1XRight, labelY, z);
-        rightLabel.rotation.y = -Math.PI / 2;
+        rightLabel.rotation.y = Math.PI / 2; // Faces +X
         scene.add(rightLabel);
     });
     
-    const aisle2Label = createShelfLabel("Soda, Juice & Drinks", longLabelSize);
-    aisle2Label.position.set(-8, labelY, 0);
-    scene.add(aisle2Label);
-    
-    const aisle3Label = createShelfLabel("Home, Cleaning & Kitchen", longLabelSize);
-    aisle3Label.position.set(8, labelY, 0);
-    scene.add(aisle3Label);
-    
+    // Aisle 2 has products on both sides, give it labels on both sides
+    const aisle2LeftLabel = createShelfLabel("Soda, Juice & Drinks", longLabelSize);
+    aisle2LeftLabel.position.set(aisle2XLeft, labelY, 0);
+    aisle2LeftLabel.rotation.y = -Math.PI / 2; // Faces -X
+    scene.add(aisle2LeftLabel);
+
+    const aisle2RightLabel = createShelfLabel("Soda, Juice & Drinks", longLabelSize);
+    aisle2RightLabel.position.set(aisle2XRight, labelY, 0);
+    aisle2RightLabel.rotation.y = Math.PI / 2; // Faces +X
+    scene.add(aisle2RightLabel);
+
+    // Aisle 3 has products on both sides, give it labels on both sides
+    const aisle3LeftLabel = createShelfLabel("Home, Cleaning & Kitchen", longLabelSize);
+    aisle3LeftLabel.position.set(aisle3XLeft, labelY, 0);
+    aisle3LeftLabel.rotation.y = -Math.PI / 2; // Faces -X
+    scene.add(aisle3LeftLabel);
+
+    const aisle3RightLabel = createShelfLabel("Home, Cleaning & Kitchen", longLabelSize);
+    aisle3RightLabel.position.set(aisle3XRight, labelY, 0);
+    aisle3RightLabel.rotation.y = Math.PI / 2; // Faces +X
+    scene.add(aisle3RightLabel);
+
     const apparelLabel = createShelfLabel("Apparel", labelSize);
     apparelLabel.position.set(aisle4XLeft, labelY, 0);
-    apparelLabel.rotation.y = Math.PI / 2;
+    apparelLabel.rotation.y = -Math.PI / 2; // Faces -X
     scene.add(apparelLabel);
-    
+
     const personalCareLabel = createShelfLabel("Personal Care & Pharmacy", longLabelSize);
     personalCareLabel.position.set(aisle4XRight, labelY, 0);
-    personalCareLabel.rotation.y = -Math.PI / 2;
+    personalCareLabel.rotation.y = Math.PI / 2; // Faces +X
     scene.add(personalCareLabel);
 
-    const backAisleLabelY = 4;
+    // Back Aisle Labels
+    const backAisleLabelY = aisleHeight + 0.1;
     const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
     electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
     scene.add(electronicsLabel);
@@ -1247,7 +1267,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(outdoorsLabel);
 
     const produceLabel = createShelfLabel("Fresh Produce", { width: 15, height: 1.2 });
-    produceLabel.position.set(0, 5, 28);
+    produceLabel.position.set(0, 2.5, 28);
     scene.add(produceLabel);
 
 
