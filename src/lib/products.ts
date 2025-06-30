@@ -36,8 +36,11 @@ const aisleZStart = -18;
 const aisleXStart = -18;
 
 // --- AISLE 1: Groceries (x = -16) ---
-const aisle1XLeft = -16.75;
-const aisle1XRight = -15.25;
+// Left shelf is at x=[-16.75, -16], center is -16.375
+// Right shelf is at x=[-16, -15.25], center is -15.625
+const aisle1XLeft = -16.375;
+const aisle1XRight = -15.625;
+
 
 // Left Side (Cereal, Canned Goods, Pasta, Milk, Water)
 stockShelf({ name: 'Honey Nut Cheerios', price: 4.12, description: 'A family size box of whole grain oat cereal.', image: 'https://target.scene7.com/is/image/Target/GUEST_2c7e3c7f-9e3b-4f8d-9e4d-2e4f9e3b3d4f?wid=488&hei=488&fmt=pjpeg', category: 'Groceries', size: [0.8, 1, 0.3], hint: 'cereal box' }, [aisle1XLeft, shelfY.top, aisleZStart], 20, 'z');
@@ -59,12 +62,14 @@ stockShelf({ name: 'Oreo Cookies', price: 3.78, description: 'A family size pack
 stockShelf({ name: 'Chips Ahoy!', price: 3.78, description: 'A family size pack of chocolate chip cookies.', image: 'https://i5.walmartimages.com/seo/Chips-Ahoy-Original-Chocolate-Chip-Cookies-Family-Size-18-2-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.7, 0.3, 0.2], hint: 'cookie package' }, [aisle1XRight, shelfY.high, aisleZStart + 12], 40, 'z');
 stockShelf({ name: 'Great Value Bread', price: 2.24, description: 'Classic white sandwich bread.', image: 'https://i5.walmartimages.com/seo/Great-Value-White-Bread-20-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [0.5, 0.5, 1], hint: 'bread loaf' }, [aisle1XRight, shelfY.mid, aisleZStart], 25, 'z');
 stockShelf({ name: 'Jif Peanut Butter', price: 3.20, description: 'Creamy peanut butter.', image: 'https://i5.walmartimages.com/seo/Jif-Creamy-Peanut-Butter-16-oz-Jar_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.5, 0.6, 0.5], hint: 'peanut butter jar' }, [aisle1XRight, shelfY.mid, aisleZStart + 22], 25, 'z');
-stockShelf({ name: 'Great Value Eggs', price: 2.50, description: 'One dozen Grade A large eggs.', image: 'https://i5.walmartimages.com/seo/Great-Value-Large-White-Eggs-12-Count_6a2e4f9e-3b3d-4f8d-9e4d-2e4f9e3b3d4f.6a2e4f9e3b3d4f8d9e4d2e4f9e3b3d.jpeg', category: 'Groceries', size: [1, 0.4, 0.5], hint: 'egg carton' }, [aisle1XRight, shelfY.low, aisleZStart], 25, 'z');
+stockShelf({ name: 'Great Value Eggs', price: 2.50, description: 'One dozen Grade A large eggs.', image: 'https://i5.walmartimages.com/seo/Great-Value-Large-White-Eggs-12-Count_6a2e4f9e-3b3d-4f8d-9e4d-2e4f9e3b3d4f.6a2e4f9e-3b3d-4f8d-9e4d-2e4f9e3b3d.jpeg', category: 'Groceries', size: [1, 0.4, 0.5], hint: 'egg carton' }, [aisle1XRight, shelfY.low, aisleZStart], 25, 'z');
 stockShelf({ name: 'Kraft Singles Cheese', price: 4.50, description: 'American cheese slices.', image: 'https://i5.walmartimages.com/seo/Kraft-Singles-American-Cheese-Slices-16-ct-12-0-oz-Package_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Groceries', size: [0.6, 0.2, 0.6], hint: 'cheese package' }, [aisle1XRight, shelfY.low, aisleZStart + 22], 25, 'z');
 
 // --- AISLE 2: Soda & Drinks (x = -8) ---
-const aisle2XLeft = -8.75;
-const aisle2XRight = -7.25;
+// Left shelf is at x=[-8.75, -8], center is -8.375
+// Right shelf is at x=[-8, -7.25], center is -7.625
+const aisle2XLeft = -8.375;
+const aisle2XRight = -7.625;
 const sodaCaseSize: [number, number, number] = [1.2, 0.4, 0.8];
 stockShelf({ name: 'Coca-Cola 12-Pack', price: 5.98, description: 'A 12-pack of classic Coca-Cola.', image: 'https://i5.walmartimages.com/seo/Coca-Cola-Soda-12-Pack-12-fl-oz-Cans_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: sodaCaseSize, hint: 'coke case' }, [aisle2XRight, shelfY.bottom, aisleZStart], 15, 'z');
 stockShelf({ name: 'Coca-Cola 12-Pack', price: 5.98, description: 'A 12-pack of classic Coca-Cola.', image: 'https://i5.walmartimages.com/seo/Coca-Cola-Soda-12-Pack-12-fl-oz-Cans_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Groceries', size: sodaCaseSize, hint: 'coke case' }, [aisle2XRight, shelfY.low, aisleZStart], 15, 'z');
@@ -80,8 +85,10 @@ stockShelf({ name: 'Red Bull', price: 2.50, description: '8.4 fl oz can of Red B
 
 
 // --- AISLE 3: Home Goods (x = 8) ---
-const aisle3XLeft = 8.75;
-const aisle3XRight = 7.25;
+// Left shelf is at x=[7.25, 8], center is 7.625
+// Right shelf is at x=[8, 8.75], center is 8.375
+const aisle3XLeft = 7.625;
+const aisle3XRight = 8.375;
 stockShelf({ name: 'Bounty Paper Towels', price: 15.99, description: 'Pack of 6 double rolls.', image: 'https://i5.walmartimages.com/seo/Bounty-Select-A-Size-Paper-Towels-White-6-Double-Rolls-12-Regular-Rolls_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [1.5, 1, 0.8], hint: 'paper towels pack' }, [aisle3XLeft, shelfY.mid, aisleZStart], 15, 'z');
 stockShelf({ name: 'Charmin Toilet Paper', price: 18.99, description: '18 mega rolls of ultra soft toilet paper.', image: 'https://i5.walmartimages.com/seo/Charmin-Ultra-Soft-Toilet-Paper-18-Mega-Rolls_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [1.5, 1.5, 1.5], hint: 'toilet paper pack' }, [aisle3XLeft, shelfY.bottom, aisleZStart], 10, 'z');
 stockShelf({ name: 'Tide Laundry Detergent', price: 12.99, description: 'Original scent liquid laundry detergent.', image: 'https://i5.walmartimages.com/seo/Tide-Original-Scent-Liquid-Laundry-Detergent-92-fl-oz-64-Loads_a2b3b7c8-2b8a-4b7e-9b0a-7b3b7c8a2b3b.7b3b7c8a2b3b7c8a2b3b7c8a2b3b.jpeg', category: 'Home Goods', size: [0.8, 1.2, 0.6], hint: 'detergent bottle' }, [aisle3XLeft, shelfY.low, aisleZStart], 20, 'z');
@@ -95,8 +102,10 @@ stockShelf({ name: 'Febreze Air Freshener', price: 2.97, description: 'Linen & S
 
 
 // --- AISLE 4: Pharmacy, Personal Care, Apparel (x = 16) ---
-const aisle4XLeft = 16.75;
-const aisle4XRight = 15.25;
+// Left shelf is at x=[15.25, 16], center is 15.625
+// Right shelf is at x=[16, 16.75], center is 16.375
+const aisle4XLeft = 15.625;
+const aisle4XRight = 16.375;
 stockShelf({ name: 'Equate Ibuprofen', price: 8.98, description: 'Pain reliever/fever reducer. 200mg tablets.', image: 'https://i5.walmartimages.com/seo/Equate-Ibuprofen-Tablets-200mg-500-Count_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Pharmacy', size: [0.3, 0.5, 0.3], hint: 'medicine bottle' }, [aisle4XLeft, shelfY.low, aisleZStart], 45, 'z');
 stockShelf({ name: 'Equate Allergy Relief', price: 12.48, description: '24-hour non-drowsy allergy relief tablets.', image: 'https://i5.walmartimages.com/seo/Equate-Allergy-Relief-Tablets-10mg-30-Count_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Pharmacy', size: [0.3, 0.5, 0.3], hint: 'medicine box' }, [aisle4XLeft, shelfY.low, aisleZStart + 15], 45, 'z');
 stockShelf({ name: 'Neutrogena Face Wash', price: 8.49, description: 'Hydro Boost hydrating facial cleansing gel.', image: 'https://i5.walmartimages.com/seo/Neutrogena-Hydro-Boost-Hydrating-Facial-Cleansing-Gel-6-oz_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Personal Care', size: [0.3, 0.8, 0.3], hint: 'face cleanser' }, [aisle4XRight, shelfY.mid, aisleZStart], 35, 'z');
@@ -109,8 +118,10 @@ stockShelf({ name: 'Secret Deodorant', price: 5.47, description: 'Invisible soli
 stockShelf({ name: 'Hanes Mens Socks', price: 10.98, description: '12-pack of white crew socks.', image: 'https://i5.walmartimages.com/seo/Hanes-Men-s-Crew-Socks-12-Pack_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Apparel', size: [0.8, 0.2, 0.6], hint: 'packaged socks' }, [aisle4XLeft, shelfY.bottom, aisleZStart], 35, 'z');
 
 // --- Back Aisle: Electronics, Toys, Sporting Goods (z = -22) ---
-const backAisleZBack = -22.75;
-const backAisleZFront = -21.25;
+// Back shelf is at z=[-22.75, -22], center is -22.375
+// Front shelf is at z=[-22, -21.25], center is -21.625
+const backAisleZBack = -22.375;
+const backAisleZFront = -21.625;
 stockShelf({ name: 'onn. 50" TV', price: 198.0, description: '50" Class 4K UHD LED Roku Smart TV.', image: 'https://i5.walmartimages.com/seo/onn-50-Class-4K-UHD-LED-Roku-Smart-TV-HDR-100012585_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Electronics', size: [4.5, 2.5, 0.2], hint: 'television box' }, [aisleXStart, shelfY.mid, backAisleZBack], 8, 'x');
 stockShelf({ name: 'PlayStation 5', price: 499.99, description: 'The Sony PlayStation 5 console.', image: 'https://m.media-amazon.com/images/I/619BkvKW35L._AC_SL1500_.jpg', category: 'Electronics', size: [1.2, 1.4, 0.6], hint: 'console box' }, [aisleXStart, shelfY.high, backAisleZBack], 10, 'x');
 stockShelf({ name: 'Apple AirPods', price: 129.00, description: '2nd Gen Apple AirPods w/ Charging Case.', image: 'https://store.storeimages.cdn-apple.com/4668/as-images.apple.com/is/MV7N2?wid=2000&hei=2000&fmt=jpeg&qlt=95&.v=1551489688005', category: 'Electronics', size: [0.3, 0.4, 0.3], hint: 'airpods box' }, [aisleXStart + 15, shelfY.low, backAisleZBack], 25, 'x');
@@ -122,7 +133,7 @@ stockShelf({ name: 'Spalding Basketball', price: 15.88, description: 'Official s
 stockShelf({ name: 'Wilson Football', price: 19.99, description: 'Official size NFL football.', image: 'https://i5.walmartimages.com/seo/Wilson-NFL-Official-Size-Football_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Sporting Goods', size: [0.5, 0.5, 0.8], hint: 'american football' }, [aisleXStart + 25, shelfY.low, backAisleZFront], 20, 'x');
 stockShelf({ name: 'Ozark Trail Tent', price: 49.99, description: '4-person dome tent.', image: 'https://i5.walmartimages.com/seo/Ozark-Trail-4-Person-Dome-Tent_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Outdoors', size: [1, 1, 1], hint: 'camping tent package' }, [aisleXStart + 40, shelfY.top, backAisleZBack], 8, 'x');
 stockShelf({ name: 'Coleman Cooler', price: 24.98, description: '48-Quart Performance 3-Day Cooler.', image: 'https://i5.walmartimages.com/seo/Coleman-Performance-48-Quart-Cooler-Blue_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Outdoors', size: [1.5, 1.2, 1.2], hint: 'beverage cooler' }, [aisleXStart + 40, shelfY.bottom, backAisleZBack], 8, 'x');
-stockShelf({ name: 'Nintendo Switch', price: 299.00, description: 'Nintendo Switch with Neon Blue and Neon Red Joy-Con.', image: 'https://i5.walmartimages.com/seo/Nintendo-Switch-w-Neon-Blue-Neon-Red-Joy-Con_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Electronics', size: [1, 0.6, 0.4], hint: 'console box' }, [aisleXStart, shelfY.high, backAisleZBack + 15], 15, 'x');
+stockShelf({ name: 'Nintendo Switch', price: 299.00, description: 'Nintendo Switch with Neon Blue and Neon Red Joy-Con.', image: 'https://i5.walmartimages.com/seo/Nintendo-Switch-w-Neon-Blue-Neon-Red-Joy-Con_1e4d2e4f-9e3b-3d4f-8d9e-4d2e4f9e3b3d.1e4d2e4f9e3b3d4f8d9e-4d2e4f9e3b3d.jpeg', category: 'Electronics', size: [1, 0.6, 0.4], hint: 'console box' }, [aisleXStart + 15, shelfY.high, backAisleZBack], 15, 'x');
 
 
 // --- Center Pallet Displays ---
