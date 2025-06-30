@@ -52,7 +52,7 @@ export const npcs: Npc[] = [
     color: '#2ecc71',
      path: [
       [19, 0, -18],
-      [0, 0, -20],
+      [0, 0, -28],
       [0, 0, 18],
       [19, 0, 18],
     ]
@@ -64,8 +64,8 @@ export const npcs: Npc[] = [
     position: [0, 0, -20],
     color: '#9b59b6',
     path: [
-        [-19, 0, -20],
-        [19, 0, -20],
+        [-19, 0, -28],
+        [19, 0, -28],
         [19, 0, 20],
         [-19, 0, 20],
     ]
@@ -173,24 +173,24 @@ export const npcs: Npc[] = [
     id: 17,
     name: 'Susan (Electronics)',
     personality: 'Expert on the latest video games and toys.',
-    position: [-10, 0, -21],
+    position: [-10, 0, -29],
     color: '#4caf50',
     isEmployee: true,
     path: [
-        [-15, 0, -21],
-        [15, 0, -21],
+        [-15, 0, -29],
+        [15, 0, -29],
     ]
   },
    {
     id: 18,
     name: 'Mike (Electronics)',
     personality: 'An employee helping customers in the electronics section.',
-    position: [10, 0, -21],
+    position: [10, 0, -29],
     color: '#f44336',
     isEmployee: true,
     path: [
-      [15, 0, -21],
-      [-15, 0, -21],
+      [15, 0, -29],
+      [-15, 0, -29],
     ]
   },
 ];

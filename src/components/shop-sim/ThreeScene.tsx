@@ -1095,7 +1095,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
     
     const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth);
-    backAisle.position.set(0, 0, -22);
+    backAisle.position.set(0, 0, -30);
     scene.add(backAisle);
 
     // Light Fixtures
@@ -1115,10 +1115,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
 
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength, 0.2, 0.5), lightFixtureMaterial);
-    backAisleFixture.position.set(0, lightY, -22);
+    backAisleFixture.position.set(0, lightY, -30);
     scene.add(backAisleFixture);
     const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
-    backAisleLight.position.set(0, lightY - 1, -22);
+    backAisleLight.position.set(0, lightY - 1, -30);
     scene.add(backAisleLight);
 
 
@@ -1188,7 +1188,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(electronicsAisleSign);
 
     // Shelf Labels
-    const labelY = aisleHeight + 1.0; // Position labels just above the aisle structure
+    const labelY = aisleHeight + 1.0;
     const labelSize = { width: 8, height: 0.4 };
     const longLabelSize = { width: 12, height: 0.4 };
 
@@ -1200,10 +1200,24 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const aisle3XRight = 8.75;
     const aisle4XLeft = 15.25;
     const aisle4XRight = 16.75;
+    
+    const backAisleZBack = -30.75;
+    const backAisleZFront = -29.25;
 
 
-    const backAisleZBack = -22.75;
-    const backAisleZFront = -21.25;
+    const backAisleLabelY = aisleHeight + 1.0;
+    const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
+    electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
+    scene.add(electronicsLabel);
+
+    const toysLabel = createShelfLabel("Toys & Games", labelSize);
+    toysLabel.position.set(10, backAisleLabelY, backAisleZFront);
+    scene.add(toysLabel);
+
+    const outdoorsLabel = createShelfLabel("Outdoors & Sporting Goods", longLabelSize);
+    outdoorsLabel.position.set(0, backAisleLabelY, backAisleZBack);
+    outdoorsLabel.rotation.y = Math.PI;
+    scene.add(outdoorsLabel);
 
     const aisle1LabelsZ = [-10, 10];
     const aisle1LeftLabels = ["Cereal & Breakfast", "Pasta & Sauces"];
@@ -1251,21 +1265,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     personalCareLabel.position.set(aisle4XRight, labelY, 0);
     personalCareLabel.rotation.y = -Math.PI / 2; // Faces -X
     scene.add(personalCareLabel);
-
-    // Back Aisle Labels
-    const backAisleLabelY = aisleHeight + 1.0;
-    const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
-    electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
-    scene.add(electronicsLabel);
-
-    const toysLabel = createShelfLabel("Toys & Games", labelSize);
-    toysLabel.position.set(10, backAisleLabelY, backAisleZFront);
-    scene.add(toysLabel);
-
-    const outdoorsLabel = createShelfLabel("Outdoors & Sporting Goods", longLabelSize);
-    outdoorsLabel.position.set(0, backAisleLabelY, backAisleZBack);
-    outdoorsLabel.rotation.y = Math.PI;
-    scene.add(outdoorsLabel);
 
     const produceLabel = createShelfLabel("Fresh Produce", { width: 15, height: 1.2 });
     produceLabel.position.set(0, 3.5, 28);
@@ -1539,4 +1538,5 @@ interface ThreeSceneProps {
     
 
     
+
 
