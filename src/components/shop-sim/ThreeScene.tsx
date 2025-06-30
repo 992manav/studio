@@ -14,7 +14,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
   const group = new THREE.Group();
   const shelfMaterial = new THREE.MeshStandardMaterial({ color: 0xeeeeee, metalness: 0.1, roughness: 0.8 });
   const supportMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, metalness: 0.5, roughness: 0.5 });
-  const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xc0c0c0, roughness: 0.8 });
+  const backPanelMaterial = new THREE.MeshStandardMaterial({ color: 0xbababa, roughness: 0.8 });
 
   const shelfThickness = 0.05;
   const supportWidth = 0.1;
@@ -49,7 +49,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
   }
 
   // Back panel
-  const backPanelGeo = new THREE.BoxGeometry(length, height, 0.02);
+  const backPanelGeo = new THREE.BoxGeometry(length, height, 0.1);
   const backPanel = new THREE.Mesh(backPanelGeo, backPanelMaterial);
   backPanel.position.y = height / 2;
   backPanel.position.z = 0; // Assuming shelf is symmetrical, back panel at center
@@ -1081,7 +1081,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Aisles
     const aisleHeight = 3.5;
-    const aisleWidth = 1.5;
+    const aisleWidth = 2.5;
     const aisleShelves = 4;
     const mainAisleLength = 40;
     const backAisleLength = 40;
@@ -1095,7 +1095,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
     
     const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth);
-    backAisle.position.set(0, 0, -30);
+    backAisle.position.set(0, 0, -50);
     scene.add(backAisle);
 
     // Light Fixtures
@@ -1115,10 +1115,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
 
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength, 0.2, 0.5), lightFixtureMaterial);
-    backAisleFixture.position.set(0, lightY, -30);
+    backAisleFixture.position.set(0, lightY, -50);
     scene.add(backAisleFixture);
     const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
-    backAisleLight.position.set(0, lightY - 1, -30);
+    backAisleLight.position.set(0, lightY - 1, -50);
     scene.add(backAisleLight);
 
 
@@ -1183,7 +1183,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         header: 'C1 / C2',
         items: ['TVs', 'Gaming', 'Audio', 'Toys'],
     }, aisleSignSize);
-    electronicsAisleSign.position.set(0, signY, -18);
+    electronicsAisleSign.position.set(0, signY, -38);
     electronicsAisleSign.rotation.y = Math.PI / 2;
     scene.add(electronicsAisleSign);
 
@@ -1201,8 +1201,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const aisle4XLeft = 15.25;
     const aisle4XRight = 16.75;
     
-    const backAisleZBack = -30.75;
-    const backAisleZFront = -29.25;
+    const backAisleZBack = -50.75;
+    const backAisleZFront = -49.25;
 
 
     const backAisleLabelY = aisleHeight + 1.0;
@@ -1538,5 +1538,6 @@ interface ThreeSceneProps {
     
 
     
+
 
 
