@@ -799,6 +799,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Walls & Ceiling
     const wallHeight = 20;
     const wallDepth = 150;
+    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.9, metalness: 0.1 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
     backWall.position.set(0, wallHeight / 2, -wallDepth / 2);
@@ -1524,6 +1525,7 @@ interface ThreeSceneProps {
     
 
     
+
 
 
 
