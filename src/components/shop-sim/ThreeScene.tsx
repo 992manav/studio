@@ -19,6 +19,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
   const shelfThickness = 0.05;
   const supportWidth = 0.1;
   const supportDepth = 0.1;
+  const backPanelDepth = 0.4; // Increased from 0.2
 
   // Shelves
   for (let i = 0; i < shelves; i++) {
@@ -49,10 +50,10 @@ function createAisle(length: number, shelves: number, height: number, width: num
   }
 
   // Back panel
-  const backPanelGeo = new THREE.BoxGeometry(length, height, 0.2);
+  const backPanelGeo = new THREE.BoxGeometry(length, height, backPanelDepth);
   const backPanel = new THREE.Mesh(backPanelGeo, backPanelMaterial);
   backPanel.position.y = height / 2;
-  backPanel.position.z = 0; // Assuming shelf is symmetrical, back panel at center
+  backPanel.position.z = -width/2 + backPanelDepth/2;
   backPanel.receiveShadow = true;
   group.add(backPanel);
 
@@ -649,6 +650,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
   const cartRef = useRef<THREE.Group>();
   const cartItemsGroupRef = useRef<THREE.Group>();
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
+  const animationsRef = useRef<Record<string, THREE.AnimationAction>>({});
+  const activeActionRef = useRef<THREE.AnimationAction | null>(null);
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshesRef = useRef<THREE.Mesh[]>([]);
   const npcMeshesRef = useRef<THREE.Group[]>([]);
@@ -746,6 +749,26 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       }
     }
   }, [onProductClick, onNpcClick, takeCart]);
+
+  const setAction = useCallback((toAction: THREE.AnimationAction | undefined) => {
+    if (!toAction || toAction === activeActionRef.current) {
+        return;
+    }
+
+    const fromAction = activeActionRef.current;
+    activeActionRef.current = toAction;
+
+    if (fromAction) {
+      fromAction.fadeOut(0.3);
+    }
+    
+    toAction
+      .reset()
+      .setEffectiveTimeScale(1)
+      .setEffectiveWeight(1)
+      .fadeIn(0.3)
+      .play();
+  }, []);
 
   useEffect(() => {
     if (!mountRef.current) return;
@@ -865,13 +888,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Entrance Gates
     const gateLeft = createSecurityGate();
-    gateLeft.position.set(-4, 0, 52);
+    gateLeft.position.set(-4, 0, 42);
     const leftArm = gateLeft.getObjectByName('gateArm');
     if (leftArm) leftArm.rotation.y = -Math.PI / 8; // Slightly open
     scene.add(gateLeft);
 
     const gateRight = createSecurityGate();
-    gateRight.position.set(4, 0, 52);
+    gateRight.position.set(4, 0, 42);
     const rightArm = gateRight.getObjectByName('gateArm');
     if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
     scene.add(gateRight);
@@ -915,7 +938,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 1 && Math.random() > 0.75) { // 25% chance of car
+            if (i < 1 && Math.random() > 0.85) { // 15% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -971,7 +994,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 45);
+        avatar.position.set(0, 0, 48);
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -986,12 +1009,24 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         
         if (gltf.animations && gltf.animations.length) {
           const mixer = new THREE.AnimationMixer(avatar);
-          const idleClip = gltf.animations.find(clip => clip.name.toLowerCase().includes('idle')) || gltf.animations[0];
-          if (idleClip) {
-            const action = mixer.clipAction(idleClip);
-            action.play();
-          }
           mixerRef.current = mixer;
+
+          const idleClip = gltf.animations.find(clip => clip.name.toLowerCase().includes('idle'));
+          if (idleClip) {
+            animationsRef.current['idle'] = mixer.clipAction(idleClip);
+          } else if (gltf.animations[0]) {
+            animationsRef.current['idle'] = mixer.clipAction(gltf.animations[0]);
+          }
+
+          const walkClip = gltf.animations.find(clip => clip.name.toLowerCase().includes('walk'));
+          if (walkClip) {
+              animationsRef.current['walk'] = mixer.clipAction(walkClip);
+          }
+          
+          activeActionRef.current = animationsRef.current['idle'];
+          if (activeActionRef.current) {
+            activeActionRef.current.play();
+          }
         }
         
         // Set initial camera position to be behind the avatar
@@ -1051,7 +1086,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Cart Corral
     const collectibleCarts: THREE.Group[] = [];
     const corralX = -15;
-    const corralZ = 60;
+    const corralZ = 50;
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 4; j++) {
         const cartModel = createShoppingCart();
@@ -1177,7 +1212,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(electronicsAisleSign);
 
     // Shelf Labels
-    const labelY = aisleHeight + 2.5;
+    const labelY = aisleHeight + 2.8;
     const labelSize = { width: 8, height: 0.4 };
     const longLabelSize = { width: 12, height: 0.4 };
 
@@ -1308,6 +1343,14 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         return;
       }
 
+      const isMoving = keysPressed.current['w'] || keysPressed.current['s'] || keysPressed.current['a'] || keysPressed.current['d'];
+
+      if (isMoving && animationsRef.current.walk) {
+        setAction(animationsRef.current.walk);
+      } else if (animationsRef.current.idle) {
+        setAction(animationsRef.current.idle);
+      }
+
       const moveSpeed = 5.0; // units per second
       const rotateSpeed = 2.0; // radians per second
       
@@ -1358,23 +1401,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
       // NPC Movement
       npcAnimationData.current.forEach(npc => {
-        const leftArm = npc.model.getObjectByName('leftArm') as THREE.Mesh;
-        const rightArm = npc.model.getObjectByName('rightArm') as THREE.Mesh;
-        const leftLeg = npc.model.getObjectByName('leftLeg') as THREE.Mesh;
-        const rightLeg = npc.model.getObjectByName('rightLeg') as THREE.Mesh;
-
         if (npc.isPaused) {
             npc.pauseTimer -= delta;
             if (npc.pauseTimer <= 0) {
                 npc.isPaused = false;
                 npc.currentTargetIndex = (npc.currentTargetIndex + 1) % npc.path.length;
             }
-            // Reset arm/leg rotation when paused
-            if (leftArm) leftArm.rotation.x = 0;
-            if (rightArm) rightArm.rotation.x = 0;
-            if (leftLeg) leftLeg.rotation.x = 0;
-            if (rightLeg) rightLeg.rotation.x = 0;
-            return; // Don't move or animate while paused
+            return; // Don't move while paused
         }
 
         if (!npc.path || npc.path.length === 0) return;
@@ -1383,14 +1416,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         const currentPosition = npc.model.position;
         const distanceToTarget = currentPosition.distanceTo(targetPosition);
 
-        if (distanceToTarget < 0.2) { // Reached waypoint, stop animation and decide next action
-            if (leftArm) {
-                leftArm.rotation.x = 0;
-                rightArm.rotation.x = 0;
-                leftLeg.rotation.x = 0;
-                rightLeg.rotation.x = 0;
-            }
-
+        if (distanceToTarget < 0.2) { // Reached waypoint, decide next action
             if (Math.random() < 0.2) { // 20% chance to pause
                 npc.isPaused = true;
                 npc.pauseTimer = Math.random() * 5 + 3; // Pause for 3-8 seconds
@@ -1406,16 +1432,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             // Face the direction of movement
             const lookAtTarget = new THREE.Vector3().copy(currentPosition).add(direction);
             npc.model.lookAt(lookAtTarget.x, npc.model.position.y, lookAtTarget.z);
-
-            // Animate limbs while moving
-            if (leftArm && rightArm && leftLeg && rightLeg) {
-              const walkCycleTime = clock.current.getElapsedTime() * npc.speed * 4;
-              const swingAngle = 0.5;
-              leftArm.rotation.x = Math.sin(walkCycleTime) * swingAngle;
-              rightArm.rotation.x = Math.sin(walkCycleTime + Math.PI) * swingAngle;
-              leftLeg.rotation.x = Math.sin(walkCycleTime + Math.PI) * swingAngle;
-              rightLeg.rotation.x = Math.sin(walkCycleTime) * swingAngle;
-            }
         }
       });
 
@@ -1461,7 +1477,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       }
       rendererRef.current?.dispose();
     };
-  }, [onPointerClick, onNpcClick, avatarConfig, takeCart]);
+  }, [onPointerClick, onNpcClick, avatarConfig, takeCart, setAction]);
 
   useEffect(() => {
     if (!cartItemsGroupRef.current) return;
