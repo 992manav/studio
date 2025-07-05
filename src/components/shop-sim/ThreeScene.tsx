@@ -1011,27 +1011,25 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
           const mixer = new THREE.AnimationMixer(avatar);
           mixerRef.current = mixer;
 
-          const idleClip = gltf.animations.find(clip => clip.name.toLowerCase().includes('idle'));
+          const idleClip = THREE.AnimationUtils.findClip(gltf.animations, 'idle') || THREE.AnimationUtils.findClip(gltf.animations, 'Idle');
           if (idleClip) {
             animationsRef.current['idle'] = mixer.clipAction(idleClip);
-          } else if (gltf.animations[0]) {
-            animationsRef.current['idle'] = mixer.clipAction(gltf.animations[0]);
           }
 
-          const walkClip = gltf.animations.find(clip => clip.name.toLowerCase().includes('walk'));
+          const walkClip = THREE.AnimationUtils.findClip(gltf.animations, 'walk') || THREE.AnimationUtils.findClip(gltf.animations, 'Walk');
           if (walkClip) {
               animationsRef.current['walk'] = mixer.clipAction(walkClip);
           }
           
-          activeActionRef.current = animationsRef.current['idle'];
-          if (activeActionRef.current) {
+          if(animationsRef.current['idle']) {
+            activeActionRef.current = animationsRef.current['idle'];
             activeActionRef.current.play();
           }
         }
         
         // Set initial camera position to be behind the avatar
-        const cameraOffset = new THREE.Vector3(0, 2.2, -4.5);
         avatar.updateMatrixWorld(); // Ensure matrix is updated
+        const cameraOffset = new THREE.Vector3(0, 2.2, -3.5);
         const cameraPosition = cameraOffset.applyMatrix4(avatar.matrixWorld);
         camera.position.copy(cameraPosition);
 
@@ -1445,9 +1443,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 2.5, -4.0);
+      // Camera follows avatar
+      const cameraOffset = new THREE.Vector3(0, 2.2, -3.5);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
-      cameraRef.current.position.lerp(cameraPosition, 0.1);
+      cameraRef.current.position.lerp(cameraPosition, 0.2);
       
       const lookAtPosition = avatarRef.current.position.clone().add(new THREE.Vector3(0,1.6,0));
       cameraRef.current.lookAt(lookAtPosition);
@@ -1556,17 +1555,3 @@ interface ThreeSceneProps {
   onNpcClick: (npc: Npc) => void;
   cart: CartItem[];
 }
-
-
-    
-
-    
-
-    
-
-
-
-
-    
-
-    
