@@ -802,7 +802,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.9, metalness: 0.1 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
-    backWall.position.set(0, wallHeight / 2, -wallDepth / 2);
+    backWall.position.set(0, wallHeight / 2, -wallDepth / 2 - 30);
     backWall.receiveShadow = true;
     scene.add(backWall);
 
@@ -890,7 +890,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
     
-    const parkingLotDepth = 30;
+    const parkingLotDepth = 10;
     const parkingLotGeometry = new THREE.PlaneGeometry(wallSize, parkingLotDepth);
     const parkingLotMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
     const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
@@ -908,12 +908,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
     const createParkingRow = (zPos: number, direction: number) => {
-        for (let i = -6; i <= 6; i++) {
+        for (let i = -2; i <= 2; i++) {
             const line = new THREE.Mesh(lineGeo, lineMaterial);
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 6 && Math.random() > 0.6) { // 40% chance of car
+            if (i < 2 && Math.random() > 0.7) { // 30% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -923,7 +923,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         }
     };
     
-    const firstRowZ = wallDepth / 2 + 12 + 8;
+    const firstRowZ = wallDepth / 2 + 12 + 5;
     createParkingRow(firstRowZ, 1);
     
     // Bollards
@@ -1082,7 +1082,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
     
     const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth);
-    backAisle.position.set(0, 0, -58);
+    backAisle.position.set(0, 0, -88);
     scene.add(backAisle);
 
     // Light Fixtures
@@ -1102,10 +1102,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
 
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength, 0.2, 0.5), lightFixtureMaterial);
-    backAisleFixture.position.set(0, lightY, -58);
+    backAisleFixture.position.set(0, lightY, -88);
     scene.add(backAisleFixture);
     const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
-    backAisleLight.position.set(0, lightY - 1, -58);
+    backAisleLight.position.set(0, lightY - 1, -88);
     scene.add(backAisleLight);
 
 
@@ -1170,7 +1170,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         header: 'C1 / C2',
         items: ['TVs', 'Gaming', 'Audio', 'Toys'],
     }, aisleSignSize);
-    electronicsAisleSign.position.set(0, signY, -46);
+    electronicsAisleSign.position.set(0, signY, -76);
     electronicsAisleSign.rotation.y = Math.PI / 2;
     scene.add(electronicsAisleSign);
 
@@ -1179,17 +1179,17 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const labelSize = { width: 8, height: 0.4 };
     const longLabelSize = { width: 12, height: 0.4 };
 
-    const aisle1XLeft = -17.5;
-    const aisle1XRight = -14.5;
-    const aisle2XLeft = -9.5;
-    const aisle2XRight = -6.5;
-    const aisle3XLeft = 6.5;
-    const aisle3XRight = 9.5;
-    const aisle4XLeft = 14.5;
-    const aisle4XRight = 17.5;
+    const aisle1XLeft = -17.8;
+    const aisle1XRight = -14.2;
+    const aisle2XLeft = -9.8;
+    const aisle2XRight = -6.2;
+    const aisle3XLeft = 6.2;
+    const aisle3XRight = 9.8;
+    const aisle4XLeft = 14.2;
+    const aisle4XRight = 17.8;
     
-    const backAisleZBack = -59.5;
-    const backAisleZFront = -56.5;
+    const backAisleZBack = -89.8;
+    const backAisleZFront = -86.2;
 
 
     const backAisleLabelY = aisleHeight + 1.5;
@@ -1392,7 +1392,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
       // Cart follows avatar
       if (hasCartRef.current && cartRef.current) {
-        const cartOffset = new THREE.Vector3(0, 0, 2.0); // Follows behind avatar
+        const cartOffset = new THREE.Vector3(0, 0, -2.0); // Follows behind avatar
         const worldOffset = cartOffset.applyQuaternion(avatarRef.current.quaternion);
         const cartTargetPosition = avatarRef.current.position.clone().add(worldOffset);
         cartTargetPosition.y = 0; // Keep cart on the floor
@@ -1525,6 +1525,7 @@ interface ThreeSceneProps {
     
 
     
+
 
 
 
