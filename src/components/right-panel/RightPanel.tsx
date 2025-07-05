@@ -24,7 +24,7 @@ export default function RightPanel() {
           className="toggle-button"
           onClick={() => setIsOpen(!isOpen)}
         >
-          {isOpen ? <PanelRightClose /> : <PanelRightOpen />}
+          {isOpen ? <PanelRightClose /> : <ShoppingCartIcon />}
         </Button>
         <h2 className="panel-title">
             <ShoppingCartIcon className="h-5 w-5" />

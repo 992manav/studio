@@ -32,19 +32,6 @@ export const npcs: Npc[] = [
     ]
   },
   {
-    id: 3,
-    name: 'Karen',
-    personality: 'An assertive and picky shopper who knows exactly what she wants and is not afraid to complain. She is currently looking for organic kale.',
-    position: [-19, 0, -15],
-    color: '#e74c3c',
-    path: [
-      [-19, 0, 18],
-      [19, 0, 18], 
-      [19, 0, -18],
-      [-19, 0, -18],
-    ]
-  },
-  {
     id: 4,
     name: 'Chad',
     personality: 'A fitness enthusiast looking for protein powder and workout gear. He talks a lot about his gym routine.',
@@ -70,33 +57,7 @@ export const npcs: Npc[] = [
         [-19, 0, 20],
     ]
   },
-  {
-    id: 9,
-    name: 'Olivia',
-    personality: 'A cheerful foodie and home chef, browsing for unique and high-quality ingredients. She\'s patient and observant.',
-    position: [-19, 0, 10],
-    color: '#8bc34a',
-    path: [
-      [-19, 0, 18],
-      [-19, 0, -18],
-      [-12, 0, -18],
-      [-12, 0, 18],
-    ]
-  },
-  {
-    id: 10,
-    name: 'David',
-    personality: 'A practical, no-nonsense DIY enthusiast looking for tools and supplies for a home project. He\'s focused and moves with purpose.',
-    position: [0, 0, 15],
-    color: '#ff9800',
-    path: [
-      [8, 0, 15],
-      [8, 0, -15],
-      [16, 0, -15],
-      [16, 0, 15],
-    ]
-  },
-  // NEW EMPLOYEES
+  // EMPLOYEES
   {
     id: 11,
     name: 'Maria (Greeter)',
@@ -105,20 +66,8 @@ export const npcs: Npc[] = [
     color: '#34495e',
     isEmployee: true,
     path: [
-        [10, 0, 60],
-        [-10, 0, 60],
-    ]
-  },
-  {
-    id: 12,
-    name: 'Rick (Greeter)',
-    personality: 'A helpful employee keeping the entrance area tidy.',
-    position: [-10, 0, 60],
-    color: '#795548',
-    isEmployee: true,
-    path: [
-        [-10, 0, 60],
-        [10, 0, 60],
+        [10, 0, 50],
+        [-10, 0, 50],
     ]
   },
   {
@@ -131,66 +80,6 @@ export const npcs: Npc[] = [
     path: [
         [-16, 0, -18],
         [-16, 0, 18],
-    ]
-  },
-  {
-    id: 14,
-    name: 'Linda (Groceries)',
-    personality: 'Restocking snacks and drinks, always with a smile.',
-    position: [-8, 0, 10],
-    color: '#607d8b',
-    isEmployee: true,
-    path: [
-        [-8, 0, -15],
-        [-8, 0, 15],
-    ]
-  },
-    {
-    id: 15,
-    name: 'Robert (Home Goods)',
-    personality: 'Neatly folding towels and organizing kitchenware.',
-    position: [8, 0, 5],
-    color: '#cddc39',
-    isEmployee: true,
-    path: [
-        [8, 0, -18],
-        [8, 0, 18],
-    ]
-  },
-  {
-    id: 16,
-    name: 'Patricia (Apparel)',
-    personality: 'Helping customers find the right size jeans.',
-    position: [16, 0, 0],
-    color: '#ffc107',
-    isEmployee: true,
-    path: [
-        [16, 0, -15],
-        [16, 0, 15],
-    ]
-  },
-    {
-    id: 17,
-    name: 'Susan (Electronics)',
-    personality: 'Expert on the latest video games and toys.',
-    position: [-10, 0, -29],
-    color: '#4caf50',
-    isEmployee: true,
-    path: [
-        [-15, 0, -29],
-        [15, 0, -29],
-    ]
-  },
-   {
-    id: 18,
-    name: 'Mike (Electronics)',
-    personality: 'An employee helping customers in the electronics section.',
-    position: [10, 0, -29],
-    color: '#f44336',
-    isEmployee: true,
-    path: [
-      [15, 0, -29],
-      [-15, 0, -29],
     ]
   },
 ];

@@ -257,6 +257,7 @@ function createCharacter(materials: {
   const shoeGeo = new THREE.BoxGeometry(0.1, 0.1, 0.2);
 
   const leftLeg = new THREE.Mesh(legGeo, materials.pants);
+  leftLeg.name = 'leftLeg';
   leftLeg.position.set(-0.1, 0.4, 0);
   group.add(leftLeg);
   
@@ -266,6 +267,7 @@ function createCharacter(materials: {
   leftLeg.add(leftShoe);
 
   const rightLeg = new THREE.Mesh(legGeo, materials.pants);
+  rightLeg.name = 'rightLeg';
   rightLeg.position.set(0.1, 0.4, 0);
   group.add(rightLeg);
   
@@ -787,7 +789,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(directionalLight);
 
     // Floor
-    const wallSize = 50;
+    const wallSize = 42;
     const wallDepth = 150;
     const floorGeometry = new THREE.PlaneGeometry(wallSize, wallDepth);
     const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.4, metalness: 0.1 });
@@ -863,13 +865,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Entrance Gates
     const gateLeft = createSecurityGate();
-    gateLeft.position.set(-4, 0, 62);
+    gateLeft.position.set(-4, 0, 52);
     const leftArm = gateLeft.getObjectByName('gateArm');
     if (leftArm) leftArm.rotation.y = -Math.PI / 8; // Slightly open
     scene.add(gateLeft);
 
     const gateRight = createSecurityGate();
-    gateRight.position.set(4, 0, 62);
+    gateRight.position.set(4, 0, 52);
     const rightArm = gateRight.getObjectByName('gateArm');
     if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
     scene.add(gateRight);
@@ -890,7 +892,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
     
-    const parkingLotDepth = 8;
+    const parkingLotDepth = 6;
     const parkingLotGeometry = new THREE.PlaneGeometry(wallSize, parkingLotDepth);
     const parkingLotMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
     const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
@@ -903,7 +905,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
     const lineLength = 5.0;
     const lineGeo = new THREE.BoxGeometry(0.1, 0.03, lineLength);
-    const parkingSpaceWidth = 3.5;
+    const parkingSpaceWidth = 4;
     
     const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
@@ -913,7 +915,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 1 && Math.random() > 0.6) { // 40% chance of car
+            if (i < 1 && Math.random() > 0.75) { // 25% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -923,7 +925,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         }
     };
     
-    const firstRowZ = wallDepth / 2 + 12 + 4;
+    const firstRowZ = wallDepth / 2 + 12 + 3;
     createParkingRow(firstRowZ, 1);
     
     // Bollards
@@ -969,7 +971,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 55);
+        avatar.position.set(0, 0, 45);
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -1049,7 +1051,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Cart Corral
     const collectibleCarts: THREE.Group[] = [];
     const corralX = -15;
-    const corralZ = 70;
+    const corralZ = 60;
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 4; j++) {
         const cartModel = createShoppingCart();
@@ -1068,7 +1070,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Aisles
     const aisleHeight = 3.5;
-    const aisleWidth = 3.5;
+    const aisleWidth = 4;
     const aisleShelves = 4;
     const mainAisleLength = 40;
     const backAisleLength = 40;
@@ -1175,21 +1177,21 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(electronicsAisleSign);
 
     // Shelf Labels
-    const labelY = aisleHeight + 2.0;
+    const labelY = aisleHeight + 2.5;
     const labelSize = { width: 8, height: 0.4 };
     const longLabelSize = { width: 12, height: 0.4 };
 
-    const aisle1XLeft = -17.8;
-    const aisle1XRight = -14.2;
-    const aisle2XLeft = -9.8;
-    const aisle2XRight = -6.2;
-    const aisle3XLeft = 6.2;
-    const aisle3XRight = 9.8;
-    const aisle4XLeft = 14.2;
-    const aisle4XRight = 17.8;
+    const aisle1XLeft = -18;
+    const aisle1XRight = -14;
+    const aisle2XLeft = -10;
+    const aisle2XRight = -6;
+    const aisle3XLeft = 6;
+    const aisle3XRight = 10;
+    const aisle4XLeft = 14;
+    const aisle4XRight = 18;
     
-    const backAisleZBack = -89.8;
-    const backAisleZFront = -86.2;
+    const backAisleZBack = -90;
+    const backAisleZFront = -86;
 
 
     const backAisleLabelY = aisleHeight + 1.5;
@@ -1356,13 +1358,23 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
       // NPC Movement
       npcAnimationData.current.forEach(npc => {
+        const leftArm = npc.model.getObjectByName('leftArm') as THREE.Mesh;
+        const rightArm = npc.model.getObjectByName('rightArm') as THREE.Mesh;
+        const leftLeg = npc.model.getObjectByName('leftLeg') as THREE.Mesh;
+        const rightLeg = npc.model.getObjectByName('rightLeg') as THREE.Mesh;
+
         if (npc.isPaused) {
             npc.pauseTimer -= delta;
             if (npc.pauseTimer <= 0) {
                 npc.isPaused = false;
                 npc.currentTargetIndex = (npc.currentTargetIndex + 1) % npc.path.length;
             }
-            return; // Don't move while paused
+            // Reset arm/leg rotation when paused
+            if (leftArm) leftArm.rotation.x = 0;
+            if (rightArm) rightArm.rotation.x = 0;
+            if (leftLeg) leftLeg.rotation.x = 0;
+            if (rightLeg) rightLeg.rotation.x = 0;
+            return; // Don't move or animate while paused
         }
 
         if (!npc.path || npc.path.length === 0) return;
@@ -1371,7 +1383,14 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         const currentPosition = npc.model.position;
         const distanceToTarget = currentPosition.distanceTo(targetPosition);
 
-        if (distanceToTarget < 0.2) { // Reached waypoint
+        if (distanceToTarget < 0.2) { // Reached waypoint, stop animation and decide next action
+            if (leftArm) {
+                leftArm.rotation.x = 0;
+                rightArm.rotation.x = 0;
+                leftLeg.rotation.x = 0;
+                rightLeg.rotation.x = 0;
+            }
+
             if (Math.random() < 0.2) { // 20% chance to pause
                 npc.isPaused = true;
                 npc.pauseTimer = Math.random() * 5 + 3; // Pause for 3-8 seconds
@@ -1387,6 +1406,16 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
             // Face the direction of movement
             const lookAtTarget = new THREE.Vector3().copy(currentPosition).add(direction);
             npc.model.lookAt(lookAtTarget.x, npc.model.position.y, lookAtTarget.z);
+
+            // Animate limbs while moving
+            if (leftArm && rightArm && leftLeg && rightLeg) {
+              const walkCycleTime = clock.current.getElapsedTime() * npc.speed * 4;
+              const swingAngle = 0.5;
+              leftArm.rotation.x = Math.sin(walkCycleTime) * swingAngle;
+              rightArm.rotation.x = Math.sin(walkCycleTime + Math.PI) * swingAngle;
+              leftLeg.rotation.x = Math.sin(walkCycleTime + Math.PI) * swingAngle;
+              rightLeg.rotation.x = Math.sin(walkCycleTime) * swingAngle;
+            }
         }
       });
 
@@ -1402,7 +1431,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
       const cameraOffset = new THREE.Vector3(0, 2.5, -4.0);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
-      cameraRef.current.position.lerp(cameraPosition, 0.2);
+      cameraRef.current.position.lerp(cameraPosition, 0.1);
       
       const lookAtPosition = avatarRef.current.position.clone().add(new THREE.Vector3(0,1.6,0));
       cameraRef.current.lookAt(lookAtPosition);
@@ -1525,10 +1554,3 @@ interface ThreeSceneProps {
     
 
     
-
-
-
-
-
-
-
