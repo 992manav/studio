@@ -787,8 +787,9 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(directionalLight);
 
     // Floor
-    const wallSize = 100;
-    const floorGeometry = new THREE.PlaneGeometry(wallSize, 150);
+    const wallSize = 50;
+    const wallDepth = 150;
+    const floorGeometry = new THREE.PlaneGeometry(wallSize, wallDepth);
     const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.4, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
@@ -798,7 +799,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Walls & Ceiling
     const wallHeight = 20;
-    const wallDepth = 150;
     const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.9, metalness: 0.1 });
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
@@ -863,20 +863,20 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Entrance Gates
     const gateLeft = createSecurityGate();
-    gateLeft.position.set(-4, 0, 72);
+    gateLeft.position.set(-4, 0, 62);
     const leftArm = gateLeft.getObjectByName('gateArm');
     if (leftArm) leftArm.rotation.y = -Math.PI / 8; // Slightly open
     scene.add(gateLeft);
 
     const gateRight = createSecurityGate();
-    gateRight.position.set(4, 0, 72);
+    gateRight.position.set(4, 0, 62);
     const rightArm = gateRight.getObjectByName('gateArm');
     if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
     scene.add(gateRight);
 
     // Facade Sign
-    const signWidth = 60;
-    const signHeight = 10;
+    const signWidth = 40;
+    const signHeight = 8;
     const facadeSign = createFacadeSign(signWidth, signHeight);
     facadeSign.position.set(0, wallHeight - 10, wallDepth / 2 + 0.1);
     scene.add(facadeSign);
@@ -890,7 +890,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
     
-    const parkingLotDepth = 10;
+    const parkingLotDepth = 8;
     const parkingLotGeometry = new THREE.PlaneGeometry(wallSize, parkingLotDepth);
     const parkingLotMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
     const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
@@ -908,12 +908,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
     const createParkingRow = (zPos: number, direction: number) => {
-        for (let i = -2; i <= 2; i++) {
+        for (let i = -1; i <= 1; i++) {
             const line = new THREE.Mesh(lineGeo, lineMaterial);
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 2 && Math.random() > 0.7) { // 30% chance of car
+            if (i < 1 && Math.random() > 0.6) { // 40% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -923,7 +923,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         }
     };
     
-    const firstRowZ = wallDepth / 2 + 12 + 5;
+    const firstRowZ = wallDepth / 2 + 12 + 4;
     createParkingRow(firstRowZ, 1);
     
     // Bollards
@@ -969,7 +969,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 65);
+        avatar.position.set(0, 0, 55);
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -1175,7 +1175,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(electronicsAisleSign);
 
     // Shelf Labels
-    const labelY = aisleHeight + 1.5;
+    const labelY = aisleHeight + 2.0;
     const labelSize = { width: 8, height: 0.4 };
     const longLabelSize = { width: 12, height: 0.4 };
 
@@ -1400,9 +1400,9 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         cartRef.current.quaternion.slerp(avatarRef.current.quaternion, 0.15);
       }
 
-      const cameraOffset = new THREE.Vector3(0, 2.2, -4.5);
+      const cameraOffset = new THREE.Vector3(0, 2.5, -4.0);
       const cameraPosition = cameraOffset.applyMatrix4(avatarRef.current.matrixWorld);
-      cameraRef.current.position.lerp(cameraPosition, 0.1);
+      cameraRef.current.position.lerp(cameraPosition, 0.2);
       
       const lookAtPosition = avatarRef.current.position.clone().add(new THREE.Vector3(0,1.6,0));
       cameraRef.current.lookAt(lookAtPosition);
@@ -1525,6 +1525,7 @@ interface ThreeSceneProps {
     
 
     
+
 
 
 

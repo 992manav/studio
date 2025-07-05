@@ -101,24 +101,24 @@ export const npcs: Npc[] = [
     id: 11,
     name: 'Maria (Greeter)',
     personality: 'A warm and welcoming employee at the entrance.',
-    position: [10, 0, 70],
+    position: [10, 0, 60],
     color: '#34495e',
     isEmployee: true,
     path: [
-        [10, 0, 70],
-        [-10, 0, 70],
+        [10, 0, 60],
+        [-10, 0, 60],
     ]
   },
   {
     id: 12,
     name: 'Rick (Greeter)',
     personality: 'A helpful employee keeping the entrance area tidy.',
-    position: [-10, 0, 70],
+    position: [-10, 0, 60],
     color: '#795548',
     isEmployee: true,
     path: [
-        [-10, 0, 70],
-        [10, 0, 70],
+        [-10, 0, 60],
+        [10, 0, 60],
     ]
   },
   {
