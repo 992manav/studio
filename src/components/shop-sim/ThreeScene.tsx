@@ -49,7 +49,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
   }
 
   // Back panel
-  const backPanelGeo = new THREE.BoxGeometry(length, height, 0.1);
+  const backPanelGeo = new THREE.BoxGeometry(length, height, 0.2);
   const backPanel = new THREE.Mesh(backPanelGeo, backPanelMaterial);
   backPanel.position.y = height / 2;
   backPanel.position.z = 0; // Assuming shelf is symmetrical, back panel at center
@@ -61,7 +61,7 @@ function createAisle(length: number, shelves: number, height: number, width: num
 
 function createShoppingCart(): THREE.Group {
   const cart = new THREE.Group();
-  const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true, transparent: true, opacity: 0.5 });
+  const wireframeMaterial = new THREE.MeshBasicMaterial({ color: 0xaaaaaa, wireframe: true });
 
   // Basket (Wireframe part)
   const basketPoints = [
@@ -751,7 +751,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Scene setup
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xeeeeee);
-    scene.fog = new THREE.Fog(0xeeeeee, 50, 250);
+    scene.fog = new THREE.Fog(0xeeeeee, 50, 150);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(75, mountRef.current.clientWidth / mountRef.current.clientHeight, 0.1, 1000);
@@ -787,31 +787,32 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     scene.add(directionalLight);
 
     // Floor
-    const floorGeometry = new THREE.PlaneGeometry(150, 150);
+    const wallSize = 100;
+    const floorGeometry = new THREE.PlaneGeometry(wallSize, 150);
     const floorMaterial = new THREE.MeshStandardMaterial({ color: 0xcccccc, roughness: 0.4, metalness: 0.1 });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
+    floor.position.z = -25;
     floor.receiveShadow = true;
     scene.add(floor);
 
     // Walls & Ceiling
     const wallHeight = 20;
-    const wallSize = 150;
-    const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.9 });
+    const wallDepth = 150;
 
     const backWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial);
-    backWall.position.set(0, wallHeight / 2, -wallSize / 2);
+    backWall.position.set(0, wallHeight / 2, -wallDepth / 2);
     backWall.receiveShadow = true;
     scene.add(backWall);
 
-    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
-    leftWall.position.set(-wallSize / 2, wallHeight / 2, 0);
+    const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(wallDepth, wallHeight), wallMaterial.clone());
+    leftWall.position.set(-wallSize / 2, wallHeight / 2, -wallDepth/2 + 75);
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     scene.add(leftWall);
 
-    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(wallSize, wallHeight), wallMaterial.clone());
-    rightWall.position.set(wallSize / 2, wallHeight / 2, 0);
+    const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(wallDepth, wallHeight), wallMaterial.clone());
+    rightWall.position.set(wallSize / 2, wallHeight / 2, -wallDepth/2 + 75);
     rightWall.rotation.y = -Math.PI / 2;
     rightWall.receiveShadow = true;
     scene.add(rightWall);
@@ -840,7 +841,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const facadeGeometry = new THREE.ExtrudeGeometry(wallShape, extrudeSettings);
     const facadeMaterial = new THREE.MeshStandardMaterial({ color: 0xaaaaaa, roughness: 0.9, metalness: 0.2 });
     const frontFacade = new THREE.Mesh(facadeGeometry, facadeMaterial);
-    frontFacade.position.set(0, 0, wallSize / 2 - facadeDepth);
+    frontFacade.position.set(0, 0, wallDepth / 2 - facadeDepth);
     frontFacade.receiveShadow = true;
     frontFacade.castShadow = true;
     scene.add(frontFacade);
@@ -856,7 +857,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
     const doorGeometry = new THREE.BoxGeometry(doorWidth, doorHeight, 0.2);
     const glassDoors = new THREE.Mesh(doorGeometry, glassMaterial);
-    glassDoors.position.set(0, doorHeight / 2, wallSize / 2 - facadeDepth/2);
+    glassDoors.position.set(0, doorHeight / 2, wallDepth / 2 - facadeDepth/2);
     scene.add(glassDoors);
 
     // Entrance Gates
@@ -876,7 +877,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const signWidth = 60;
     const signHeight = 10;
     const facadeSign = createFacadeSign(signWidth, signHeight);
-    facadeSign.position.set(0, wallHeight - 10, wallSize / 2 + 0.1);
+    facadeSign.position.set(0, wallHeight - 10, wallDepth / 2 + 0.1);
     scene.add(facadeSign);
 
     // Exterior Ground & Parking Lot
@@ -884,16 +885,16 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const sidewalkMaterial = new THREE.MeshStandardMaterial({ color: 0xbbbbbb, roughness: 0.6 });
     const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     sidewalk.rotation.x = -Math.PI / 2;
-    sidewalk.position.set(0, 0.01, wallSize/2 + 6);
+    sidewalk.position.set(0, 0.01, wallDepth/2 + 6);
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
     
-    const parkingLotDepth = 80;
+    const parkingLotDepth = 30;
     const parkingLotGeometry = new THREE.PlaneGeometry(wallSize, parkingLotDepth);
     const parkingLotMaterial = new THREE.MeshStandardMaterial({ color: 0x555555, roughness: 0.8 });
     const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
     parkingLot.rotation.x = -Math.PI / 2;
-    parkingLot.position.set(0, 0.01, wallSize/2 + 12 + parkingLotDepth / 2);
+    parkingLot.position.set(0, 0.01, wallDepth/2 + 12 + parkingLotDepth / 2);
     parkingLot.receiveShadow = true;
     scene.add(parkingLot);
 
@@ -906,12 +907,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     const carColors = [0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b];
 
     const createParkingRow = (zPos: number, direction: number) => {
-        for (let i = -10; i <= 10; i++) {
+        for (let i = -6; i <= 6; i++) {
             const line = new THREE.Mesh(lineGeo, lineMaterial);
             line.position.set(i * parkingSpaceWidth, 0.02, zPos);
             scene.add(line);
 
-            if (i < 10 && Math.random() > 0.7) { // 30% chance of car
+            if (i < 6 && Math.random() > 0.6) { // 40% chance of car
                 const car = createCar(new THREE.Color(carColors[Math.floor(Math.random() * carColors.length)]));
                 const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
                 car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
@@ -921,40 +922,25 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         }
     };
     
-    const firstRowZ = wallSize / 2 + 12 + 8;
-    const secondRowZ = firstRowZ + 18;
-    const thirdRowZ = secondRowZ + 18;
-
+    const firstRowZ = wallDepth / 2 + 12 + 8;
     createParkingRow(firstRowZ, 1);
-    createParkingRow(secondRowZ, -1);
-    createParkingRow(thirdRowZ, 1);
     
-    // Scattered shopping carts in parking lot
-    for(let i=0; i<3; i++) {
-      const cartModel = createShoppingCart();
-      const x = (Math.random() - 0.5) * 120;
-      const z = wallSize/2 + 15 + Math.random() * 50;
-      cartModel.position.set(x, 0, z);
-      cartModel.rotation.y = Math.random() * Math.PI * 2;
-      scene.add(cartModel);
-    }
-
-
     // Bollards
     const bollardGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 16);
     const bollardMat = new THREE.MeshStandardMaterial({ color: '#0071ce', metalness: 0.4, roughness: 0.6 });
     for(let i=0; i<4; i++) {
         const bollard = new THREE.Mesh(bollardGeo, bollardMat);
-        bollard.position.set(-15 + i * 10, 1.5/2, wallSize/2 + 2);
+        bollard.position.set(-15 + i * 10, 1.5/2, wallDepth/2 + 2);
         bollard.castShadow = true;
         scene.add(bollard);
     }
     
     // Ceiling
-    const ceilingGeometry = new THREE.PlaneGeometry(150, 150);
+    const ceilingGeometry = new THREE.PlaneGeometry(wallSize, wallDepth);
     const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
     ceiling.position.y = wallHeight;
+    ceiling.position.z = -wallDepth/2 + 75;
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
@@ -982,7 +968,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 80);
+        avatar.position.set(0, 0, 65);
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -1062,7 +1048,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     // Cart Corral
     const collectibleCarts: THREE.Group[] = [];
     const corralX = -15;
-    const corralZ = 78;
+    const corralZ = 70;
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 4; j++) {
         const cartModel = createShoppingCart();
@@ -1081,7 +1067,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
 
     // Aisles
     const aisleHeight = 3.5;
-    const aisleWidth = 2.5;
+    const aisleWidth = 3.5;
     const aisleShelves = 4;
     const mainAisleLength = 40;
     const backAisleLength = 40;
@@ -1095,7 +1081,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
     
     const backAisle = createAisle(backAisleLength, aisleShelves, aisleHeight, aisleWidth);
-    backAisle.position.set(0, 0, -50);
+    backAisle.position.set(0, 0, -58);
     scene.add(backAisle);
 
     // Light Fixtures
@@ -1115,10 +1101,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
     });
 
     const backAisleFixture = new THREE.Mesh(new THREE.BoxGeometry(backAisleLength, 0.2, 0.5), lightFixtureMaterial);
-    backAisleFixture.position.set(0, lightY, -50);
+    backAisleFixture.position.set(0, lightY, -58);
     scene.add(backAisleFixture);
     const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
-    backAisleLight.position.set(0, lightY - 1, -50);
+    backAisleLight.position.set(0, lightY - 1, -58);
     scene.add(backAisleLight);
 
 
@@ -1183,29 +1169,29 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({ onProductClick, onNpcCli
         header: 'C1 / C2',
         items: ['TVs', 'Gaming', 'Audio', 'Toys'],
     }, aisleSignSize);
-    electronicsAisleSign.position.set(0, signY, -38);
+    electronicsAisleSign.position.set(0, signY, -46);
     electronicsAisleSign.rotation.y = Math.PI / 2;
     scene.add(electronicsAisleSign);
 
     // Shelf Labels
-    const labelY = aisleHeight + 1.0;
+    const labelY = aisleHeight + 1.5;
     const labelSize = { width: 8, height: 0.4 };
     const longLabelSize = { width: 12, height: 0.4 };
 
-    const aisle1XLeft = -16.75;
-    const aisle1XRight = -15.25;
-    const aisle2XLeft = -8.75;
-    const aisle2XRight = -7.25;
-    const aisle3XLeft = 7.25;
-    const aisle3XRight = 8.75;
-    const aisle4XLeft = 15.25;
-    const aisle4XRight = 16.75;
+    const aisle1XLeft = -17.5;
+    const aisle1XRight = -14.5;
+    const aisle2XLeft = -9.5;
+    const aisle2XRight = -6.5;
+    const aisle3XLeft = 6.5;
+    const aisle3XRight = 9.5;
+    const aisle4XLeft = 14.5;
+    const aisle4XRight = 17.5;
     
-    const backAisleZBack = -50.75;
-    const backAisleZFront = -49.25;
+    const backAisleZBack = -59.5;
+    const backAisleZFront = -56.5;
 
 
-    const backAisleLabelY = aisleHeight + 1.0;
+    const backAisleLabelY = aisleHeight + 1.5;
     const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
     electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
     scene.add(electronicsLabel);
@@ -1538,6 +1524,7 @@ interface ThreeSceneProps {
     
 
     
+
 
 
 
