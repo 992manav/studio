@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import type { CartItem, Product, AvatarConfig } from '@/lib/types';
 import { products as allProducts } from '@/lib/products';
 import { useToast } from "@/hooks/use-toast";
+import { useRouter } from 'next/navigation';
 
 interface GameContextType {
   cart: CartItem[];
@@ -12,7 +13,8 @@ interface GameContextType {
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   wallet: number;
-  handleCheckout: () => void;
+  handleCheckout: () => void; // This will navigate
+  processTransaction: () => boolean; // This will handle logic
   avatarConfig: AvatarConfig;
   setAvatarConfig: (config: AvatarConfig) => void;
   getProductById: (id: number) => Product | undefined;
@@ -25,6 +27,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [wallet, setWallet] = useState(500);
   const [avatarConfig, setAvatarConfig] = useState<AvatarConfig>({ color: '#E54ED0', texture: null });
   const { toast } = useToast();
+  const router = useRouter();
 
   const addToCart = (product: Product, quantity: number = 1) => {
     setCart((prevCart) => {
@@ -60,23 +63,40 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setCart([]);
   }
 
-  const handleCheckout = () => {
-    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-    if (total > wallet) {
+  const processTransaction = () => {
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const taxes = subtotal * 0.08;
+    const shipping = subtotal > 0 ? 5.99 : 0;
+    const finalTotal = subtotal + taxes + shipping;
+
+    if (finalTotal > wallet) {
       toast({
         variant: "destructive",
-        title: "Checkout Failed",
+        title: "Payment Failed",
         description: "Insufficient funds in your wallet.",
       });
-      return;
+      return false;
     }
-    setWallet((prev) => prev - total);
+    setWallet((prev) => prev - finalTotal);
     setCart([]);
     toast({
       title: "Checkout Successful!",
-      description: `You spent $${total.toFixed(2)}. Your new balance is $${(wallet - total).toFixed(2)}.`,
+      description: `You spent $${finalTotal.toFixed(2)}. Your new balance is $${(wallet - finalTotal).toFixed(2)}.`,
     });
+    return true;
   };
+
+  const handleCheckout = () => {
+      if (cart.length === 0) {
+          toast({
+              variant: "destructive",
+              title: "Cart is empty",
+              description: "Please add items to your cart before checking out.",
+          });
+          return;
+      }
+      router.push('/checkout');
+  }
 
   const getProductById = useCallback((id: number): Product | undefined => {
     return allProducts.find(p => p.id === id);
@@ -92,6 +112,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
         clearCart,
         wallet,
         handleCheckout,
+        processTransaction,
         avatarConfig,
         setAvatarConfig,
         getProductById

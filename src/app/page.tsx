@@ -2,7 +2,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { GameProvider } from '@/contexts/GameContext';
 import ShopSim from '@/components/shop-sim/ShopSim';
 import { LiveAPIProvider } from "@/contexts/LiveAPIContext";
 import SidePanel from "@/components/side-panel/SidePanel";
@@ -37,33 +36,31 @@ export default function Home() {
   }
 
   return (
-    <GameProvider>
-      <LiveAPIProvider url={uri} apiKey={API_KEY}>
-        <div className="streaming-console">
-          <SidePanel />
-          <main>
-            <div className="main-app-area">
-              <ShopSim />
-              <video
-                className={cn("stream", {
-                  hidden: !videoRef.current || !videoStream,
-                })}
-                ref={videoRef}
-                autoPlay
-                playsInline
-                muted
-              />
-            </div>
-
-            <ControlTray
-              videoRef={videoRef}
-              supportsVideo={true}
-              onVideoStreamChange={setVideoStream}
+    <LiveAPIProvider url={uri} apiKey={API_KEY}>
+      <div className="streaming-console">
+        <SidePanel />
+        <main>
+          <div className="main-app-area">
+            <ShopSim />
+            <video
+              className={cn("stream", {
+                hidden: !videoRef.current || !videoStream,
+              })}
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
             />
-          </main>
-          <RightPanel />
-        </div>
-      </LiveAPIProvider>
-    </GameProvider>
+          </div>
+
+          <ControlTray
+            videoRef={videoRef}
+            supportsVideo={true}
+            onVideoStreamChange={setVideoStream}
+          />
+        </main>
+        <RightPanel />
+      </div>
+    </LiveAPIProvider>
   );
 }
