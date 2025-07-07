@@ -743,11 +743,67 @@ function createShelfLabel(
   return labelMesh;
 }
 
+function createCheckoutCounter(): THREE.Group {
+  const group = new THREE.Group();
+  group.userData.isCheckout = true;
+
+  const counterMaterial = new THREE.MeshStandardMaterial({
+    color: 0xcccccc,
+    metalness: 0.2,
+    roughness: 0.8,
+  });
+  const beltMaterial = new THREE.MeshStandardMaterial({
+    color: 0x333333,
+    roughness: 0.9,
+  });
+  const scannerMaterial = new THREE.MeshStandardMaterial({
+    color: 0xee4d4d,
+    metalness: 0.5,
+    roughness: 0.5,
+  });
+
+  const bodyGeo = new THREE.BoxGeometry(4, 1, 1.2);
+  const body = new THREE.Mesh(bodyGeo, counterMaterial);
+  body.position.y = 0.5;
+  body.castShadow = true;
+  body.receiveShadow = true;
+  group.add(body);
+
+  const beltGeo = new THREE.BoxGeometry(2.5, 0.1, 0.8);
+  const belt = new THREE.Mesh(beltGeo, beltMaterial);
+  belt.position.set(-0.6, 1.05, 0);
+  belt.receiveShadow = true;
+  group.add(belt);
+
+  const scannerBaseGeo = new THREE.BoxGeometry(0.8, 1.2, 0.8);
+  const scannerBase = new THREE.Mesh(scannerBaseGeo, counterMaterial);
+  scannerBase.position.set(1.4, 0.6, 0);
+  scannerBase.castShadow = true;
+  scannerBase.receiveShadow = true;
+  group.add(scannerBase);
+
+  const scannerLightGeo = new THREE.BoxGeometry(0.5, 0.05, 0.5);
+  const scannerLight = new THREE.Mesh(scannerLightGeo, scannerMaterial);
+  scannerLight.position.set(1.4, 1.25, 0);
+  group.add(scannerLight);
+
+  const clickBoxGeo = new THREE.BoxGeometry(4.2, 2, 1.4);
+  const clickBox = new THREE.Mesh(
+    clickBoxGeo,
+    new THREE.MeshBasicMaterial({ visible: false })
+  );
+  clickBox.position.y = 1;
+  group.add(clickBox);
+
+  return group;
+}
+
 export const ThreeScene: React.FC<ThreeSceneProps> = ({
   onProductClick,
   onNpcClick,
   cart,
   isChatting,
+  onCheckoutCounterClick,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
@@ -770,6 +826,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshesRef = useRef<THREE.Mesh[]>([]);
   const npcMeshesRef = useRef<THREE.Group[]>([]);
+  const checkoutCountersRef = useRef<THREE.Group[]>([]);
   const collectibleCartsRef = useRef<THREE.Group[]>([]);
   const hintMessageRef = useRef("");
   const isChattingRef = useRef(isChatting);
@@ -840,6 +897,29 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(pointer, cameraRef.current);
 
+      const checkoutIntersects = raycaster.intersectObjects(
+        checkoutCountersRef.current,
+        true
+      );
+      if (checkoutIntersects.length > 0) {
+        let clickedCounterGroup = checkoutIntersects[0].object;
+        while (
+          clickedCounterGroup.parent &&
+          !clickedCounterGroup.userData.isCheckout
+        ) {
+          clickedCounterGroup = clickedCounterGroup.parent;
+        }
+        if (clickedCounterGroup.userData.isCheckout) {
+          const distance = avatarRef.current.position.distanceTo(
+            clickedCounterGroup.position
+          );
+          if (distance < 6) {
+            onCheckoutCounterClick();
+            return;
+          }
+        }
+      }
+
       // Check for collectible cart click
       if (!hasCartRef.current) {
         const cartIntersects = raycaster.intersectObjects(
@@ -900,7 +980,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
         }
       }
     },
-    [onProductClick, onNpcClick, takeCart]
+    [onProductClick, onNpcClick, takeCart, onCheckoutCounterClick]
   );
 
   const setAction = useCallback(
@@ -1078,6 +1158,18 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const rightArm = gateRight.getObjectByName("gateArm");
     if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
     scene.add(gateRight);
+
+    // Checkout Counters
+    const checkoutCounters: THREE.Group[] = [];
+    const counterPositions = [-12, 0, 12];
+    counterPositions.forEach((x) => {
+      const counter = createCheckoutCounter();
+      counter.position.set(x, 0, 28);
+      counter.rotation.y = Math.PI; // Face the player as they enter
+      scene.add(counter);
+      checkoutCounters.push(counter);
+    });
+    checkoutCountersRef.current = checkoutCounters;
 
     // Move facade sign to match new wall position
     const signWidth = 40;
@@ -1393,13 +1485,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const signY = 10;
     const aisleSignSize = { width: 6, height: 8 };
     const categorySignSize = { width: 10, height: 6 };
-
-    const checkoutSign = createHangingSign(
-      { largeText: "CHECKOUT" },
-      { width: 12, height: 4 }
-    );
-    checkoutSign.position.set(0, signY, 25);
-    scene.add(checkoutSign);
 
     const groceryAisleSign = createHangingSign(
       {
@@ -1905,4 +1990,5 @@ interface ThreeSceneProps {
   onNpcClick: (npc: Npc) => void;
   cart: CartItem[];
   isChatting: boolean;
+  onCheckoutCounterClick: () => void;
 }

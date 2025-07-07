@@ -10,7 +10,11 @@ import { ProductDetailsDialog } from "./ProductDetailsDialog";
 import { Wallet } from "./Wallet";
 import { CustomerChatDialog } from "./CustomerChatDialog";
 
-export default function ShopSim() {
+interface ShopSimProps {
+  onCheckoutCounterClick: () => void;
+}
+
+export default function ShopSim({ onCheckoutCounterClick }: ShopSimProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const { getProductById, cart } = useGame();
   const { toast } = useToast();
@@ -86,6 +90,7 @@ export default function ShopSim() {
         onNpcClick={handleNpcClick}
         cart={cart}
         isChatting={!!chattingWith}
+        onCheckoutCounterClick={onCheckoutCounterClick}
       />
       <div className="absolute top-4 left-4 flex items-center gap-4">
         <Wallet />

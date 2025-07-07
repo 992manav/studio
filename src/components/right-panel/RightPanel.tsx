@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from 'react';
 import { ShoppingCart } from '@/components/shop-sim/ShoppingCart';
 import { Button } from '@/components/ui/button';
 import { PanelRightClose, PanelRightOpen, ShoppingCart as ShoppingCartIcon } from 'lucide-react';
@@ -8,9 +7,12 @@ import type { Product } from '@/lib/types';
 import './RightPanel.css';
 import cn from 'classnames';
 
-export default function RightPanel() {
-  const [isOpen, setIsOpen] = useState(false);
+interface RightPanelProps {
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
 
+export default function RightPanel({ isOpen, setIsOpen }: RightPanelProps) {
   const handleProductClick = (product: Product | number) => {
     // This functionality is not needed in the sidebar view.
   };
