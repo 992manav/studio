@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -65,7 +66,7 @@ export const CustomerChatDialog = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[480px] p-0 flex flex-col h-[80vh] max-h-[600px]">
-        <DialogHeader className="px-6 pt-6 pb-2 border-b">
+        <DialogHeader className="px-6 pt-6 pb-2 border-b shrink-0">
           <DialogTitle className="text-2xl flex items-center gap-3">
             <Avatar className="w-10 h-10 bg-muted text-primary-foreground font-bold flex items-center justify-center text-lg">
               {npc.name[0]}
@@ -121,7 +122,7 @@ export const CustomerChatDialog = ({
           </div>
         </ScrollArea>
 
-        <DialogFooter className="!justify-start p-4 border-t bg-background sticky bottom-0">
+        <DialogFooter className="!justify-start p-4 border-t bg-background shrink-0">
           <div className="flex w-full items-center space-x-3">
             <Input
               id="message"
