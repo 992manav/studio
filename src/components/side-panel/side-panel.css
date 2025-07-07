@@ -1,11 +1,13 @@
 .side-panel {
+  position: relative;
+  z-index: 10;
   background: hsl(var(--card));
   color: hsl(var(--card-foreground));
-  width: 40px;
+  width: 48px;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  transition: all 0.2s ease-in;
+  transition: width 0.2s ease-in-out;
   border-right: 1px solid hsl(var(--border));
   flex-shrink: 0;
 }

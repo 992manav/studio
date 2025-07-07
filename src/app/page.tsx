@@ -15,7 +15,7 @@ export default function Home() {
       <WelcomeDialog isOpen={isWelcomeOpen} onOpenChange={setWelcomeOpen} />
       <SidePanel />
       <main className="flex-1 relative">
-        <ShopSim onCheckoutCounterClick={() => setRightPanelOpen(true)} />
+        <ShopSim onCheckoutCounterClick={() => setRightPanelOpen(o => !o)} />
       </main>
       <RightPanel isOpen={isRightPanelOpen} setIsOpen={setRightPanelOpen} />
     </div>

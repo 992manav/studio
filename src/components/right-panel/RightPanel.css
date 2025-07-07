@@ -1,4 +1,6 @@
 .right-panel {
+  position: relative;
+  z-index: 10;
   background: hsl(var(--card));
   color: hsl(var(--card-foreground));
   width: 48px;
@@ -7,12 +9,12 @@
   height: 100vh;
   transition: width 0.2s ease-in-out;
   border-left: 1px solid hsl(var(--border));
-  overflow: hidden; /* Changed from overflow-x: hidden */
+  overflow: hidden;
   flex-shrink: 0;
 }
 
 .right-panel.open {
-  width: 400px; /* Increased width */
+  width: 400px;
 }
 
 .right-panel .panel-header {
@@ -50,7 +52,7 @@
 
 .right-panel .panel-content {
   flex-grow: 1;
-  overflow-y: hidden; /* Let child components handle scrolling */
+  overflow-y: hidden; 
   overflow-x: hidden;
   transition: opacity 0.2s ease-in-out;
 }
