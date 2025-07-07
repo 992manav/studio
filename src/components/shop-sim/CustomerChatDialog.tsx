@@ -63,7 +63,7 @@ export const CustomerChatDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] grid-rows-[auto_1fr_auto] flex flex-col h-[70vh] p-0 bg-background rounded-xl shadow-2xl">
+      <DialogContent className="sm:max-w-[480px] grid-rows-[auto_1fr_auto] flex flex-col h-[calc(100vh-4rem)] max-h-[600px] p-0 bg-background rounded-xl shadow-2xl">
         <DialogHeader className="px-6 pt-6 pb-2">
           <DialogTitle className="text-2xl flex items-center gap-2">
             <Avatar className="w-8 h-8 bg-muted text-primary-foreground font-bold">
@@ -76,7 +76,7 @@ export const CustomerChatDialog = ({
           </DialogDescription>
         </DialogHeader>
         <ScrollArea
-          className="flex-grow my-2 px-6 pr-4 overflow-y-auto"
+          className="flex-grow my-2 px-6 pr-4"
           ref={scrollAreaRef}
         >
           <div className="space-y-4">

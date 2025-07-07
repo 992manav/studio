@@ -7,6 +7,7 @@
   height: 100vh;
   transition: all 0.2s ease-in;
   border-right: 1px solid hsl(var(--border));
+  flex-shrink: 0;
 }
 
 .side-panel.open {
@@ -38,66 +39,23 @@
 
 .side-panel.open .top h2 {
   opacity: 1;
-  display: block;
+  display: flex;
 }
 
 .side-panel .opener {
   color: hsl(var(--muted-foreground));
 }
 
-.side-panel:not(.open) .indicators,
-.side-panel:not(.open) .side-panel-container,
-.side-panel:not(.open) .input-container {
+.side-panel:not(.open) .side-panel-container {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s ease-in;
 }
 
-.side-panel .indicators {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  flex-shrink: 0;
-  white-space: nowrap;
-}
-
-.side-panel .streaming-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: hsl(var(--muted-foreground));
-  border: 1px solid hsl(var(--border));
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  user-select: none;
-}
-
-.side-panel.open .streaming-indicator {
-  min-width: 110px;
-  justify-content: center;
-}
-
-.side-panel .streaming-indicator.connected {
-  border-color: hsla(142, 71%, 45%, 0.5); /* green-500/50 */
-  color: hsl(142, 71%, 45%); /* green-500 */
-}
-
 .side-panel .side-panel-container {
   flex-grow: 1;
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
-}
-
-.side-panel .input-container {
-  padding: 1rem;
-  border-top: 1px solid hsl(var(--border));
-  flex-shrink: 0;
-}
-
-.side-panel .input-content {
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
 }
