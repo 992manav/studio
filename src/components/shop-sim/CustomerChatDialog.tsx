@@ -38,12 +38,13 @@ export const CustomerChatDialog = ({
 
   useEffect(() => {
     if (scrollAreaRef.current) {
-      const scrollableView = scrollAreaRef.current.querySelector("div");
-      if (scrollableView) {
-        scrollableView.scrollTop = scrollableView.scrollHeight;
+      // The viewport is the first div child of the scroll area root
+      const scrollableViewport = scrollAreaRef.current.querySelector("div");
+      if (scrollableViewport) {
+        scrollableViewport.scrollTop = scrollableViewport.scrollHeight;
       }
     }
-  }, [chatHistory]);
+  }, [chatHistory, isAiReplying]);
 
   if (!npc) return null;
 
@@ -63,74 +64,69 @@ export const CustomerChatDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px] grid-rows-[auto_1fr_auto] flex flex-col h-[calc(100vh-4rem)] max-h-[600px] p-0 bg-background rounded-xl shadow-2xl">
-        <DialogHeader className="px-6 pt-6 pb-2">
-          <DialogTitle className="text-2xl flex items-center gap-2">
-            <Avatar className="w-8 h-8 bg-muted text-primary-foreground font-bold">
+      <DialogContent className="sm:max-w-[480px] p-0 flex flex-col h-[80vh] max-h-[600px]">
+        <DialogHeader className="px-6 pt-6 pb-2 border-b">
+          <DialogTitle className="text-2xl flex items-center gap-3">
+            <Avatar className="w-10 h-10 bg-muted text-primary-foreground font-bold flex items-center justify-center text-lg">
               {npc.name[0]}
             </Avatar>
             Chat with {npc.name}
           </DialogTitle>
-          <DialogDescription className="text-muted-foreground text-sm mt-1">
+          <DialogDescription className="text-muted-foreground text-sm pt-1">
             {npc.personality}
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea
-          className="flex-grow my-2 px-6 pr-4"
-          ref={scrollAreaRef}
-        >
-          <div className="space-y-4">
-            {chatHistory.map((chat, index) => (
+
+        <ScrollArea className="flex-grow" ref={scrollAreaRef}>
+          <div className="space-y-4 p-6">
+            {chatHistory.map((chat) => (
               <div
-                key={index}
+                key={chat.timestamp}
                 className={`flex items-end gap-2 ${
                   chat.sender === "user" ? "justify-end" : "justify-start"
-                } animate-fade-in`}
+                } animate-in fade-in duration-300`}
               >
                 {chat.sender !== "user" && (
-                  <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold">
+                  <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold flex items-center justify-center text-xs">
                     {npc.name[0]}
                   </Avatar>
                 )}
                 <div
-                  className={`max-w-[75%] rounded-2xl px-4 py-2 shadow-md transition-all duration-200 text-sm ${
+                  className={`max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm text-sm ${
                     chat.sender === "user"
                       ? "bg-primary text-primary-foreground ml-auto"
                       : "bg-muted text-foreground mr-auto"
                   }`}
-                  title={
-                    chat.timestamp
-                      ? new Date(chat.timestamp).toLocaleTimeString()
-                      : ""
-                  }
+                  title={new Date(chat.timestamp).toLocaleTimeString()}
                 >
-                  <p>{chat.text}</p>
+                  <p className="leading-relaxed">{chat.text}</p>
                 </div>
                 {chat.sender === "user" && (
-                  <Avatar className="w-7 h-7 bg-primary text-primary-foreground font-bold">
+                  <Avatar className="w-7 h-7 bg-accent text-accent-foreground font-bold flex items-center justify-center text-xs">
                     U
                   </Avatar>
                 )}
               </div>
             ))}
             {isAiReplying && (
-              <div className="flex items-end gap-2 justify-start animate-fade-in">
-                <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold">
+              <div className="flex items-end gap-2 justify-start animate-in fade-in duration-300">
+                <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold flex items-center justify-center text-xs">
                   {npc.name[0]}
                 </Avatar>
-                <div className="max-w-[75%] rounded-2xl px-4 py-2 bg-muted shadow-md">
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                <div className="max-w-[75%] rounded-2xl px-4 py-2.5 bg-muted shadow-sm">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                 </div>
               </div>
             )}
           </div>
         </ScrollArea>
-        <DialogFooter className="!justify-start px-6 pb-6 pt-2 bg-background sticky bottom-0">
-          <div className="flex w-full items-center space-x-2">
+
+        <DialogFooter className="!justify-start p-4 border-t bg-background sticky bottom-0">
+          <div className="flex w-full items-center space-x-3">
             <Input
               id="message"
               placeholder="Type your message..."
-              className="flex-grow rounded-full px-4 py-2 border focus:ring-2 focus:ring-primary/50 transition-all"
+              className="flex-grow"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -142,7 +138,7 @@ export const CustomerChatDialog = ({
               size="icon"
               onClick={handleSend}
               disabled={!message.trim() || isAiReplying}
-              className="rounded-full shadow-md"
+              className="rounded-full shadow-md shrink-0"
             >
               <Send className="h-4 w-4" />
               <span className="sr-only">Send</span>

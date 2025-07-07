@@ -32,4 +32,5 @@ export interface Npc {
 export interface ChatMessage {
   sender: 'user' | 'npc';
   text: string;
+  timestamp: number;
 }

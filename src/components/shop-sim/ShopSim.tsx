@@ -45,7 +45,7 @@ export default function ShopSim() {
 
     const newHistory: ChatMessage[] = [
       ...chatHistory,
-      { sender: "user", text: message },
+      { sender: "user", text: message, timestamp: Date.now() },
     ];
     setChatHistory(newHistory);
     setIsAiReplying(true);
@@ -65,7 +65,7 @@ export default function ShopSim() {
 
       setChatHistory((prev) => [
         ...prev,
-        { sender: "npc", text: result.response },
+        { sender: "npc", text: result.response, timestamp: Date.now() },
       ]);
     } catch (e) {
       console.error("Chat API failed:", e);
