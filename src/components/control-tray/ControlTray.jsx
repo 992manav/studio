@@ -34,7 +34,7 @@ const MediaStreamButton = memo(
 function ControlTray({
   videoRef,
   children,
-  onVideoStreamChange = () => {},
+  onVideoStreamChange = (_stream) => {},
   supportsVideo,
 }) {
   const videoStreams = [useWebcam(), useScreenCapture()];
