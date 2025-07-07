@@ -1,16 +1,17 @@
 .right-panel {
-  position: relative;
-  z-index: 10;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 20;
   background: hsl(var(--card));
   color: hsl(var(--card-foreground));
   width: 48px;
   display: flex;
   flex-direction: column;
   height: 100vh;
-  transition: width 0.2s ease-in-out;
+  transition: width 0.25s ease-in-out;
   border-left: 1px solid hsl(var(--border));
   overflow: hidden;
-  flex-shrink: 0;
 }
 
 .right-panel.open {

@@ -88,7 +88,6 @@ export default function ShopSim({ onCheckoutCounterClick }: ShopSimProps) {
       <ThreeScene
         onProductClick={handleProductClick}
         onNpcClick={handleNpcClick}
-        cart={cart}
         isChatting={!!chattingWith}
         onCheckoutCounterClick={onCheckoutCounterClick}
       />

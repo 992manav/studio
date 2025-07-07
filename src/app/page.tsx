@@ -14,10 +14,12 @@ export default function Home() {
     <div className="flex h-screen w-full overflow-hidden bg-background">
       <WelcomeDialog isOpen={isWelcomeOpen} onOpenChange={setWelcomeOpen} />
       <SidePanel />
-      <main className="flex-1 relative">
-        <ShopSim onCheckoutCounterClick={() => setRightPanelOpen(o => !o)} />
-      </main>
-      <RightPanel isOpen={isRightPanelOpen} setIsOpen={setRightPanelOpen} />
+      <div className="flex-1 relative">
+        <main className="w-full h-full">
+          <ShopSim onCheckoutCounterClick={() => setRightPanelOpen((o) => !o)} />
+        </main>
+        <RightPanel isOpen={isRightPanelOpen} setIsOpen={setRightPanelOpen} />
+      </div>
     </div>
   );
 }
