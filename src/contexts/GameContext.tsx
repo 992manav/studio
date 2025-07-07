@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useCallback, useMemo } from 'react';
 import type { CartItem, Product, AvatarConfig } from '@/lib/types';
 import { products as allProducts } from '@/lib/products';
 import { useToast } from "@/hooks/use-toast";
@@ -29,7 +30,7 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const { toast } = useToast();
   const router = useRouter();
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = useCallback((product: Product, quantity: number = 1) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((item) => item.id === product.id);
       if (existingItem) {
@@ -43,13 +44,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       title: "Item Added",
       description: `${product.name} has been added to your cart.`,
     });
-  };
+  }, [toast]);
 
-  const removeFromCart = (productId: number) => {
+  const removeFromCart = useCallback((productId: number) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== productId));
-  };
+  }, []);
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = useCallback((productId: number, quantity: number) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
@@ -57,13 +58,13 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     setCart((prevCart) =>
       prevCart.map((item) => (item.id === productId ? { ...item, quantity } : item))
     );
-  };
+  }, [removeFromCart]);
   
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setCart([]);
-  }
+  }, []);
 
-  const processTransaction = () => {
+  const processTransaction = useCallback(() => {
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const taxes = subtotal * 0.08;
     const shipping = subtotal > 0 ? 5.99 : 0;
@@ -84,9 +85,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       description: `You spent $${finalTotal.toFixed(2)}. Your new balance is $${(wallet - finalTotal).toFixed(2)}.`,
     });
     return true;
-  };
+  }, [cart, wallet, toast]);
 
-  const handleCheckout = () => {
+  const handleCheckout = useCallback(() => {
       if (cart.length === 0) {
           toast({
               variant: "destructive",
@@ -96,28 +97,29 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
           return;
       }
       router.push('/checkout');
-  }
+  }, [cart.length, router, toast]);
 
   const getProductById = useCallback((id: number): Product | undefined => {
     return allProducts.find(p => p.id === id);
   }, []);
 
+  const value = useMemo(() => ({
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    wallet,
+    handleCheckout,
+    processTransaction,
+    avatarConfig,
+    setAvatarConfig,
+    getProductById
+  }), [cart, wallet, avatarConfig, addToCart, removeFromCart, updateQuantity, clearCart, handleCheckout, processTransaction, getProductById]);
+
+
   return (
-    <GameContext.Provider
-      value={{
-        cart,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        wallet,
-        handleCheckout,
-        processTransaction,
-        avatarConfig,
-        setAvatarConfig,
-        getProductById
-      }}
-    >
+    <GameContext.Provider value={value}>
       {children}
     </GameContext.Provider>
   );

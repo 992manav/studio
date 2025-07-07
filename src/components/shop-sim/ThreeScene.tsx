@@ -6,8 +6,16 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { products } from "@/lib/products";
 import { npcs as allNpcs } from "@/lib/npcs";
-import type { Product, Npc } from "@/lib/types";
-import { useGame } from "@/contexts/GameContext";
+import type { Product, Npc, AvatarConfig, CartItem } from "@/lib/types";
+
+interface ThreeSceneProps {
+  onProductClick: (product: Product | number) => void;
+  onNpcClick: (npc: Npc) => void;
+  isChatting: boolean;
+  onCheckoutCounterClick: () => void;
+  cart: CartItem[];
+  avatarConfig: AvatarConfig;
+}
 
 function createAisle(
   length: number,
@@ -823,9 +831,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   onNpcClick,
   isChatting,
   onCheckoutCounterClick,
+  cart,
+  avatarConfig,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const { avatarConfig, cart } = useGame();
   const [hasCart, setHasCart] = useState(false);
   const hasCartRef = useRef(hasCart);
   hasCartRef.current = hasCart;
@@ -2044,9 +2053,3 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     </div>
   );
 };
-interface ThreeSceneProps {
-  onProductClick: (product: Product | number) => void;
-  onNpcClick: (npc: Npc) => void;
-  isChatting: boolean;
-  onCheckoutCounterClick: () => void;
-}

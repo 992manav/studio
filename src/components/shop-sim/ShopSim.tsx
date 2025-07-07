@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useCallback } from "react";
@@ -16,7 +17,7 @@ interface ShopSimProps {
 
 export default function ShopSim({ onCheckoutCounterClick }: ShopSimProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const { getProductById, cart } = useGame();
+  const { getProductById, cart, avatarConfig } = useGame();
   const { toast } = useToast();
 
   // Chat state
@@ -90,6 +91,8 @@ export default function ShopSim({ onCheckoutCounterClick }: ShopSimProps) {
         onNpcClick={handleNpcClick}
         isChatting={!!chattingWith}
         onCheckoutCounterClick={onCheckoutCounterClick}
+        cart={cart}
+        avatarConfig={avatarConfig}
       />
       <div className="absolute top-4 left-4 flex items-center gap-4">
         <Wallet />
