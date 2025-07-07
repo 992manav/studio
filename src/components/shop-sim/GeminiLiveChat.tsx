@@ -7,9 +7,11 @@ import { liveChat } from '@/ai/flows/live-chat';
 import { products as allProducts } from '@/lib/products';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, Loader2, Mic, MicOff, User } from 'lucide-react';
+import { Bot, Loader2, Mic, MicOff, User, Paperclip, Send, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import AudioPulse from '@/components/audio-pulse/AudioPulse';
+import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 // Extend the Window interface for webkitSpeechRecognition
 declare global {
@@ -24,14 +26,14 @@ export const GeminiLiveChat = () => {
   const [isListening, setIsListening] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model'; content: string }[]>([]);
+  const [userText, setUserText] = useState("");
+  const [imageDataUri, setImageDataUri] = useState<string | null>(null);
+  const [chatHistory, setChatHistory] = useState<{ role: 'user' | 'model'; content: string; image?: string | null }[]>([]);
   const recognitionRef = useRef<any>(null); // SpeechRecognition instance
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Use a ref to keep track of the latest chat history for the API call,
-  // preventing stale closures in the handleUserQuery callback.
   const chatHistoryRef = useRef(chatHistory);
   useEffect(() => {
     chatHistoryRef.current = chatHistory;
@@ -39,31 +41,31 @@ export const GeminiLiveChat = () => {
 
   useEffect(() => {
     setIsMounted(true);
-    // Create audio element once mounted on client
     audioRef.current = new Audio();
   }, []);
 
   const handleUserQuery = useCallback(async (query: string) => {
-    if (!query || isThinking) return;
+    if ((!query && !imageDataUri) || isThinking) return;
 
     setIsListening(false);
     setIsThinking(true);
     
-    const userMessage = { role: 'user' as const, content: query };
+    const userMessage = { role: 'user' as const, content: query, image: imageDataUri };
     const newHistoryWithUser = [...chatHistoryRef.current, userMessage];
     setChatHistory(newHistoryWithUser);
+    setUserText("");
     
     try {
       const cartItems = cart.map((item) => item.name);
-      // We pass the full product catalog, excluding only the image and hint,
-      // to give the AI context about product details, price, and location.
       const productCatalog = allProducts.map(({ image, hint, ...rest }) => rest);
       
       const result = await liveChat({
         userQuery: query,
+        imageDataUri: imageDataUri || undefined,
         cartItems,
         productCatalog,
-        chatHistory: newHistoryWithUser,
+        // Pass a simplified history to the flow, without the image data
+        chatHistory: newHistoryWithUser.map(h => ({ role: h.role, content: h.content })),
       });
 
       const modelMessage = { role: 'model' as const, content: result.response };
@@ -81,8 +83,36 @@ export const GeminiLiveChat = () => {
       setChatHistory(prevHistory => [...prevHistory, errorMessage]);
     } finally {
         setIsThinking(false);
+        setImageDataUri(null);
     }
-  }, [cart, isThinking, toast]);
+  }, [cart, isThinking, toast, imageDataUri]);
+
+  const handleSend = () => {
+    if (userText.trim() || imageDataUri) {
+        handleUserQuery(userText);
+    }
+  };
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Gemini has a 4MB limit for image data in requests
+      if (file.size > 4 * 1024 * 1024) { 
+        toast({
+          variant: "destructive",
+          title: "Image is too large",
+          description: "Please select an image smaller than 4MB.",
+        });
+        event.target.value = ''; // Clear the input
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImageDataUri(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     if (audioRef.current) {
@@ -106,7 +136,6 @@ export const GeminiLiveChat = () => {
         }
     };
     
-    // Only create the recognition instance once.
     if (!recognitionRef.current) {
         const recognition = new window.webkitSpeechRecognition();
         recognition.continuous = false;
@@ -140,7 +169,6 @@ export const GeminiLiveChat = () => {
         recognitionRef.current = recognition;
     }
 
-    // Always update the onresult callback to avoid stale closures.
     recognitionRef.current.onresult = onResult;
 
   }, [isMounted, handleUserQuery, toast]);
@@ -199,8 +227,6 @@ export const GeminiLiveChat = () => {
       );
   } else if (isListening) {
       statusIndicator = <p className="text-sm text-muted-foreground">Listening...</p>;
-  } else if (chatHistory.length > 0) {
-      statusIndicator = <p className="text-sm text-muted-foreground">Mic is off</p>;
   } else {
       statusIndicator = <div className="h-5" />; // Placeholder to keep height consistent
   }
@@ -216,7 +242,7 @@ export const GeminiLiveChat = () => {
             {chatHistory.length === 0 && !isListening && !isThinking && (
                 <div className="text-center text-muted-foreground py-10">
                     <Bot size={48} className="mx-auto mb-2" />
-                    <p>Click the mic to start talking to your shopping assistant.</p>
+                    <p>Ask a question, upload an image, or click the mic to start.</p>
                 </div>
             )}
             {chatHistory.map((chat, index) => (
@@ -224,6 +250,11 @@ export const GeminiLiveChat = () => {
                     {chat.role === 'model' && <Bot className="flex-shrink-0 text-primary" />}
                     <div className={`rounded-lg px-3 py-2 text-sm max-w-[85%] ${chat.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
                         {chat.content}
+                        {chat.image && (
+                            <div className="mt-2 rounded-md overflow-hidden">
+                                <Image src={chat.image} alt="User upload" width={150} height={150} className="object-cover" />
+                            </div>
+                        )}
                     </div>
                      {chat.role === 'user' && <User className="flex-shrink-0" />}
                 </div>
@@ -239,6 +270,36 @@ export const GeminiLiveChat = () => {
         </div>
       </ScrollArea>
        <div className="flex flex-col items-center flex-shrink-0">
+         {imageDataUri && (
+            <div className="relative mb-2 p-1 border rounded-lg bg-muted">
+                <Image src={imageDataUri} alt="Image preview" width={80} height={80} className="rounded-md object-cover" />
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute -top-3 -right-3 h-6 w-6 rounded-full bg-destructive text-destructive-foreground hover:bg-destructive/80"
+                    onClick={() => setImageDataUri(null)}
+                >
+                    <X className="h-4 w-4" />
+                </Button>
+            </div>
+         )}
+         <div className="flex w-full items-center gap-2 mb-4">
+            <Button asChild variant="ghost" size="icon" className="shrink-0" disabled={isThinking || isPlayingAudio || isListening}>
+                <label htmlFor="image-upload" className="cursor-pointer"><Paperclip /></label>
+            </Button>
+            <input type="file" id="image-upload" className="hidden" accept="image/*" onChange={handleImageUpload}/>
+            <Input 
+                placeholder="Ask about a product..."
+                value={userText}
+                onChange={(e) => setUserText(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={isThinking || isPlayingAudio || isListening}
+            />
+            <Button onClick={handleSend} size="icon" disabled={(!userText.trim() && !imageDataUri) || isThinking || isPlayingAudio || isListening}>
+                <Send />
+            </Button>
+         </div>
+
          <div className="h-10 flex items-center justify-center">
             {statusIndicator}
          </div>

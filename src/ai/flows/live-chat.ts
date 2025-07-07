@@ -14,6 +14,12 @@ import wav from 'wav';
 
 const LiveChatInputSchema = z.object({
   userQuery: z.string().describe("The user's spoken question or command."),
+  imageDataUri: z
+    .string()
+    .optional()
+    .describe(
+      "An optional image of a product provided by the user as a data URI. Expected format: 'data:<mimetype>;base64,<encoded_data>'."
+    ),
   cartItems: z.array(z.string()).describe("The list of item names in the user's cart."),
   productCatalog: z.array(z.any()).describe('A list of all available products in the store to provide context.'),
   chatHistory: z.array(z.object({
@@ -46,11 +52,12 @@ const prompt = ai.definePrompt({
 - **Crucially, do not break character.** Never mention that you are an AI, a language model, or that the user is in a game or simulation. Interact as if you are a real in-store assistant communicating through a smart device.
 
 **Your Knowledge & Capabilities:**
-You have real-time access to the user's shopping cart and a complete catalog of all products available in the store. Use this information to:
-1.  **Locate Products:** When asked for a product's location, use its \`position\` data to give clear directions. For example, "You'll find the milk on your left in the first aisle, about halfway down."
-2.  **Provide Product Details:** Answer questions about price, description, and category.
-3.  **Give Smart Recommendations:** Suggest related items based on the user's cart contents. If they have pasta, suggest marinara sauce.
-4.  **Answer General Questions:** Help with any other shopping-related queries.
+You have real-time access to the user's shopping cart, a complete catalog of all products available in the store, and potentially an image the user has uploaded. Use this information to:
+1.  **Analyze Images:** If the user uploads an image, identify the product. You can then provide details about it, suggest where to find it, or recommend similar items.
+2.  **Locate Products:** When asked for a product's location, use its \`position\` data to give clear directions. For example, "You'll find the milk on your left in the first aisle, about halfway down."
+3.  **Provide Product Details:** Answer questions about price, description, and category.
+4.  **Give Smart Recommendations:** Suggest related items based on the user's cart contents. If they have pasta, suggest marinara sauce.
+5.  **Answer General Questions:** Help with any other shopping-related queries.
 
 **Store Layout Reference:**
 - The store is a large rectangle. The entrance is at the front (positive Z direction).
@@ -72,6 +79,12 @@ User's Shopping Cart:
 
 Full Product Catalog (for your reference):
 {{{json productCatalog}}}
+
+{{#if imageDataUri}}
+User's Uploaded Image:
+(Analyze this image to help answer the user's question. The user wants to know more about the product in the image.)
+{{media url=imageDataUri}}
+{{/if}}
 
 Conversation History (user is 'user', you are 'model'):
 {{#each chatHistory}}
