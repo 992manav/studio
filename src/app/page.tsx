@@ -6,7 +6,7 @@ import SidePanel from "@/components/side-panel/SidePanel";
 
 export default function Home() {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-background">
+    <div className="flex h-screen w-full overflow-hidden bg-background">
       <SidePanel />
       <main className="flex-1 relative">
         <ShopSim />

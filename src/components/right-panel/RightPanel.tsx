@@ -9,7 +9,7 @@ import './RightPanel.css';
 import cn from 'classnames';
 
 export default function RightPanel() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleProductClick = (product: Product | number) => {
     // This functionality is not needed in the sidebar view.

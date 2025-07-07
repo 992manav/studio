@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import "./side-panel.css";
 
 export default function SidePanel() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
     <div className={`side-panel ${open ? "open" : ""}`}>
