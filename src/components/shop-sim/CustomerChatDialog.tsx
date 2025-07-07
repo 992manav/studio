@@ -87,22 +87,22 @@ export const CustomerChatDialog = ({
                 } animate-in fade-in duration-300`}
               >
                 {chat.sender !== "user" && (
-                  <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold flex items-center justify-center text-xs">
+                  <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0">
                     {npc.name[0]}
                   </Avatar>
                 )}
                 <div
                   className={`max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm text-sm ${
                     chat.sender === "user"
-                      ? "bg-primary text-primary-foreground ml-auto"
-                      : "bg-muted text-foreground mr-auto"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
                   }`}
                   title={new Date(chat.timestamp).toLocaleTimeString()}
                 >
                   <p className="leading-relaxed">{chat.text}</p>
                 </div>
                 {chat.sender === "user" && (
-                  <Avatar className="w-7 h-7 bg-accent text-accent-foreground font-bold flex items-center justify-center text-xs">
+                  <Avatar className="w-7 h-7 bg-accent text-accent-foreground font-bold flex items-center justify-center text-xs shrink-0">
                     U
                   </Avatar>
                 )}
@@ -110,7 +110,7 @@ export const CustomerChatDialog = ({
             ))}
             {isAiReplying && (
               <div className="flex items-end gap-2 justify-start animate-in fade-in duration-300">
-                <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold flex items-center justify-center text-xs">
+                <Avatar className="w-7 h-7 bg-muted text-primary-foreground font-bold flex items-center justify-center text-xs shrink-0">
                   {npc.name[0]}
                 </Avatar>
                 <div className="max-w-[75%] rounded-2xl px-4 py-2.5 bg-muted shadow-sm">
