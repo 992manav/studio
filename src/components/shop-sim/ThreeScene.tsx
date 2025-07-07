@@ -811,6 +811,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   const hasCartRef = useRef(hasCart);
   hasCartRef.current = hasCart;
   const [hintMessage, setHintMessage] = useState("");
+  const [checkoutHint, setCheckoutHint] = useState("");
 
   const [showChatHint, setShowChatHint] = useState(false);
 
@@ -829,6 +830,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   const checkoutCountersRef = useRef<THREE.Group[]>([]);
   const collectibleCartsRef = useRef<THREE.Group[]>([]);
   const hintMessageRef = useRef("");
+  const checkoutHintRef = useRef("");
   const isChattingRef = useRef(isChatting);
   const npcAnimationData = useRef<
     {
@@ -1057,7 +1059,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
 
     // Floor
     const wallSize = 42;
-    const wallDepth = 150;
+    const wallDepth = 80; // Reduced from 150
     const floorGeometry = new THREE.PlaneGeometry(wallSize, wallDepth);
     const floorMaterial = new THREE.MeshStandardMaterial({
       color: 0xcccccc,
@@ -1066,7 +1068,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     });
     const floor = new THREE.Mesh(floorGeometry, floorMaterial);
     floor.rotation.x = -Math.PI / 2;
-    floor.position.z = -25;
+    floor.position.z = 0; // Centered the floor
     floor.receiveShadow = true;
     scene.add(floor);
 
@@ -1082,7 +1084,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       new THREE.PlaneGeometry(wallDepth, wallHeight),
       wallMaterial.clone()
     );
-    leftWall.position.set(-wallSize / 2, wallHeight / 2, -wallDepth / 2 + 75);
+    leftWall.position.set(-wallSize / 2, wallHeight / 2, 0); // Centered the wall
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     scene.add(leftWall);
@@ -1091,7 +1093,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       new THREE.PlaneGeometry(wallDepth, wallHeight),
       wallMaterial.clone()
     );
-    rightWall.position.set(wallSize / 2, wallHeight / 2, -wallDepth / 2 + 75);
+    rightWall.position.set(wallSize / 2, wallHeight / 2, 0); // Centered the wall
     rightWall.rotation.y = -Math.PI / 2;
     rightWall.receiveShadow = true;
     scene.add(rightWall);
@@ -1224,7 +1226,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
     ceiling.position.y = wallHeight;
-    ceiling.position.z = -wallDepth / 2 + 75;
+    ceiling.position.z = 0; // Centered ceiling
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
@@ -1239,7 +1241,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 38);
+        avatar.position.set(0, 0, 35); // Moved closer to entrance
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -1568,6 +1570,18 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           takeCart(closestCart);
         }
       }
+
+      if (key === "c" && !isChattingRef.current) {
+        if (avatarRef.current) {
+          const isNearCheckout = checkoutCountersRef.current.some(
+            (counter) =>
+              avatarRef.current!.position.distanceTo(counter.position) < 6
+          );
+          if (isNearCheckout) {
+            onCheckoutCounterClick();
+          }
+        }
+      }
     };
     const handleKeyUp = (event: KeyboardEvent) => {
       if (!event.key) return;
@@ -1676,6 +1690,24 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           hintMessageRef.current = "";
           setHintMessage("");
         }
+      }
+
+      // Check for checkout interaction hint
+      let newCheckoutHint = "";
+      if (avatarRef.current) {
+        const isNearCheckout = checkoutCountersRef.current.some(
+          (counter) =>
+            avatarRef.current!.position.distanceTo(counter.position) < 6
+        );
+
+        if (isNearCheckout) {
+          newCheckoutHint = "Press 'C' to checkout";
+        }
+      }
+
+      if (newCheckoutHint !== checkoutHintRef.current) {
+        checkoutHintRef.current = newCheckoutHint;
+        setCheckoutHint(newCheckoutHint);
       }
 
       // NPC Movement
@@ -1956,32 +1988,45 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   return (
     <div className="relative w-full h-full">
       <div ref={mountRef} className="w-full h-full cursor-pointer" />
-      {hintMessage && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
-          <p className="font-semibold text-lg">
-            Press{" "}
-            <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-              E
-            </kbd>{" "}
-            to take cart
-          </p>
-        </div>
-      )}
-      {showChatHint && (
-        <div className="absolute bottom-36 left-1/2 -translate-x-1/2 rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
-          <p className="font-semibold text-lg">
-            Press{" "}
-            <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-              C
-            </kbd>{" "}
-            or{" "}
-            <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-              CC
-            </kbd>{" "}
-            to chat with nearest customer
-          </p>
-        </div>
-      )}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+        {hintMessage && (
+          <div className="rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
+            <p className="font-semibold text-lg">
+              Press{" "}
+              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+                E
+              </kbd>{" "}
+              to take cart
+            </p>
+          </div>
+        )}
+        {checkoutHint && (
+          <div className="rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
+            <p className="font-semibold text-lg">
+              Press{" "}
+              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+                C
+              </kbd>{" "}
+              to checkout
+            </p>
+          </div>
+        )}
+        {showChatHint && (
+          <div className="rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
+            <p className="font-semibold text-lg">
+              Press{" "}
+              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+                C
+              </kbd>{" "}
+              or{" "}
+              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+                CC
+              </kbd>{" "}
+              to chat with nearest customer
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
