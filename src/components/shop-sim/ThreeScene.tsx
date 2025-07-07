@@ -747,6 +747,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   onProductClick,
   onNpcClick,
   cart,
+  isChatting,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
@@ -771,6 +772,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   const npcMeshesRef = useRef<THREE.Group[]>([]);
   const collectibleCartsRef = useRef<THREE.Group[]>([]);
   const hintMessageRef = useRef("");
+  const isChattingRef = useRef(isChatting);
   const npcAnimationData = useRef<
     {
       model: THREE.Group;
@@ -784,6 +786,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   >([]);
   const clock = useRef(new THREE.Clock());
   const animationLoopId = useRef<number>();
+
+  useEffect(() => {
+    isChattingRef.current = isChatting;
+  }, [isChatting]);
 
   const takeCart = useCallback(
     (cartToTake: THREE.Group) => {
@@ -1062,13 +1068,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
 
     // Entrance Gates
     const gateLeft = createSecurityGate();
-    gateLeft.position.set(-4, 0, 42);
+    gateLeft.position.set(-4, 0, 32); // Moved closer
     const leftArm = gateLeft.getObjectByName("gateArm");
     if (leftArm) leftArm.rotation.y = -Math.PI / 8; // Slightly open
     scene.add(gateLeft);
 
     const gateRight = createSecurityGate();
-    gateRight.position.set(4, 0, 42);
+    gateRight.position.set(4, 0, 32); // Moved closer
     const rightArm = gateRight.getObjectByName("gateArm");
     if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
     scene.add(gateRight);
@@ -1077,22 +1083,22 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const signWidth = 40;
     const signHeight = 8;
     const facadeSign = createFacadeSign(signWidth, signHeight);
-    facadeSign.position.set(0, wallHeight - 10, 46.1); // just in front of wall
+    facadeSign.position.set(0, wallHeight - 10, wallDepth / 2 + 1); // just in front of wall
     scene.add(facadeSign);
 
     // Exterior Ground & Parking Lot
-    const sidewalkGeometry = new THREE.PlaneGeometry(wallSize, 12);
+    const sidewalkGeometry = new THREE.PlaneGeometry(wallSize, 6);
     const sidewalkMaterial = new THREE.MeshStandardMaterial({
       color: 0xbbbbbb,
       roughness: 0.6,
     });
     const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     sidewalk.rotation.x = -Math.PI / 2;
-    sidewalk.position.set(0, 0.01, wallDepth / 2 + 6);
+    sidewalk.position.set(0, 0.01, wallDepth / 2 + 3);
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
 
-    const parkingLotDepth = 6;
+    const parkingLotDepth = 4;
     const parkingLotGeometry = new THREE.PlaneGeometry(
       wallSize,
       parkingLotDepth
@@ -1103,44 +1109,9 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     });
     const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
     parkingLot.rotation.x = -Math.PI / 2;
-    parkingLot.position.set(0, 0.01, wallDepth / 2 + 12 + parkingLotDepth / 2);
+    parkingLot.position.set(0, 0.01, wallDepth / 2 + 6 + parkingLotDepth / 2);
     parkingLot.receiveShadow = true;
     scene.add(parkingLot);
-
-    // Parking Lines & Cars
-    const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const lineLength = 5.0;
-    const lineGeo = new THREE.BoxGeometry(0.1, 0.03, lineLength);
-    const parkingSpaceWidth = 4;
-
-    const carColors = [
-      0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b,
-    ];
-
-    const createParkingRow = (zPos: number, direction: number) => {
-      for (let i = -1; i <= 1; i++) {
-        const line = new THREE.Mesh(lineGeo, lineMaterial);
-        line.position.set(i * parkingSpaceWidth, 0.02, zPos);
-        scene.add(line);
-
-        if (i < 1 && Math.random() > 0.85) {
-          // 15% chance of car
-          const car = createCar(
-            new THREE.Color(
-              carColors[Math.floor(Math.random() * carColors.length)]
-            )
-          );
-          const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
-          car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
-          car.rotation.y =
-            (Math.PI / 2) * direction + (Math.random() - 0.5) * 0.1;
-          scene.add(car);
-        }
-      }
-    };
-
-    const firstRowZ = wallDepth / 2 + 12 + 3;
-    createParkingRow(firstRowZ, 1);
 
     // Bollards
     const bollardGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 16);
@@ -1151,7 +1122,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     });
     for (let i = 0; i < 4; i++) {
       const bollard = new THREE.Mesh(bollardGeo, bollardMat);
-      bollard.position.set(-15 + i * 10, 1.5 / 2, wallDepth / 2 + 2);
+      bollard.position.set(-15 + i * 10, 1.5 / 2, wallDepth / 2 - 1);
       bollard.castShadow = true;
       scene.add(bollard);
     }
@@ -1165,19 +1136,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
 
-    // Produce Bins
-    const produceBin1 = createProduceBin(8, 4, 1);
-    produceBin1.position.set(-12, 0.5, 30);
-    scene.add(produceBin1);
-
-    const produceBin2 = createProduceBin(8, 4, 1);
-    produceBin2.position.set(0, 0.5, 30);
-    scene.add(produceBin2);
-
-    const produceBin3 = createProduceBin(8, 4, 1);
-    produceBin3.position.set(12, 0.5, 30);
-    scene.add(produceBin3);
-
     // Player Avatar
     const gltfLoader = new GLTFLoader();
     const dracoLoader = new DRACOLoader();
@@ -1189,7 +1147,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 48);
+        avatar.position.set(0, 0, 38);
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -1206,18 +1164,28 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           const mixer = new THREE.AnimationMixer(avatar);
           mixerRef.current = mixer;
 
-          const idleClip =
-            THREE.AnimationUtils.findClip(gltf.animations, "idle") ||
-            THREE.AnimationUtils.findClip(gltf.animations, "Idle");
+          const idleClip = THREE.AnimationUtils.findClip(
+            gltf.animations,
+            "idle"
+          );
           if (idleClip) {
             animationsRef.current["idle"] = mixer.clipAction(idleClip);
           }
 
-          const walkClip =
-            THREE.AnimationUtils.findClip(gltf.animations, "walk") ||
-            THREE.AnimationUtils.findClip(gltf.animations, "Walk");
+          const walkClip = THREE.AnimationUtils.findClip(
+            gltf.animations,
+            "walk"
+          );
           if (walkClip) {
             animationsRef.current["walk"] = mixer.clipAction(walkClip);
+          }
+          const walkBackwardClip = THREE.AnimationUtils.findClip(
+            gltf.animations,
+            "walk.backward"
+          );
+          if (walkBackwardClip) {
+            animationsRef.current["walk.backward"] =
+              mixer.clipAction(walkBackwardClip);
           }
 
           if (animationsRef.current["idle"]) {
@@ -1315,7 +1283,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     // Cart Corral
     const collectibleCarts: THREE.Group[] = [];
     const corralX = -15;
-    const corralZ = 50;
+    const corralZ = 30;
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 4; j++) {
         const cartModel = createShoppingCart();
@@ -1357,7 +1325,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       aisleHeight,
       aisleWidth
     );
-    backAisle.position.set(0, 0, -88);
+    backAisle.position.set(0, 0, -22);
     scene.add(backAisle);
 
     // Light Fixtures
@@ -1391,10 +1359,10 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       new THREE.BoxGeometry(backAisleLength, 0.2, 0.5),
       lightFixtureMaterial
     );
-    backAisleFixture.position.set(0, lightY, -88);
+    backAisleFixture.position.set(0, lightY, -22);
     scene.add(backAisleFixture);
     const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
-    backAisleLight.position.set(0, lightY - 1, -88);
+    backAisleLight.position.set(0, lightY - 1, -22);
     scene.add(backAisleLight);
 
     // Products
@@ -1430,7 +1398,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       { largeText: "CHECKOUT" },
       { width: 12, height: 4 }
     );
-    checkoutSign.position.set(0, signY, 40);
+    checkoutSign.position.set(0, signY, 25);
     scene.add(checkoutSign);
 
     const groceryAisleSign = createHangingSign(
@@ -1440,7 +1408,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    groceryAisleSign.position.set(-16, signY, 22);
+    groceryAisleSign.position.set(-12, signY, 22);
     scene.add(groceryAisleSign);
 
     const drinksAisleSign = createHangingSign(
@@ -1450,7 +1418,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    drinksAisleSign.position.set(-8, signY, 22);
+    drinksAisleSign.position.set(-4, signY, 22);
+    drinksAisleSign.rotation.y = -Math.PI / 4;
     scene.add(drinksAisleSign);
 
     const homeGoodsAisleSign = createHangingSign(
@@ -1460,7 +1429,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    homeGoodsAisleSign.position.set(8, signY, 22);
+    homeGoodsAisleSign.position.set(4, signY, 22);
+    homeGoodsAisleSign.rotation.y = Math.PI / 4;
     scene.add(homeGoodsAisleSign);
 
     const apparelAisleSign = createHangingSign(
@@ -1470,7 +1440,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       categorySignSize
     );
-    apparelAisleSign.position.set(16, signY, 22);
+    apparelAisleSign.position.set(12, signY, 22);
     scene.add(apparelAisleSign);
 
     const electronicsAisleSign = createHangingSign(
@@ -1480,115 +1450,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    electronicsAisleSign.position.set(0, signY, -76);
+    electronicsAisleSign.position.set(0, signY, -10);
     electronicsAisleSign.rotation.y = Math.PI / 2;
     scene.add(electronicsAisleSign);
 
-    // Shelf Labels
-    const labelY = aisleHeight + 2.8;
-    const labelSize = { width: 8, height: 0.4 };
-    const longLabelSize = { width: 12, height: 0.4 };
-
-    const aisle1XLeft = -18;
-    const aisle1XRight = -14;
-    const aisle2XLeft = -10;
-    const aisle2XRight = -6;
-    const aisle3XLeft = 6;
-    const aisle3XRight = 10;
-    const aisle4XLeft = 14;
-    const aisle4XRight = 18;
-
-    const backAisleZBack = -90;
-    const backAisleZFront = -86;
-
-    const backAisleLabelY = aisleHeight + 1.5;
-    const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
-    electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
-    scene.add(electronicsLabel);
-
-    const toysLabel = createShelfLabel("Toys & Games", labelSize);
-    toysLabel.position.set(10, backAisleLabelY, backAisleZFront);
-    scene.add(toysLabel);
-
-    const outdoorsLabel = createShelfLabel(
-      "Outdoors & Sporting Goods",
-      longLabelSize
-    );
-    outdoorsLabel.position.set(0, backAisleLabelY, backAisleZBack);
-    outdoorsLabel.rotation.y = Math.PI;
-    scene.add(outdoorsLabel);
-
-    const aisle1LabelsZ = [-10, 10];
-    const aisle1LeftLabels = ["Cereal & Breakfast", "Pasta & Sauces"];
-    const aisle1RightLabels = ["Snacks & Cookies", "Bakery & Dairy"];
-    aisle1LabelsZ.forEach((z, i) => {
-      const leftLabel = createShelfLabel(aisle1LeftLabels[i], labelSize);
-      leftLabel.position.set(aisle1XLeft, labelY, z);
-      leftLabel.rotation.y = Math.PI / 2; // Faces +X
-      scene.add(leftLabel);
-
-      const rightLabel = createShelfLabel(aisle1RightLabels[i], labelSize);
-      rightLabel.position.set(aisle1XRight, labelY, z);
-      rightLabel.rotation.y = -Math.PI / 2; // Faces -X
-      scene.add(rightLabel);
-    });
-
-    // Aisle 2 has products on both sides, give it labels on both sides
-    const aisle2LeftLabel = createShelfLabel(
-      "Soda, Juice & Drinks",
-      longLabelSize
-    );
-    aisle2LeftLabel.position.set(aisle2XLeft, labelY, 0);
-    aisle2LeftLabel.rotation.y = Math.PI / 2; // Faces +X
-    scene.add(aisle2LeftLabel);
-
-    const aisle2RightLabel = createShelfLabel(
-      "Soda, Juice & Drinks",
-      longLabelSize
-    );
-    aisle2RightLabel.position.set(aisle2XRight, labelY, 0);
-    aisle2RightLabel.rotation.y = -Math.PI / 2; // Faces -X
-    scene.add(aisle2RightLabel);
-
-    // Aisle 3 has products on both sides, give it labels on both sides
-    const aisle3LeftLabel = createShelfLabel(
-      "Home, Cleaning & Kitchen",
-      longLabelSize
-    );
-    aisle3LeftLabel.position.set(aisle3XLeft, labelY, 0);
-    aisle3LeftLabel.rotation.y = Math.PI / 2; // Faces +X
-    scene.add(aisle3LeftLabel);
-
-    const aisle3RightLabel = createShelfLabel(
-      "Home, Cleaning & Kitchen",
-      longLabelSize
-    );
-    aisle3RightLabel.position.set(aisle3XRight, labelY, 0);
-    aisle3RightLabel.rotation.y = -Math.PI / 2; // Faces -X
-    scene.add(aisle3RightLabel);
-
-    const apparelLabel = createShelfLabel("Apparel", labelSize);
-    apparelLabel.position.set(aisle4XLeft, labelY, 0);
-    apparelLabel.rotation.y = Math.PI / 2; // Faces +X
-    scene.add(apparelLabel);
-
-    const personalCareLabel = createShelfLabel(
-      "Personal Care & Pharmacy",
-      longLabelSize
-    );
-    personalCareLabel.position.set(aisle4XRight, labelY, 0);
-    personalCareLabel.rotation.y = -Math.PI / 2; // Faces -X
-    scene.add(personalCareLabel);
-
-    const produceLabel = createShelfLabel("Fresh Produce", {
-      width: 15,
-      height: 1.2,
-    });
-    produceLabel.position.set(0, 3.5, 28);
-    scene.add(produceLabel);
-
     // Event Listeners
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isChattingRef.current) return;
       if (!event.key) return;
       const key = event.key.toLowerCase();
       keysPressed.current[key] = true;
@@ -1644,35 +1512,54 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
         return;
       }
 
-      const isMoving =
-        keysPressed.current["w"] ||
-        keysPressed.current["s"] ||
-        keysPressed.current["a"] ||
-        keysPressed.current["d"];
-
-      if (isMoving && animationsRef.current.walk) {
-        setAction(animationsRef.current.walk);
-      } else if (animationsRef.current.idle) {
-        setAction(animationsRef.current.idle);
+      let desiredAction = "idle";
+      if (!isChattingRef.current) {
+        if (keysPressed.current["w"]) {
+          desiredAction = "walk";
+        } else if (keysPressed.current["s"]) {
+          desiredAction = animationsRef.current["walk.backward"]
+            ? "walk.backward"
+            : "walk";
+        }
       }
 
-      const moveSpeed = 5.0; // units per second
-      const rotateSpeed = 2.0; // radians per second
+      if (activeActionRef.current?.getClip().name !== desiredAction) {
+        const toAction = animationsRef.current[desiredAction];
+        if (toAction) {
+          if (desiredAction === "walk" && keysPressed.current["s"]) {
+            toAction.timeScale = -1; // Play walk animation backwards
+          } else {
+            toAction.timeScale = 1;
+          }
+          setAction(toAction);
+        }
+      }
 
-      const forward = new THREE.Vector3();
-      avatarRef.current.getWorldDirection(forward);
+      if (avatarRef.current && !isChattingRef.current) {
+        const moveSpeed = 5.0; // units per second
+        const rotateSpeed = 2.0; // radians per second
 
-      if (keysPressed.current["w"]) {
-        avatarRef.current.position.addScaledVector(forward, moveSpeed * delta);
-      }
-      if (keysPressed.current["s"]) {
-        avatarRef.current.position.addScaledVector(forward, -moveSpeed * delta);
-      }
-      if (keysPressed.current["a"]) {
-        avatarRef.current.rotation.y += rotateSpeed * delta;
-      }
-      if (keysPressed.current["d"]) {
-        avatarRef.current.rotation.y -= rotateSpeed * delta;
+        const forward = new THREE.Vector3();
+        avatarRef.current.getWorldDirection(forward);
+
+        if (keysPressed.current["w"]) {
+          avatarRef.current.position.addScaledVector(
+            forward,
+            moveSpeed * delta
+          );
+        }
+        if (keysPressed.current["s"]) {
+          avatarRef.current.position.addScaledVector(
+            forward,
+            -moveSpeed * delta
+          );
+        }
+        if (keysPressed.current["a"]) {
+          avatarRef.current.rotation.y += rotateSpeed * delta;
+        }
+        if (keysPressed.current["d"]) {
+          avatarRef.current.rotation.y -= rotateSpeed * delta;
+        }
       }
 
       // Check for cart interaction hint
@@ -1769,16 +1656,21 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       }
 
       // Camera follows avatar
-      const cameraOffset = new THREE.Vector3(0, 2.2, -3.5);
-      const cameraPosition = cameraOffset.applyMatrix4(
-        avatarRef.current.matrixWorld
+      cameraRef.current.position.lerp(
+        new THREE.Vector3()
+          .copy(avatarRef.current.position)
+          .add(
+            new THREE.Vector3(0, 2.2, -3.5).applyQuaternion(
+              avatarRef.current.quaternion
+            )
+          ),
+        1
       );
-      cameraRef.current.position.lerp(cameraPosition, 0.2);
-
-      const lookAtPosition = avatarRef.current.position
-        .clone()
-        .add(new THREE.Vector3(0, 1.6, 0));
-      cameraRef.current.lookAt(lookAtPosition);
+      cameraRef.current.lookAt(
+        avatarRef.current.position
+          .clone()
+          .add(new THREE.Vector3(0, 1.6, 0))
+      );
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
     };
@@ -1932,6 +1824,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   useEffect(() => {
     let lastCPress = 0;
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (isChattingRef.current) return;
       if (event.key.toLowerCase() === "c") {
         const now = Date.now();
         if (now - lastCPress < 400) {
@@ -2011,4 +1904,5 @@ interface ThreeSceneProps {
   onProductClick: (product: Product | number) => void;
   onNpcClick: (npc: Npc) => void;
   cart: CartItem[];
+  isChatting: boolean;
 }

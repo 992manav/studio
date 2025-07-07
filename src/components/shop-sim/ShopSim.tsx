@@ -85,6 +85,7 @@ export default function ShopSim() {
         onProductClick={handleProductClick}
         onNpcClick={handleNpcClick}
         cart={cart}
+        isChatting={!!chattingWith}
       />
       <div className="absolute top-4 left-4 flex items-center gap-4">
         <Wallet />
