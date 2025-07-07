@@ -26,7 +26,7 @@ export const WelcomeDialog = ({ isOpen, onOpenChange }: WelcomeDialogProps) => {
             Welcome to ShopSim!
           </DialogTitle>
           <DialogDescription className="pt-2">
-            Explore the store, chat with shoppers and the AI assistant, and buy products with your virtual wallet.
+            Explore the store, chat with shoppers and the AI assistant, Start by talking to Clare over there in the blue jacket.
           </DialogDescription>
         </DialogHeader>
         <div className="py-4 grid grid-cols-2 gap-4 text-sm">
