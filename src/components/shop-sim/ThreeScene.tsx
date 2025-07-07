@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useCallback, useState } from "react";
@@ -990,14 +991,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       roughness: 0.9,
       metalness: 0.1,
     });
-
-    const backWall = new THREE.Mesh(
-      new THREE.PlaneGeometry(wallSize, wallHeight),
-      wallMaterial
-    );
-    backWall.position.set(0, wallHeight / 2, 46); // was -wallDepth / 2 - 40
-    backWall.receiveShadow = true;
-    scene.add(backWall);
 
     const leftWall = new THREE.Mesh(
       new THREE.PlaneGeometry(wallDepth, wallHeight),
