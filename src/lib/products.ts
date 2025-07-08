@@ -167,41 +167,66 @@ for (let i = 0; i < 4; i++) {
   }
 }
 
-// --- Produce Bins Displays ---
-const addProducePile = (
-  baseProduct: Omit<Product, "id" | "position">,
-  center: [number, number, number],
-  pileSize: [number, number],
-  count: number
-) => {
-  for (let i = 0; i < count; i++) {
-    const x = center[0] + (Math.random() - 0.5) * pileSize[0];
-    const z = center[2] + (Math.random() - 0.5) * pileSize[1];
-    const y = center[1] + baseProduct.size[1] / 2 + Math.random() * 0.08;
+// --- Produce Stacks on Aisle 1 ---
+const produceShelfY = shelfY.bottom + 0.025; // Top of bottom shelf
+const produceShelfX = aisle1XLeft; // Left side of Aisle 1
+const produceShelfZStart = aisleZStart + 20; // Start after pasta
 
-    products.push({
-      ...baseProduct,
-      id: currentId++,
-      position: [x, y, z],
-    });
-  }
-};
+// Apple Stack
+const appleBase = { name: "Red Apple", price: 0.54, description: "A crisp and sweet red delicious apple.", image: "https://4.imimg.com/data4/JX/WJ/ANDROID-16294238/product-1000x1000.jpeg", category: "Produce", size: [0.3, 0.3, 0.3] as [number, number, number], hint: "red apple" };
+for (let y = 0; y < 3; y++) { // layers high
+    for (let x = 0; x < 5; x++) { // stacks wide on shelf
+        for (let z = 0; z < 5; z++) { // stacks deep on shelf
+            products.push({
+                ...appleBase,
+                id: currentId++,
+                position: [
+                    produceShelfX + 0.5 + x * (appleBase.size[0] + 0.05),
+                    produceShelfY + appleBase.size[1] / 2 + y * appleBase.size[1],
+                    produceShelfZStart + z * (appleBase.size[2] + 0.05),
+                ]
+            })
+        }
+    }
+}
 
-const binSurfaceY = 1.0;
-const produceBinZ = 20;
+// Orange Stack
+const orangeBase = { name: "Navel Orange", price: 0.88, description: "A sweet and juicy navel orange.", image: "https://img06.weeecdn.com/product/image/187/337/35B5E8830448B7D5.png", category: "Produce", size: [0.3, 0.3, 0.3] as [number, number, number], hint: "orange fruit" };
+const orangeShelfZStart = produceShelfZStart + 6;
+for (let y = 0; y < 3; y++) {
+    for (let x = 0; x < 5; x++) {
+        for (let z = 0; z < 5; z++) {
+            products.push({
+                ...orangeBase,
+                id: currentId++,
+                position: [
+                    produceShelfX + 0.5 + x * (orangeBase.size[0] + 0.05),
+                    produceShelfY + orangeBase.size[1] / 2 + y * orangeBase.size[1],
+                    orangeShelfZStart + z * (orangeBase.size[2] + 0.05),
+                ]
+            })
+        }
+    }
+}
 
-addProducePile(
-  { name: "Banana", price: 0.21, description: "A single fresh banana.", image: "https://files.merca20.com/uploads/2021/08/one-a-day-bananas-packaging.jpg", category: "Produce", size: [0.2, 0.1, 0.6], hint: "banana" },
-  [-12, binSurfaceY, produceBinZ], [3.5, 3.5], 30
-);
-addProducePile(
-  { name: "Red Apple", price: 0.54, description: "A crisp and sweet red delicious apple.", image: "https://4.imimg.com/data4/JX/WJ/ANDROID-16294238/product-1000x1000.jpeg", category: "Produce", size: [0.3, 0.3, 0.3], hint: "red apple" },
-  [0, binSurfaceY, produceBinZ], [3.5, 3.5], 25
-);
-addProducePile(
-  { name: "Navel Orange", price: 0.88, description: "A sweet and juicy navel orange.", image: "https://img06.weeecdn.com/product/image/187/337/35B5E8830448B7D5.png", category: "Produce", size: [0.3, 0.3, 0.3], hint: "orange fruit" },
-  [12, binSurfaceY, produceBinZ], [3.5, 3.5], 25
-);
+// Banana Stack
+const bananaBase = { name: "Banana", price: 0.21, description: "A single fresh banana.", image: "https://files.merca20.com/uploads/2021/08/one-a-day-bananas-packaging.jpg", category: "Produce", size: [0.2, 0.1, 0.6] as [number, number, number], hint: "banana" };
+const bananaShelfZStart = orangeShelfZStart + 6;
+for (let y = 0; y < 2; y++) {
+    for (let x = 0; x < 5; x++) {
+        for (let z = 0; z < 4; z++) {
+            products.push({
+                ...bananaBase,
+                id: currentId++,
+                position: [
+                    produceShelfX + 0.5 + x * (bananaBase.size[0] + 0.05),
+                    produceShelfY + bananaBase.size[1] / 2 + y * bananaBase.size[1],
+                    bananaShelfZStart + z * (bananaBase.size[2] + 0.05),
+                ]
+            })
+        }
+    }
+}
 
 // --- EXTRA PRODUCTS FOR DEMO ---
 stockShelf(
