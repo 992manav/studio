@@ -1,3 +1,4 @@
+
 import type { Product } from "./types";
 
 export const products: Product[] = [];
@@ -44,8 +45,8 @@ const stockShelf = (
 const aisleZStart = -18;
 
 // --- AISLE 1: Groceries (x = -16) ---
-const aisle1XLeft = -17.8; // Left side of aisle 1
-const aisle1XRight = -14.2; // Right side of aisle 1
+const aisle1XLeft = -17.0;
+const aisle1XRight = -15.0;
 
 // Left Side
 stockShelf(
@@ -76,8 +77,8 @@ stockShelf(
 );
 
 // --- AISLE 2: Soda & Drinks (x = -8) ---
-const aisle2XLeft = -9.8;
-const aisle2XRight = -6.2;
+const aisle2XLeft = -9.0;
+const aisle2XRight = -7.0;
 const sodaCaseSize: [number, number, number] = [1.2, 0.4, 0.8];
 stockShelf(
   { name: "Coca-Cola 12-Pack", price: 5.98, description: "A 12-pack of classic Coca-Cola.", image: "https://th.bing.com/th/id/R.5c9ac9b6ffb1dc3d82471746047a5451?rik=KowRz4U1DFLOVQ&riu=http%3a%2f%2f1000logos.net%2fwp-content%2fuploads%2f2016%2f11%2fcoca-cola-emblem.jpg&ehk=oCRNNGPmRI0Ip5p4pqw3T38bl8ECsPu%2bdsknO%2bI5%2fAg%3d&risl=&pid=ImgRaw&r=0", category: "Groceries", size: sodaCaseSize, hint: "coke case" },
@@ -97,8 +98,8 @@ stockShelf(
 );
 
 // --- AISLE 3: Home Goods (x = 8) ---
-const aisle3XLeft = 6.2;
-const aisle3XRight = 9.8;
+const aisle3XLeft = 7.0;
+const aisle3XRight = 9.0;
 stockShelf(
   { name: "Bounty Paper Towels", price: 15.99, description: "Pack of 6 double rolls.", image: "https://tse2.mm.bing.net/th/id/OIP.5fmIz95FOnU2JwZjb6ZLpgHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", category: "Home Goods", size: [1.2, 1, 0.6], hint: "paper towels pack" },
   [aisle3XLeft, shelfY.low, aisleZStart], 12, "z"
@@ -113,8 +114,8 @@ stockShelf(
 );
 
 // --- AISLE 4: Pharmacy, Personal Care, Apparel (x = 16) ---
-const aisle4XLeft = 14.2;
-const aisle4XRight = 17.8;
+const aisle4XLeft = 15.0;
+const aisle4XRight = 17.0;
 stockShelf(
   { name: "Equate Ibuprofen", price: 8.98, description: "Pain reliever/fever reducer. 200mg tablets.", image: "https://i5.walmartimages.com/seo/Equate-Ibuprofen-Pain-Reliever-Fever-Reducer-Tablets-200-mg-500-Count_a6639695-8a2a-4fb4-89d4-1a3b01859846.1098d626e2579ac69c4c7953266a27e7.jpeg", category: "Pharmacy", size: [0.4, 0.6, 0.4], hint: "medicine bottle" },
   [aisle4XRight, shelfY.low, aisleZStart], 15, "z"
@@ -129,8 +130,8 @@ stockShelf(
 );
 
 // --- Back Aisle: Electronics, Toys, Sporting Goods (z = -22) ---
-const backAisleZBack = -23.8;
-const backAisleZFront = -20.2;
+const backAisleZBack = -23.0;
+const backAisleZFront = -21.0;
 const backAisleXStart = -18;
 stockShelf(
   { name: 'onn. 50" TV', price: 198.0, description: '50" Class 4K UHD LED Roku Smart TV.', image: "https://i5.walmartimages.com/seo/onn-50-Class-4K-UHD-2160P-LED-Roku-Smart-TV-HDR-100012585_a334f553-6058-450f-a968-b783f9872580.893c527cbfed8f0b7b12d1b822212f30.jpeg", category: "Electronics", size: [4.5, 2.5, 0.2], hint: "television box" },

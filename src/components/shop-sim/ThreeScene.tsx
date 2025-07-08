@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useRef, useEffect, useCallback, useState } from "react";
@@ -102,7 +103,7 @@ function createAisle(
   const backPanelGeo = new THREE.BoxGeometry(length, height, backPanelDepth);
   const backPanel = new THREE.Mesh(backPanelGeo, backPanelMaterial);
   backPanel.position.y = height / 2;
-  backPanel.position.z = -width / 2 + backPanelDepth / 2;
+  backPanel.position.z = 0; // Centered for double-sided aisle
   backPanel.receiveShadow = true;
   group.add(backPanel);
 
