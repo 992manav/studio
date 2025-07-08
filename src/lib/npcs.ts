@@ -67,13 +67,9 @@ export const npcs: Npc[] = [
     name: "Clara (Assistant)",
     personality:
       "The in-store avatar for the helpful AI assistant. Clara is knowledgeable, patient, and always ready to help customers find what they need.",
-    position: [-2, 0, 28],
+    position: [-5, 0, 31],
     color: "#f1c40f", // A distinct yellow/gold color
     isEmployee: true,
-    path: [
-      [-2, 0, 28],
-      [2, 0, 28],
-    ], // A short path to seem active but stay near the front
   },
   {
     id: 11,
