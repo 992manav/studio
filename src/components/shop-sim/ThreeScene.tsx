@@ -117,17 +117,18 @@ function createShoppingCart(): THREE.Group {
     wireframe: true,
   });
 
-  // Basket (Wireframe part)
+  // Basket (Wireframe part) - Increased size
   const basketPoints = [
-    new THREE.Vector3(-0.4, 0.5, -0.6), // bottom front left
-    new THREE.Vector3(0.4, 0.5, -0.6), // bottom front right
-    new THREE.Vector3(0.4, 0.5, 0.6), // bottom back right
-    new THREE.Vector3(-0.4, 0.5, 0.6), // bottom back left
-    new THREE.Vector3(-0.5, 1.0, -0.7), // top front left
-    new THREE.Vector3(0.5, 1.0, -0.7), // top front right
-    new THREE.Vector3(0.5, 1.0, 0.7), // top back right
-    new THREE.Vector3(-0.5, 1.0, 0.7), // top back left
+    new THREE.Vector3(-0.5, 0.5, -0.75), // bottom front left
+    new THREE.Vector3(0.5, 0.5, -0.75), // bottom front right
+    new THREE.Vector3(0.5, 0.5, 0.75), // bottom back right
+    new THREE.Vector3(-0.5, 0.5, 0.75), // bottom back left
+    new THREE.Vector3(-0.6, 1.0, -0.85), // top front left
+    new THREE.Vector3(0.6, 1.0, -0.85), // top front right
+    new THREE.Vector3(0.6, 1.0, 0.85), // top back right
+    new THREE.Vector3(-0.6, 1.0, 0.85), // top back left
   ];
+
 
   const basketGeo = new THREE.BufferGeometry().setFromPoints(basketPoints);
   basketGeo.setIndex([
@@ -155,11 +156,11 @@ function createShoppingCart(): THREE.Group {
     roughness: 0.3,
   });
 
-  // Handle
-  const handleBarGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.0, 8);
+  // Handle - Widened to match new cart size
+  const handleBarGeo = new THREE.CylinderGeometry(0.03, 0.03, 1.2, 8);
   const handleBar = new THREE.Mesh(handleBarGeo, frameMaterial);
   handleBar.rotation.z = Math.PI / 2;
-  handleBar.position.set(0, 1.1, 0.8);
+  handleBar.position.set(0, 1.1, 0.95); // Moved back slightly
   cart.add(handleBar);
 
   // Wheels
@@ -172,10 +173,11 @@ function createShoppingCart(): THREE.Group {
     wheel.position.set(x, 0.1, z);
     cart.add(wheel);
   };
-  createWheel(-0.35, -0.5);
-  createWheel(0.35, -0.5);
-  createWheel(-0.35, 0.5);
-  createWheel(0.35, 0.5);
+  // Repositioned for new cart size
+  createWheel(-0.45, -0.65);
+  createWheel(0.45, -0.65);
+  createWheel(-0.45, 0.65);
+  createWheel(0.45, 0.65);
 
   cart.traverse((child) => {
     if (child instanceof THREE.Mesh) {
@@ -2054,3 +2056,5 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     </div>
   );
 };
+
+    
