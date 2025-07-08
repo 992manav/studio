@@ -80,7 +80,7 @@ const aisle2XLeft = -9.8;
 const aisle2XRight = -6.2;
 const sodaCaseSize: [number, number, number] = [1.2, 0.4, 0.8];
 stockShelf(
-  { name: "Coca-Cola 12-Pack", price: 5.98, description: "A 12-pack of classic Coca-Cola.", image: "https://i5.walmartimages.com/seo/Coca-Cola-Classic-Soda-Pop-12-fl-oz-12-Pack-Cans_0b3e7f4e-9ea1-487a-85b5-555546dff42f.a465f13f99a6f1406541f544a434193b.jpeg", category: "Groceries", size: sodaCaseSize, hint: "coke case" },
+  { name: "Coca-Cola 12-Pack", price: 5.98, description: "A 12-pack of classic Coca-Cola.", image: "https://th.bing.com/th/id/R.5c9ac9b6ffb1dc3d82471746047a5451?rik=KowRz4U1DFLOVQ&riu=http%3a%2f%2f1000logos.net%2fwp-content%2fuploads%2f2016%2f11%2fcoca-cola-emblem.jpg&ehk=oCRNNGPmRI0Ip5p4pqw3T38bl8ECsPu%2bdsknO%2bI5%2fAg%3d&risl=&pid=ImgRaw&r=0", category: "Groceries", size: sodaCaseSize, hint: "coke case" },
   [aisle2XRight, shelfY.low, aisleZStart], 12, "z"
 );
 stockShelf(
@@ -88,7 +88,7 @@ stockShelf(
   [aisle2XRight, shelfY.mid, aisleZStart], 12, "z"
 );
 stockShelf(
-  { name: "Dr Pepper 12-Pack", price: 5.98, description: "A 12-pack of Dr Pepper soda.", image: "https://i5.walmartimages.com/seo/Dr-Pepper-Soda-12-pk-12-fl-oz_14532551-36f7-4a43-9023-f36894c1a5b8.81f21a5a3a726ea72483864f7b607065.jpeg", category: "Groceries", size: sodaCaseSize, hint: "dr pepper case" },
+  { name: "Dr Pepper 12-Pack", price: 5.98, description: "A 12-pack of Dr Pepper soda.", image: "https://logos-world.net/wp-content/uploads/2021/08/Dr-Pepper-Emblem.png", category: "Groceries", size: sodaCaseSize, hint: "dr pepper case" },
   [aisle2XLeft, shelfY.low, aisleZStart], 12, "z"
 );
 stockShelf(
