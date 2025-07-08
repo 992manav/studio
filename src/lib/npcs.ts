@@ -15,8 +15,6 @@ export const npcs: Npc[] = [
     path: [
       [-12, 0, 18],
       [-12, 0, -18],
-      [-19, 0, -18],
-      [-19, 0, 18],
     ],
   },
   {
@@ -29,8 +27,6 @@ export const npcs: Npc[] = [
     path: [
       [12, 0, 18],
       [12, 0, -18],
-      [19, 0, -18],
-      [19, 0, 18],
     ],
   },
   {
@@ -42,9 +38,7 @@ export const npcs: Npc[] = [
     color: "#2ecc71",
     path: [
       [0, 0, 18],
-      [0, 0, -28],
-      [12, 0, -28],
-      [12, 0, 18],
+      [0, 0, -18],
     ],
   },
   {
@@ -52,13 +46,11 @@ export const npcs: Npc[] = [
     name: "Eleanor",
     personality:
       "A sweet elderly lady moving slowly and carefully, admiring all the different products. She loves to chat.",
-    position: [0, 0, -20],
+    position: [0, 0, 10],
     color: "#9b59b6",
     path: [
-      [-19, 0, -28],
-      [19, 0, -28],
-      [19, 0, 20],
-      [-19, 0, 20],
+      [0, 0, 15],
+      [0, 0, -15],
     ],
   },
   // EMPLOYEES
