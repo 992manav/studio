@@ -2,6 +2,11 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
+  experimental: {
+    allowedDevOrigins: [
+      'https://9000-firebase-studio-1750716101127.cluster-zkm2jrwbnbd4awuedc2alqxrpk.cloudworkstations.dev',
+    ],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -85,6 +90,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'images.albertsons-media.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '4.imimg.com',
         port: '',
         pathname: '/**',
       },
