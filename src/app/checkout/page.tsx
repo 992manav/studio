@@ -10,7 +10,6 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { CreditCard, ShoppingCart } from "lucide-react";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -51,13 +50,6 @@ export default function CheckoutPage() {
   
   const { isValid } = form.formState;
 
-  // Redirect to home if cart is empty after initial mount
-  useEffect(() => {
-    if (cart.length === 0) {
-      router.replace("/");
-    }
-  }, [cart, router]);
-
   const subtotal = cart.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0
@@ -67,25 +59,22 @@ export default function CheckoutPage() {
   const total = subtotal + taxes + shipping;
   const discount = 0; // Placeholder for discount logic
 
-  const handlePlaceOrder = () => {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     const success = processTransaction();
     if (success) {
       router.push("/");
     }
-  };
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    handlePlaceOrder();
   }
 
   if (cart.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-gray-50 dark:bg-gray-900">
-        <ShoppingCart className="w-16 h-16 text-primary mb-4 animate-pulse" />
+        <ShoppingCart className="w-16 h-16 text-primary mb-4" />
         <h1 className="text-2xl font-bold mb-2">Your cart is empty</h1>
         <p className="text-muted-foreground mb-6">
-          Redirecting you to the store...
+          Add items to your cart to see them here.
         </p>
+        <Button onClick={() => router.push('/')}>Back to Store</Button>
       </div>
     );
   }
