@@ -1,4 +1,4 @@
-import type {NextConfig} from 'next';
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -91,6 +91,18 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: '5.imimg.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.pantry24.de',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'files.merca20.com',
         port: '',
         pathname: '/**',
       },

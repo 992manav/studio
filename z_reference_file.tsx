@@ -8,6 +8,7 @@ import { products } from "@/lib/products";
 import { npcs as allNpcs } from "@/lib/npcs";
 import type { Product, CartItem, Npc } from "@/lib/types";
 import { useGame } from "@/contexts/GameContext";
+import { TextureLoader } from "three";
 
 function createAisle(
   length: number,
@@ -16,45 +17,22 @@ function createAisle(
   width: number
 ): THREE.Group {
   const group = new THREE.Group();
-  // Default material (plain color)
-  const defaultShelfMaterial = new THREE.MeshStandardMaterial({
-    color: 0xeeeeee,
-    metalness: 0.1,
-    roughness: 0.8,
-  });
-  // Store shelf meshes to update later
-  const shelfMeshes: THREE.Mesh[] = [];
-  const shelfThickness = 0.05;
-  for (let i = 0; i < shelves; i++) {
-    const y =
-      (i * (height - shelfThickness)) / (shelves - 1) + shelfThickness / 2;
-    const shelfGeo = new THREE.BoxGeometry(length, shelfThickness, width);
-    const shelfMesh = new THREE.Mesh(shelfGeo, defaultShelfMaterial);
-    shelfMesh.position.y = y;
-    shelfMesh.castShadow = true;
-    shelfMesh.receiveShadow = true;
-    group.add(shelfMesh);
-    shelfMeshes.push(shelfMesh);
-  }
-  // Load wood texture and update shelf materials when loaded
+  let shelfMaterial;
   if (typeof window !== "undefined") {
-    const textureLoader = new THREE.TextureLoader();
-    textureLoader.load("/textures/wood.jpg", (woodTexture) => {
-      woodTexture.wrapS = THREE.RepeatWrapping;
-      woodTexture.wrapT = THREE.RepeatWrapping;
-      woodTexture.repeat.set(4, 2);
-      const woodMaterial = new THREE.MeshStandardMaterial({
-        map: woodTexture,
-        metalness: 0.1,
-        roughness: 0.8,
-      });
-      shelfMeshes.forEach((mesh) => {
-        mesh.material = woodMaterial;
-        mesh.material.needsUpdate = true;
-      });
+    const textureLoader = new TextureLoader();
+    const woodTexture = textureLoader.load("/textures/wood.jpg");
+    shelfMaterial = new THREE.MeshStandardMaterial({
+      map: woodTexture,
+      metalness: 0.1,
+      roughness: 0.8,
+    });
+  } else {
+    shelfMaterial = new THREE.MeshStandardMaterial({
+      color: 0xeeeeee,
+      metalness: 0.1,
+      roughness: 0.8,
     });
   }
-
   const supportMaterial = new THREE.MeshStandardMaterial({
     color: 0x555555,
     metalness: 0.5,
@@ -65,9 +43,22 @@ function createAisle(
     roughness: 0.8,
   });
 
+  const shelfThickness = 0.05;
   const supportWidth = 0.1;
   const supportDepth = 0.1;
   const backPanelDepth = 0.4; // Increased from 0.2
+
+  // Shelves
+  for (let i = 0; i < shelves; i++) {
+    const y =
+      (i * (height - shelfThickness)) / (shelves - 1) + shelfThickness / 2;
+    const shelfGeo = new THREE.BoxGeometry(length, shelfThickness, width);
+    const shelfMesh = new THREE.Mesh(shelfGeo, shelfMaterial);
+    shelfMesh.position.y = y;
+    shelfMesh.castShadow = true;
+    shelfMesh.receiveShadow = true;
+    group.add(shelfMesh);
+  }
 
   // Supports
   const numSupports = Math.floor(length / 6) + 2;
@@ -763,67 +754,18 @@ function createShelfLabel(
   return labelMesh;
 }
 
-function createCheckoutCounter(): THREE.Group {
-  const group = new THREE.Group();
-  group.userData.isCheckout = true;
-
-  const counterMaterial = new THREE.MeshStandardMaterial({
-    color: 0xcccccc,
-    metalness: 0.2,
-    roughness: 0.8,
-  });
-  const beltMaterial = new THREE.MeshStandardMaterial({
-    color: 0x333333,
-    roughness: 0.9,
-  });
-  const scannerMaterial = new THREE.MeshStandardMaterial({
-    color: 0xee4d4d,
-    metalness: 0.5,
-    roughness: 0.5,
-  });
-
-  const bodyGeo = new THREE.BoxGeometry(4, 1, 1.2);
-  const body = new THREE.Mesh(bodyGeo, counterMaterial);
-  body.position.y = 0.5;
-  body.castShadow = true;
-  body.receiveShadow = true;
-  group.add(body);
-
-  const beltGeo = new THREE.BoxGeometry(2.5, 0.1, 0.8);
-  const belt = new THREE.Mesh(beltGeo, beltMaterial);
-  belt.position.set(-0.6, 1.05, 0);
-  belt.receiveShadow = true;
-  group.add(belt);
-
-  const scannerBaseGeo = new THREE.BoxGeometry(0.8, 1.2, 0.8);
-  const scannerBase = new THREE.Mesh(scannerBaseGeo, counterMaterial);
-  scannerBase.position.set(1.4, 0.6, 0);
-  scannerBase.castShadow = true;
-  scannerBase.receiveShadow = true;
-  group.add(scannerBase);
-
-  const scannerLightGeo = new THREE.BoxGeometry(0.5, 0.05, 0.5);
-  const scannerLight = new THREE.Mesh(scannerLightGeo, scannerMaterial);
-  scannerLight.position.set(1.4, 1.25, 0);
-  group.add(scannerLight);
-
-  const clickBoxGeo = new THREE.BoxGeometry(4.2, 2, 1.4);
-  const clickBox = new THREE.Mesh(
-    clickBoxGeo,
-    new THREE.MeshBasicMaterial({ visible: false })
-  );
-  clickBox.position.y = 1;
-  group.add(clickBox);
-
-  return group;
+// Utility function to find an animation clip by name
+function findClip(
+  clips: THREE.AnimationClip[],
+  name: string
+): THREE.AnimationClip | undefined {
+  return clips.find((clip) => clip.name === name);
 }
 
 export const ThreeScene: React.FC<ThreeSceneProps> = ({
   onProductClick,
   onNpcClick,
   cart,
-  isChatting,
-  onCheckoutCounterClick,
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const { avatarConfig } = useGame();
@@ -831,7 +773,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   const hasCartRef = useRef(hasCart);
   hasCartRef.current = hasCart;
   const [hintMessage, setHintMessage] = useState("");
-  const [checkoutHint, setCheckoutHint] = useState("");
 
   const [showChatHint, setShowChatHint] = useState(false);
 
@@ -847,11 +788,8 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   const keysPressed = useRef<{ [key: string]: boolean }>({});
   const productMeshesRef = useRef<THREE.Mesh[]>([]);
   const npcMeshesRef = useRef<THREE.Group[]>([]);
-  const checkoutCountersRef = useRef<THREE.Group[]>([]);
   const collectibleCartsRef = useRef<THREE.Group[]>([]);
   const hintMessageRef = useRef("");
-  const checkoutHintRef = useRef("");
-  const isChattingRef = useRef(isChatting);
   const npcAnimationData = useRef<
     {
       model: THREE.Group;
@@ -865,10 +803,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   >([]);
   const clock = useRef(new THREE.Clock());
   const animationLoopId = useRef<number>();
-
-  useEffect(() => {
-    isChattingRef.current = isChatting;
-  }, [isChatting]);
 
   const takeCart = useCallback(
     (cartToTake: THREE.Group) => {
@@ -918,29 +852,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
 
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(pointer, cameraRef.current);
-
-      const checkoutIntersects = raycaster.intersectObjects(
-        checkoutCountersRef.current,
-        true
-      );
-      if (checkoutIntersects.length > 0) {
-        let clickedCounterGroup = checkoutIntersects[0].object;
-        while (
-          clickedCounterGroup.parent &&
-          !clickedCounterGroup.userData.isCheckout
-        ) {
-          clickedCounterGroup = clickedCounterGroup.parent;
-        }
-        if (clickedCounterGroup.userData.isCheckout) {
-          const distance = avatarRef.current.position.distanceTo(
-            clickedCounterGroup.position
-          );
-          if (distance < 6) {
-            onCheckoutCounterClick();
-            return;
-          }
-        }
-      }
 
       // Check for collectible cart click
       if (!hasCartRef.current) {
@@ -1002,7 +913,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
         }
       }
     },
-    [onProductClick, onNpcClick, takeCart, onCheckoutCounterClick]
+    [onProductClick, onNpcClick, takeCart]
   );
 
   const setAction = useCallback(
@@ -1061,22 +972,28 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const textureLoader = new THREE.TextureLoader();
 
     // Lighting
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8)); // Lower intensity for more contrast
-    const sunLight = new THREE.DirectionalLight(0xfff8e7, 0.7);
-    sunLight.position.set(-30, 80, 50);
-    sunLight.castShadow = true;
-    scene.add(sunLight);
+    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    directionalLight.position.set(-50, 60, 30);
+    directionalLight.castShadow = true;
+    directionalLight.shadow.mapSize.width = 1024;
+    directionalLight.shadow.mapSize.height = 1024;
+    directionalLight.shadow.camera.near = 1;
+    directionalLight.shadow.camera.far = 200;
+    directionalLight.shadow.camera.left = -100;
+    directionalLight.shadow.camera.right = 100;
+    directionalLight.shadow.camera.top = 100;
+    directionalLight.shadow.camera.bottom = -100;
+    directionalLight.shadow.bias = -0.001;
+    scene.add(directionalLight);
 
     // Floor
     const wallSize = 42;
-    const wallDepth = 80; // Reduced from 150
+    const wallDepth = 150;
     const floorGeometry = new THREE.PlaneGeometry(wallSize, wallDepth);
-    const woodTexture = textureLoader.load("/textures/wood.jpg");
-    woodTexture.wrapS = THREE.RepeatWrapping;
-    woodTexture.wrapT = THREE.RepeatWrapping;
-    woodTexture.repeat.set(10, 20); // Adjust tiling as needed
     const floorMaterial = new THREE.MeshStandardMaterial({
-      map: woodTexture,
+      color: 0xcccccc,
       roughness: 0.4,
       metalness: 0.1,
     });
@@ -1089,16 +1006,24 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     // Walls & Ceiling
     const wallHeight = 20;
     const wallMaterial = new THREE.MeshStandardMaterial({
-      color: 0xeaeaea, // Warmer light gray for walls
+      color: 0xf0f0f0,
       roughness: 0.9,
       metalness: 0.1,
     });
+
+    const backWall = new THREE.Mesh(
+      new THREE.PlaneGeometry(wallSize, wallHeight),
+      wallMaterial
+    );
+    backWall.position.set(0, wallHeight / 2, 46); // was -wallDepth / 2 - 40
+    backWall.receiveShadow = true;
+    scene.add(backWall);
 
     const leftWall = new THREE.Mesh(
       new THREE.PlaneGeometry(wallDepth, wallHeight),
       wallMaterial.clone()
     );
-    leftWall.position.set(-wallSize / 2, wallHeight / 2, 0); // Centered the wall
+    leftWall.position.set(-wallSize / 2, wallHeight / 2, -wallDepth / 2 + 75);
     leftWall.rotation.y = Math.PI / 2;
     leftWall.receiveShadow = true;
     scene.add(leftWall);
@@ -1107,7 +1032,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       new THREE.PlaneGeometry(wallDepth, wallHeight),
       wallMaterial.clone()
     );
-    rightWall.position.set(wallSize / 2, wallHeight / 2, 0); // Centered the wall
+    rightWall.position.set(wallSize / 2, wallHeight / 2, -wallDepth / 2 + 75);
     rightWall.rotation.y = -Math.PI / 2;
     rightWall.receiveShadow = true;
     scene.add(rightWall);
@@ -1164,49 +1089,37 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
 
     // Entrance Gates
     const gateLeft = createSecurityGate();
-    gateLeft.position.set(-4, 0, 32); // Moved closer
+    gateLeft.position.set(-4, 0, 42);
     const leftArm = gateLeft.getObjectByName("gateArm");
     if (leftArm) leftArm.rotation.y = -Math.PI / 8; // Slightly open
     scene.add(gateLeft);
 
     const gateRight = createSecurityGate();
-    gateRight.position.set(4, 0, 32); // Moved closer
+    gateRight.position.set(4, 0, 42);
     const rightArm = gateRight.getObjectByName("gateArm");
     if (rightArm) rightArm.rotation.y = Math.PI + Math.PI / 8; // Slightly open
     scene.add(gateRight);
-
-    // Checkout Counters
-    const checkoutCounters: THREE.Group[] = [];
-    const counterPositions = [-12, 0, 12];
-    counterPositions.forEach((x) => {
-      const counter = createCheckoutCounter();
-      counter.position.set(x, 0, 28);
-      counter.rotation.y = Math.PI; // Face the player as they enter
-      scene.add(counter);
-      checkoutCounters.push(counter);
-    });
-    checkoutCountersRef.current = checkoutCounters;
 
     // Move facade sign to match new wall position
     const signWidth = 40;
     const signHeight = 8;
     const facadeSign = createFacadeSign(signWidth, signHeight);
-    facadeSign.position.set(0, wallHeight - 10, wallDepth / 2 + 1); // just in front of wall
+    facadeSign.position.set(0, wallHeight - 10, 46.1); // just in front of wall
     scene.add(facadeSign);
 
     // Exterior Ground & Parking Lot
-    const sidewalkGeometry = new THREE.PlaneGeometry(wallSize, 6);
+    const sidewalkGeometry = new THREE.PlaneGeometry(wallSize, 12);
     const sidewalkMaterial = new THREE.MeshStandardMaterial({
       color: 0xbbbbbb,
       roughness: 0.6,
     });
     const sidewalk = new THREE.Mesh(sidewalkGeometry, sidewalkMaterial);
     sidewalk.rotation.x = -Math.PI / 2;
-    sidewalk.position.set(0, 0.01, wallDepth / 2 + 3);
+    sidewalk.position.set(0, 0.01, wallDepth / 2 + 6);
     sidewalk.receiveShadow = true;
     scene.add(sidewalk);
 
-    const parkingLotDepth = 4;
+    const parkingLotDepth = 6;
     const parkingLotGeometry = new THREE.PlaneGeometry(
       wallSize,
       parkingLotDepth
@@ -1217,9 +1130,44 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     });
     const parkingLot = new THREE.Mesh(parkingLotGeometry, parkingLotMaterial);
     parkingLot.rotation.x = -Math.PI / 2;
-    parkingLot.position.set(0, 0.01, wallDepth / 2 + 6 + parkingLotDepth / 2);
+    parkingLot.position.set(0, 0.01, wallDepth / 2 + 12 + parkingLotDepth / 2);
     parkingLot.receiveShadow = true;
     scene.add(parkingLot);
+
+    // Parking Lines & Cars
+    const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const lineLength = 5.0;
+    const lineGeo = new THREE.BoxGeometry(0.1, 0.03, lineLength);
+    const parkingSpaceWidth = 4;
+
+    const carColors = [
+      0xd4d4d4, 0xeeeeee, 0x4c4c4c, 0x1f4e8c, 0x8c1f1f, 0x2b2b2b,
+    ];
+
+    const createParkingRow = (zPos: number, direction: number) => {
+      for (let i = -1; i <= 1; i++) {
+        const line = new THREE.Mesh(lineGeo, lineMaterial);
+        line.position.set(i * parkingSpaceWidth, 0.02, zPos);
+        scene.add(line);
+
+        if (i < 1 && Math.random() > 0.85) {
+          // 15% chance of car
+          const car = createCar(
+            new THREE.Color(
+              carColors[Math.floor(Math.random() * carColors.length)]
+            )
+          );
+          const xPos = i * parkingSpaceWidth + parkingSpaceWidth / 2;
+          car.position.set(xPos, 0, zPos + direction * (lineLength / 2 + 1.2));
+          car.rotation.y =
+            (Math.PI / 2) * direction + (Math.random() - 0.5) * 0.1;
+          scene.add(car);
+        }
+      }
+    };
+
+    const firstRowZ = wallDepth / 2 + 12 + 3;
+    createParkingRow(firstRowZ, 1);
 
     // Bollards
     const bollardGeo = new THREE.CylinderGeometry(0.3, 0.3, 1.5, 16);
@@ -1230,7 +1178,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     });
     for (let i = 0; i < 4; i++) {
       const bollard = new THREE.Mesh(bollardGeo, bollardMat);
-      bollard.position.set(-15 + i * 10, 1.5 / 2, wallDepth / 2 - 1);
+      bollard.position.set(-15 + i * 10, 1.5 / 2, wallDepth / 2 + 2);
       bollard.castShadow = true;
       scene.add(bollard);
     }
@@ -1240,9 +1188,22 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const ceilingMaterial = new THREE.MeshStandardMaterial({ color: 0xdddddd });
     const ceiling = new THREE.Mesh(ceilingGeometry, ceilingMaterial);
     ceiling.position.y = wallHeight;
-    ceiling.position.z = 0; // Centered ceiling
+    ceiling.position.z = -wallDepth / 2 + 75;
     ceiling.rotation.x = Math.PI / 2;
     scene.add(ceiling);
+
+    // Produce Bins
+    const produceBin1 = createProduceBin(8, 4, 1);
+    produceBin1.position.set(-12, 0.5, 30);
+    scene.add(produceBin1);
+
+    const produceBin2 = createProduceBin(8, 4, 1);
+    produceBin2.position.set(0, 0.5, 30);
+    scene.add(produceBin2);
+
+    const produceBin3 = createProduceBin(8, 4, 1);
+    produceBin3.position.set(12, 0.5, 30);
+    scene.add(produceBin3);
 
     // Player Avatar
     const gltfLoader = new GLTFLoader();
@@ -1255,7 +1216,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       (gltf) => {
         const avatar = gltf.scene;
         avatar.scale.set(1.2, 1.2, 1.2); // Make it a bit bigger
-        avatar.position.set(0, 0, 35); // Moved closer to entrance
+        avatar.position.set(0, 0, 48);
         avatar.rotation.y = Math.PI; // Face into the store
 
         avatar.traverse((child) => {
@@ -1272,25 +1233,18 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           const mixer = new THREE.AnimationMixer(avatar);
           mixerRef.current = mixer;
 
-          // Find animation clips by name
-          const findClipByName = (name: string) => {
-            return gltf.animations.find((clip) => clip.name === name);
-          };
-
-          const idleClip = findClipByName("idle");
+          const idleClip =
+            findClip(gltf.animations, "idle") ||
+            findClip(gltf.animations, "Idle");
           if (idleClip) {
             animationsRef.current["idle"] = mixer.clipAction(idleClip);
           }
 
-          const walkClip = findClipByName("walk");
+          const walkClip =
+            findClip(gltf.animations, "walk") ||
+            findClip(gltf.animations, "Walk");
           if (walkClip) {
             animationsRef.current["walk"] = mixer.clipAction(walkClip);
-          }
-
-          const walkBackwardClip = findClipByName("walk.backward");
-          if (walkBackwardClip) {
-            animationsRef.current["walk.backward"] =
-              mixer.clipAction(walkBackwardClip);
           }
 
           if (animationsRef.current["idle"]) {
@@ -1388,7 +1342,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     // Cart Corral
     const collectibleCarts: THREE.Group[] = [];
     const corralX = -15;
-    const corralZ = 30;
+    const corralZ = 50;
     for (let i = 0; i < 2; i++) {
       for (let j = 0; j < 4; j++) {
         const cartModel = createShoppingCart();
@@ -1430,14 +1384,12 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       aisleHeight,
       aisleWidth
     );
-    backAisle.position.set(0, 0, -22);
+    backAisle.position.set(0, 0, -88);
     scene.add(backAisle);
 
     // Light Fixtures
-    const lightFixtureMaterial = new THREE.MeshStandardMaterial({
+    const lightFixtureMaterial = new THREE.MeshBasicMaterial({
       color: 0xffffff,
-      emissive: 0xffffff,
-      emissiveIntensity: 0.1,
     });
     const lightFixtureGeometry = new THREE.BoxGeometry(
       mainAisleLength,
@@ -1464,13 +1416,15 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       new THREE.BoxGeometry(backAisleLength, 0.2, 0.5),
       lightFixtureMaterial
     );
-    backAisleFixture.position.set(0, lightY, -22);
+    backAisleFixture.position.set(0, lightY, -88);
     scene.add(backAisleFixture);
     const backAisleLight = new THREE.PointLight(0xfff8e7, 40, 50, 1.2);
-    backAisleLight.position.set(0, lightY - 1, -22);
+    backAisleLight.position.set(0, lightY - 1, -88);
     scene.add(backAisleLight);
 
     // Products
+    // Texture cache to avoid loading the same image multiple times
+    const textureCache = new Map<string, THREE.Texture>();
     productMeshesRef.current = products.map((product) => {
       const productGeometry = new THREE.BoxGeometry(...product.size);
       const placeholderMaterial = new THREE.MeshStandardMaterial({
@@ -1478,24 +1432,54 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           Math.random() * 0.5 + 0.5
         ),
       });
-      const productMesh = new THREE.Mesh(productGeometry, placeholderMaterial);
+      const productMesh = new THREE.Mesh(
+        productGeometry,
+        placeholderMaterial as THREE.Material | THREE.Material[]
+      );
       productMesh.position.fromArray(product.position);
       productMesh.userData = product;
       productMesh.castShadow = true;
       productMesh.receiveShadow = true;
       scene.add(productMesh);
 
-      textureLoader.load(product.image, (texture) => {
-        texture.colorSpace = THREE.SRGBColorSpace;
-        texture.minFilter = THREE.LinearFilter;
-        texture.magFilter = THREE.LinearFilter;
-        if (rendererRef.current) {
-          texture.anisotropy =
-            rendererRef.current.capabilities.getMaxAnisotropy();
-        }
-        productMesh.material = new THREE.MeshStandardMaterial({ map: texture });
-        (productMesh.material as THREE.Material).needsUpdate = true;
-      });
+      // Use cached texture if available, otherwise load and cache it
+      const setProductMaterials = (texture: THREE.Texture | null) => {
+        const frontMaterial = texture
+          ? new THREE.MeshStandardMaterial({ map: texture })
+          : new THREE.MeshStandardMaterial({ color: 0xffcc00 }); // fallback color (yellow)
+        const materials = [
+          new THREE.MeshStandardMaterial({ color: 0xcccccc }), // right
+          new THREE.MeshStandardMaterial({ color: 0xcccccc }), // left
+          new THREE.MeshStandardMaterial({ color: 0xcccccc }), // top
+          new THREE.MeshStandardMaterial({ color: 0xcccccc }), // bottom
+          frontMaterial, // front
+          new THREE.MeshStandardMaterial({ color: 0xcccccc }), // back
+        ];
+        productMesh.material = materials;
+      };
+
+      if (textureCache.has(product.image)) {
+        setProductMaterials(textureCache.get(product.image)!);
+      } else {
+        textureLoader.load(
+          product.image,
+          (texture) => {
+            texture.colorSpace = THREE.SRGBColorSpace;
+            texture.minFilter = THREE.LinearFilter;
+            texture.magFilter = THREE.LinearFilter;
+            textureCache.set(product.image, texture);
+            setProductMaterials(texture);
+          },
+          undefined,
+          (err) => {
+            console.error(
+              `Failed to load product image: ${product.image}`,
+              err
+            );
+            setProductMaterials(null); // fallback
+          }
+        );
+      }
 
       return productMesh;
     });
@@ -1505,6 +1489,13 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
     const aisleSignSize = { width: 6, height: 8 };
     const categorySignSize = { width: 10, height: 6 };
 
+    const checkoutSign = createHangingSign(
+      { largeText: "CHECKOUT" },
+      { width: 12, height: 4 }
+    );
+    checkoutSign.position.set(0, signY, 40);
+    scene.add(checkoutSign);
+
     const groceryAisleSign = createHangingSign(
       {
         header: "A1 / A2",
@@ -1512,7 +1503,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    groceryAisleSign.position.set(-12, signY, 22);
+    groceryAisleSign.position.set(-16, signY, 22);
     scene.add(groceryAisleSign);
 
     const drinksAisleSign = createHangingSign(
@@ -1522,8 +1513,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    drinksAisleSign.position.set(-4, signY, 22);
-    drinksAisleSign.rotation.y = -Math.PI / 4;
+    drinksAisleSign.position.set(-8, signY, 22);
     scene.add(drinksAisleSign);
 
     const homeGoodsAisleSign = createHangingSign(
@@ -1533,8 +1523,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    homeGoodsAisleSign.position.set(4, signY, 22);
-    homeGoodsAisleSign.rotation.y = Math.PI / 4;
+    homeGoodsAisleSign.position.set(8, signY, 22);
     scene.add(homeGoodsAisleSign);
 
     const apparelAisleSign = createHangingSign(
@@ -1544,7 +1533,7 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       categorySignSize
     );
-    apparelAisleSign.position.set(12, signY, 22);
+    apparelAisleSign.position.set(16, signY, 22);
     scene.add(apparelAisleSign);
 
     const electronicsAisleSign = createHangingSign(
@@ -1554,13 +1543,115 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       },
       aisleSignSize
     );
-    electronicsAisleSign.position.set(0, signY, -10);
+    electronicsAisleSign.position.set(0, signY, -76);
     electronicsAisleSign.rotation.y = Math.PI / 2;
     scene.add(electronicsAisleSign);
 
+    // Shelf Labels
+    const labelY = aisleHeight + 2.8;
+    const labelSize = { width: 8, height: 0.4 };
+    const longLabelSize = { width: 12, height: 0.4 };
+
+    const aisle1XLeft = -18;
+    const aisle1XRight = -14;
+    const aisle2XLeft = -10;
+    const aisle2XRight = -6;
+    const aisle3XLeft = 6;
+    const aisle3XRight = 10;
+    const aisle4XLeft = 14;
+    const aisle4XRight = 18;
+
+    const backAisleZBack = -90;
+    const backAisleZFront = -86;
+
+    const backAisleLabelY = aisleHeight + 1.5;
+    const electronicsLabel = createShelfLabel("Electronics & TVs", labelSize);
+    electronicsLabel.position.set(-10, backAisleLabelY, backAisleZFront);
+    scene.add(electronicsLabel);
+
+    const toysLabel = createShelfLabel("Toys & Games", labelSize);
+    toysLabel.position.set(10, backAisleLabelY, backAisleZFront);
+    scene.add(toysLabel);
+
+    const outdoorsLabel = createShelfLabel(
+      "Outdoors & Sporting Goods",
+      longLabelSize
+    );
+    outdoorsLabel.position.set(0, backAisleLabelY, backAisleZBack);
+    outdoorsLabel.rotation.y = Math.PI;
+    scene.add(outdoorsLabel);
+
+    const aisle1LabelsZ = [-10, 10];
+    const aisle1LeftLabels = ["Cereal & Breakfast", "Pasta & Sauces"];
+    const aisle1RightLabels = ["Snacks & Cookies", "Bakery & Dairy"];
+    aisle1LabelsZ.forEach((z, i) => {
+      const leftLabel = createShelfLabel(aisle1LeftLabels[i], labelSize);
+      leftLabel.position.set(aisle1XLeft, labelY, z);
+      leftLabel.rotation.y = Math.PI / 2; // Faces +X
+      scene.add(leftLabel);
+
+      const rightLabel = createShelfLabel(aisle1RightLabels[i], labelSize);
+      rightLabel.position.set(aisle1XRight, labelY, z);
+      rightLabel.rotation.y = -Math.PI / 2; // Faces -X
+      scene.add(rightLabel);
+    });
+
+    // Aisle 2 has products on both sides, give it labels on both sides
+    const aisle2LeftLabel = createShelfLabel(
+      "Soda, Juice & Drinks",
+      longLabelSize
+    );
+    aisle2LeftLabel.position.set(aisle2XLeft, labelY, 0);
+    aisle2LeftLabel.rotation.y = Math.PI / 2; // Faces +X
+    scene.add(aisle2LeftLabel);
+
+    const aisle2RightLabel = createShelfLabel(
+      "Soda, Juice & Drinks",
+      longLabelSize
+    );
+    aisle2RightLabel.position.set(aisle2XRight, labelY, 0);
+    aisle2RightLabel.rotation.y = -Math.PI / 2; // Faces -X
+    scene.add(aisle2RightLabel);
+
+    // Aisle 3 has products on both sides, give it labels on both sides
+    const aisle3LeftLabel = createShelfLabel(
+      "Home, Cleaning & Kitchen",
+      longLabelSize
+    );
+    aisle3LeftLabel.position.set(aisle3XLeft, labelY, 0);
+    aisle3LeftLabel.rotation.y = Math.PI / 2; // Faces +X
+    scene.add(aisle3LeftLabel);
+
+    const aisle3RightLabel = createShelfLabel(
+      "Home, Cleaning & Kitchen",
+      longLabelSize
+    );
+    aisle3RightLabel.position.set(aisle3XRight, labelY, 0);
+    aisle3RightLabel.rotation.y = -Math.PI / 2; // Faces -X
+    scene.add(aisle3RightLabel);
+
+    const apparelLabel = createShelfLabel("Apparel", labelSize);
+    apparelLabel.position.set(aisle4XLeft, labelY, 0);
+    apparelLabel.rotation.y = Math.PI / 2; // Faces +X
+    scene.add(apparelLabel);
+
+    const personalCareLabel = createShelfLabel(
+      "Personal Care & Pharmacy",
+      longLabelSize
+    );
+    personalCareLabel.position.set(aisle4XRight, labelY, 0);
+    personalCareLabel.rotation.y = -Math.PI / 2; // Faces -X
+    scene.add(personalCareLabel);
+
+    const produceLabel = createShelfLabel("Fresh Produce", {
+      width: 15,
+      height: 1.2,
+    });
+    produceLabel.position.set(0, 3.5, 28);
+    scene.add(produceLabel);
+
     // Event Listeners
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isChattingRef.current) return;
       if (!event.key) return;
       const key = event.key.toLowerCase();
       keysPressed.current[key] = true;
@@ -1585,18 +1676,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
         if (closestCart && minDistance < 4) {
           // Interaction distance
           takeCart(closestCart);
-        }
-      }
-
-      if (key === "c" && !isChattingRef.current) {
-        if (avatarRef.current) {
-          const isNearCheckout = checkoutCountersRef.current.some(
-            (counter) =>
-              avatarRef.current!.position.distanceTo(counter.position) < 6
-          );
-          if (isNearCheckout) {
-            onCheckoutCounterClick();
-          }
         }
       }
     };
@@ -1628,54 +1707,35 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
         return;
       }
 
-      let desiredAction = "idle";
-      if (!isChattingRef.current) {
-        if (keysPressed.current["w"]) {
-          desiredAction = "walk";
-        } else if (keysPressed.current["s"]) {
-          desiredAction = animationsRef.current["walk.backward"]
-            ? "walk.backward"
-            : "walk";
-        }
+      const isMoving =
+        keysPressed.current["w"] ||
+        keysPressed.current["s"] ||
+        keysPressed.current["a"] ||
+        keysPressed.current["d"];
+
+      if (isMoving && animationsRef.current.walk) {
+        setAction(animationsRef.current.walk);
+      } else if (animationsRef.current.idle) {
+        setAction(animationsRef.current.idle);
       }
 
-      if (activeActionRef.current?.getClip().name !== desiredAction) {
-        const toAction = animationsRef.current[desiredAction];
-        if (toAction) {
-          if (desiredAction === "walk" && keysPressed.current["s"]) {
-            toAction.timeScale = -1; // Play walk animation backwards
-          } else {
-            toAction.timeScale = 1;
-          }
-          setAction(toAction);
-        }
+      const moveSpeed = 5.0; // units per second
+      const rotateSpeed = 2.0; // radians per second
+
+      const forward = new THREE.Vector3();
+      avatarRef.current.getWorldDirection(forward);
+
+      if (keysPressed.current["w"]) {
+        avatarRef.current.position.addScaledVector(forward, moveSpeed * delta);
       }
-
-      if (avatarRef.current && !isChattingRef.current) {
-        const moveSpeed = 5.0; // units per second
-        const rotateSpeed = 2.0; // radians per second
-
-        const forward = new THREE.Vector3();
-        avatarRef.current.getWorldDirection(forward);
-
-        if (keysPressed.current["w"]) {
-          avatarRef.current.position.addScaledVector(
-            forward,
-            moveSpeed * delta
-          );
-        }
-        if (keysPressed.current["s"]) {
-          avatarRef.current.position.addScaledVector(
-            forward,
-            -moveSpeed * delta
-          );
-        }
-        if (keysPressed.current["a"]) {
-          avatarRef.current.rotation.y += rotateSpeed * delta;
-        }
-        if (keysPressed.current["d"]) {
-          avatarRef.current.rotation.y -= rotateSpeed * delta;
-        }
+      if (keysPressed.current["s"]) {
+        avatarRef.current.position.addScaledVector(forward, -moveSpeed * delta);
+      }
+      if (keysPressed.current["a"]) {
+        avatarRef.current.rotation.y += rotateSpeed * delta;
+      }
+      if (keysPressed.current["d"]) {
+        avatarRef.current.rotation.y -= rotateSpeed * delta;
       }
 
       // Check for cart interaction hint
@@ -1707,24 +1767,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           hintMessageRef.current = "";
           setHintMessage("");
         }
-      }
-
-      // Check for checkout interaction hint
-      let newCheckoutHint = "";
-      if (avatarRef.current) {
-        const isNearCheckout = checkoutCountersRef.current.some(
-          (counter) =>
-            avatarRef.current!.position.distanceTo(counter.position) < 6
-        );
-
-        if (isNearCheckout) {
-          newCheckoutHint = "Press 'C' to checkout";
-        }
-      }
-
-      if (newCheckoutHint !== checkoutHintRef.current) {
-        checkoutHintRef.current = newCheckoutHint;
-        setCheckoutHint(newCheckoutHint);
       }
 
       // NPC Movement
@@ -1790,19 +1832,16 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
       }
 
       // Camera follows avatar
-      cameraRef.current.position.lerp(
-        new THREE.Vector3()
-          .copy(avatarRef.current.position)
-          .add(
-            new THREE.Vector3(0, 2.2, -3.5).applyQuaternion(
-              avatarRef.current.quaternion
-            )
-          ),
-        1
+      const cameraOffset = new THREE.Vector3(0, 2.2, -3.5);
+      const cameraPosition = cameraOffset.applyMatrix4(
+        avatarRef.current.matrixWorld
       );
-      cameraRef.current.lookAt(
-        avatarRef.current.position.clone().add(new THREE.Vector3(0, 1.6, 0))
-      );
+      cameraRef.current.position.lerp(cameraPosition, 0.2);
+
+      const lookAtPosition = avatarRef.current.position
+        .clone()
+        .add(new THREE.Vector3(0, 1.6, 0));
+      cameraRef.current.lookAt(lookAtPosition);
 
       rendererRef.current.render(sceneRef.current, cameraRef.current);
     };
@@ -1887,7 +1926,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
           productMesh.material = new THREE.MeshStandardMaterial({
             map: texture,
           });
-          (productMesh.material as THREE.Material).needsUpdate = true;
         });
 
         group.add(productMesh);
@@ -1956,7 +1994,6 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   useEffect(() => {
     let lastCPress = 0;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (isChattingRef.current) return;
       if (event.key.toLowerCase() === "c") {
         const now = Date.now();
         if (now - lastCPress < 400) {
@@ -2003,45 +2040,32 @@ export const ThreeScene: React.FC<ThreeSceneProps> = ({
   return (
     <div className="relative w-full h-full">
       <div ref={mountRef} className="w-full h-full cursor-pointer" />
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
-        {hintMessage && (
-          <div className="rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
-            <p className="font-semibold text-lg">
-              Press{" "}
-              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-                E
-              </kbd>{" "}
-              to take cart
-            </p>
-          </div>
-        )}
-        {checkoutHint && (
-          <div className="rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
-            <p className="font-semibold text-lg">
-              Press{" "}
-              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-                C
-              </kbd>{" "}
-              to checkout
-            </p>
-          </div>
-        )}
-        {showChatHint && (
-          <div className="rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
-            <p className="font-semibold text-lg">
-              Press{" "}
-              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-                C
-              </kbd>{" "}
-              or{" "}
-              <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
-                CC
-              </kbd>{" "}
-              to chat with nearest customer
-            </p>
-          </div>
-        )}
-      </div>
+      {hintMessage && (
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
+          <p className="font-semibold text-lg">
+            Press{" "}
+            <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+              E
+            </kbd>{" "}
+            to take cart
+          </p>
+        </div>
+      )}
+      {showChatHint && (
+        <div className="absolute bottom-36 left-1/2 -translate-x-1/2 rounded-lg bg-background/80 p-4 text-foreground shadow-lg border animate-in fade-in-0">
+          <p className="font-semibold text-lg">
+            Press{" "}
+            <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+              C
+            </kbd>{" "}
+            or{" "}
+            <kbd className="rounded-md border bg-muted px-2 py-1.5 text-lg font-mono">
+              CC
+            </kbd>{" "}
+            to chat with nearest customer
+          </p>
+        </div>
+      )}
     </div>
   );
 };
@@ -2049,6 +2073,4 @@ interface ThreeSceneProps {
   onProductClick: (product: Product | number) => void;
   onNpcClick: (npc: Npc) => void;
   cart: CartItem[];
-  isChatting: boolean;
-  onCheckoutCounterClick: () => void;
 }

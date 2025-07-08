@@ -7,11 +7,46 @@ export function createAisle(
   width: number
 ): THREE.Group {
   const group = new THREE.Group();
-  const shelfMaterial = new THREE.MeshStandardMaterial({
+  // Default material (plain color)
+  const defaultShelfMaterial = new THREE.MeshStandardMaterial({
     color: 0xeeeeee,
     metalness: 0.1,
     roughness: 0.8,
   });
+  // Store shelf meshes to update later
+  const shelfMeshes: THREE.Mesh[] = [];
+  // Create shelves with default material
+  const shelfThickness = 0.05;
+  for (let i = 0; i < shelves; i++) {
+    const y =
+      (i * (height - shelfThickness)) / (shelves - 1) + shelfThickness / 2;
+    const shelfGeo = new THREE.BoxGeometry(length, shelfThickness, width);
+    const shelfMesh = new THREE.Mesh(shelfGeo, defaultShelfMaterial);
+    shelfMesh.position.y = y;
+    shelfMesh.castShadow = true;
+    shelfMesh.receiveShadow = true;
+    group.add(shelfMesh);
+    shelfMeshes.push(shelfMesh);
+  }
+  // Load wood texture and update shelf materials when loaded
+  if (typeof window !== "undefined") {
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      "/textures/wood.jpg",
+      (woodTexture) => {
+        woodTexture.wrapS = THREE.RepeatWrapping;
+        woodTexture.wrapT = THREE.RepeatWrapping;
+        woodTexture.repeat.set(4, 2);
+        const woodMaterial = new THREE.MeshStandardMaterial({
+          color: 0xff0000,
+        });
+        shelfMeshes.forEach((mesh) => {
+          mesh.material = woodMaterial;
+          mesh.material.needsUpdate = true;
+        });
+      }
+    );
+  }
   const supportMaterial = new THREE.MeshStandardMaterial({
     color: 0x555555,
     metalness: 0.5,
@@ -21,20 +56,9 @@ export function createAisle(
     color: 0xbababa,
     roughness: 0.8,
   });
-  const shelfThickness = 0.05;
   const supportWidth = 0.1;
   const supportDepth = 0.1;
   const backPanelDepth = 0.4;
-  for (let i = 0; i < shelves; i++) {
-    const y =
-      (i * (height - shelfThickness)) / (shelves - 1) + shelfThickness / 2;
-    const shelfGeo = new THREE.BoxGeometry(length, shelfThickness, width);
-    const shelfMesh = new THREE.Mesh(shelfGeo, shelfMaterial);
-    shelfMesh.position.y = y;
-    shelfMesh.castShadow = true;
-    shelfMesh.receiveShadow = true;
-    group.add(shelfMesh);
-  }
   const numSupports = Math.floor(length / 6) + 2;
   for (let i = 0; i < numSupports; i++) {
     const x = -length / 2 + i * (length / (numSupports - 1));

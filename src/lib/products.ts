@@ -34,7 +34,7 @@ const stockShelf = (
       id: currentId++,
       position: [
         position[0],
-        position[1] + baseProduct.size[1] / 2,
+        position[1] + baseProduct.size[1] / 2 - 0.05,
         position[2],
       ],
     });
@@ -49,30 +49,30 @@ const aisle1XRight = -14.2; // Right side of aisle 1
 
 // Left Side
 stockShelf(
-  { name: "Honey Nut Cheerios", price: 4.12, description: "A family size box of whole grain oat cereal.", image: "https://i5.walmartimages.com/seo/General-Mills-Honey-Nut-Cheerios-Heart-Healthy-Cereal-Family-Size-18-8-oz_c6b12a05-341a-464a-9ce8-4f79aa0b31e9.37a77d243a75583311451528c11540d9.jpeg", category: "Groceries", size: [0.8, 1, 0.3], hint: "cereal box" },
+  { name: "Honey Nut Cheerios", price: 4.12, description: "A family size box of whole grain oat cereal.", image: "https://cdn.shopify.com/s/files/1/0266/4075/2726/products/cheerios_1024x1024.png", category: "Groceries", size: [0.8, 1, 0.3], hint: "cereal box" },
   [aisle1XLeft, shelfY.high, aisleZStart], 8, "z"
 );
 stockShelf(
-    { name: "Campbell's Tomato Soup", price: 1.5, description: "Classic condensed tomato soup.", image: "https://i5.walmartimages.com/seo/Campbell-s-Condensed-Tomato-Soup-10-75-oz-Can_a5264875-9c86-455b-8041-e4a89966d11a.2a4729424686411f185a2195e7c8441d.jpeg", category: "Groceries", size: [0.3, 0.5, 0.3], hint: "soup can" },
-    [aisle1XLeft, shelfY.mid, aisleZStart], 10, "z"
+  { name: "Campbell's Tomato Soup", price: 1.5, description: "Classic condensed tomato soup.", image: "https://cdn.shopify.com/s/files/1/0266/4075/2726/products/campbells-soup_1024x1024.png", category: "Groceries", size: [0.3, 0.5, 0.3], hint: "soup can" },
+  [aisle1XLeft, shelfY.mid, aisleZStart], 10, "z"
 );
 stockShelf(
-    { name: "Spaghetti Pasta", price: 1.28, description: "A box of classic spaghetti.", image: "https://i5.walmartimages.com/seo/Great-Value-Spaghetti-16-oz_b3598528-2231-4e48-b445-6a58f7f2b053.a973a98075abe21396a570d55fac158d.jpeg", category: "Groceries", size: [0.8, 0.2, 0.4], hint: "pasta box" },
-    [aisle1XLeft, shelfY.low, aisleZStart], 10, "z"
+  { name: "Spaghetti Pasta", price: 1.28, description: "A box of classic spaghetti.", image: "https://i5.walmartimages.com/seo/Great-Value-Spaghetti-16-oz_b3598528-2231-4e48-b445-6a58f7f2b053.a973a98075abe21396a570d55fac158d.jpeg", category: "Groceries", size: [0.8, 0.2, 0.4], hint: "pasta box" },
+  [aisle1XLeft, shelfY.low, aisleZStart], 10, "z"
 );
 
 // Right Side
 stockShelf(
-  { name: "Lays Classic Chips", price: 3.5, description: "A party size bag of classic potato chips.", image: "https://i5.walmartimages.com/seo/Lay-s-Classic-Potato-Chips-Party-Size-13-oz-Bag_1c178abc-3559-466f-bf83-11b025b42d7b.497c2707293a525f20f0b4d4a86a2b85.jpeg", category: "Groceries", size: [0.8, 1, 0.4], hint: "potato chips" },
+  { name: "Lays Classic Chips", price: 3.5, description: "A party size bag of classic potato chips.", image: "https://images.squarespace-cdn.com/content/v1/5e73e506323a8f2617853507/9018ca92-3b95-426c-8ccf-3d3065f5a0ce/lays-classiic-potato-chips-min.png", category: "Groceries", size: [0.8, 1, 0.4], hint: "potato chips" },
   [aisle1XRight, shelfY.high, aisleZStart], 8, "z"
 );
 stockShelf(
-    { name: "Oreo Cookies", price: 3.78, description: "A family size pack of classic Oreo cookies.", image: "https://i5.walmartimages.com/seo/Oreo-Chocolate-Sandwich-Cookies-Family-Size-18-71-oz_6a44a69b-8557-4342-b1d0-607238276e18.e795a2f55f60f6ac92451368c3455a5b.jpeg", category: "Groceries", size: [0.7, 0.3, 0.2], hint: "cookie package" },
-    [aisle1XRight, shelfY.mid, aisleZStart], 10, "z"
+  { name: "Oreo Cookies", price: 3.78, description: "A family size pack of classic Oreo cookies.", image: "https://www.pantry24.de/wp-content/uploads/2023/02/Oreo-170g.jpg", category: "Groceries", size: [0.7, 0.3, 0.2], hint: "cookie package" },
+  [aisle1XRight, shelfY.mid, aisleZStart], 10, "z"
 );
 stockShelf(
-    { name: "Great Value Bread", price: 2.24, description: "Classic white sandwich bread.", image: "https://i5.walmartimages.com/seo/Great-Value-White-Sandwich-Bread-20-oz_39a16f27-681b-4155-83f5-0dee7815d013.882cb973166d7346617a6c0b39926487.jpeg", category: "Groceries", size: [0.5, 0.5, 1], hint: "bread loaf" },
-    [aisle1XRight, shelfY.low, aisleZStart], 6, "z"
+  { name: "Great Value Bread", price: 2.24, description: "Classic white sandwich bread.", image: "https://i5.walmartimages.com/asr/fd804f80-f09b-44c5-b02c-c7ab592b12f3.32fa78c99c51e374a327a1743e83d4f9.jpeg", category: "Groceries", size: [0.5, 0.5, 1], hint: "bread loaf" },
+  [aisle1XRight, shelfY.low, aisleZStart], 6, "z"
 );
 
 // --- AISLE 2: Soda & Drinks (x = -8) ---
@@ -84,7 +84,7 @@ stockShelf(
   [aisle2XRight, shelfY.low, aisleZStart], 12, "z"
 );
 stockShelf(
-  { name: "Pepsi 12-Pack", price: 5.98, description: "A 12-pack of classic Pepsi cola.", image: "https://i5.walmartimages.com/seo/Pepsi-Cola-Soda-Pop-12-fl-oz-12-Pack-Cans_7663737b-9441-479d-8353-28956b647f0e.dcf84a3233b2931a28a381014a6a5786.jpeg", category: "Groceries", size: sodaCaseSize, hint: "pepsi case" },
+  { name: "Pepsi 12-Pack", price: 5.98, description: "A 12-pack of classic Pepsi cola.", image: "https://i0.wp.com/www.printmag.com/wp-content/uploads/2023/03/Screen-Shot-2023-03-30-at-12.00.38-PM.png?fit=1568%2C650&quality=80&ssl=1", category: "Groceries", size: sodaCaseSize, hint: "pepsi case" },
   [aisle2XRight, shelfY.mid, aisleZStart], 12, "z"
 );
 stockShelf(
@@ -100,7 +100,7 @@ stockShelf(
 const aisle3XLeft = 6.2;
 const aisle3XRight = 9.8;
 stockShelf(
-  { name: "Bounty Paper Towels", price: 15.99, description: "Pack of 6 double rolls.", image: "https://i5.walmartimages.com/seo/Bounty-Select-A-Size-Paper-Towels-2-Double-Rolls-5-Regular-Rolls_11d68545-5688-4673-86c0-b3846663558c.319589e47264a8525b6d573f50800d3b.jpeg", category: "Home Goods", size: [1.2, 1, 0.6], hint: "paper towels pack" },
+  { name: "Bounty Paper Towels", price: 15.99, description: "Pack of 6 double rolls.", image: "https://tse2.mm.bing.net/th/id/OIP.5fmIz95FOnU2JwZjb6ZLpgHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", category: "Home Goods", size: [1.2, 1, 0.6], hint: "paper towels pack" },
   [aisle3XLeft, shelfY.low, aisleZStart], 12, "z"
 );
 stockShelf(
@@ -108,7 +108,7 @@ stockShelf(
   [aisle3XLeft, shelfY.bottom, aisleZStart], 10, "z"
 );
 stockShelf(
-  { name: "Clorox Disinfecting Wipes", price: 4.99, description: "Crisp lemon scent disinfecting wipes.", image: "https://i5.walmartimages.com/seo/Clorox-Disinfecting-Wipes-Bleach-Free-Cleaning-Wipes-Crisp-Lemon-75-Wipes_653905c8-2f19-42e2-9a3d-c3639a03f47e.165e6c703eb45c613063f1a0517725b8.jpeg", category: "Home Goods", size: [0.5, 0.7, 0.5], hint: "wipes container" },
+  { name: "Clorox Disinfecting Wipes", price: 4.99, description: "Crisp lemon scent disinfecting wipes.", image: "https://www.gosupps.com/media/catalog/product/cache/25/image/1500x/040ec09b1e35df139433887a97daa66f/9/1/91RhF8-w9eL._AC_SL1500_.jpg", category: "Home Goods", size: [0.5, 0.7, 0.5], hint: "wipes container" },
   [aisle3XRight, shelfY.high, aisleZStart], 15, "z"
 );
 
@@ -137,11 +137,11 @@ stockShelf(
   [backAisleXStart, shelfY.low, backAisleZBack], 8, "x"
 );
 stockShelf(
-  { name: "LEGO Classic Bricks", price: 20.0, description: "A box of 484 classic LEGO bricks.", image: "https://i5.walmartimages.com/seo/LEGO-Classic-Medium-Creative-Brick-Box-10696-Building-Toy-484-Pieces_a298f219-411a-4a64-9686-5d752d96e5d0.c4e5111b1c67d710034d6739b61d3e91.jpeg", category: "Toys", size: [1.2, 0.8, 0.5], hint: "lego box" },
+  { name: "LEGO Classic Bricks", price: 20.0, description: "A box of 484 classic LEGO bricks.", image: "https://digilego.com/wp-content/uploads/2021/10/Lego-Logo-Color-Feature.jpg", category: "Toys", size: [1.2, 0.8, 0.5], hint: "lego box" },
   [backAisleXStart, shelfY.bottom, backAisleZFront], 12, "x"
 );
 stockShelf(
-  { name: "Spalding Basketball", price: 15.88, description: "Official size street basketball.", image: "https://i5.walmartimages.com/seo/Spalding-NBA-Street-Outdoor-Basketball-Official-Size-7-29-5_b4e94326-9d62-4211-a88a-d47575910c2c.d25816c42337d4576f4e19b95955b248.jpeg", category: "Sporting Goods", size: [0.8, 0.8, 0.8], hint: "basketball" },
+  { name: "Spalding Basketball", price: 15.88, description: "Official size street basketball.", image: "https://tse3.mm.bing.net/th/id/OIP.6wWrH6g6FnhKQku3nqlt2gHaHa?r=0&rs=1&pid=ImgDetMain&o=7&rm=3", category: "Sporting Goods", size: [0.8, 0.8, 0.8], hint: "basketball" },
   [backAisleXStart + 25, shelfY.low, backAisleZFront], 10, "x"
 );
 
@@ -151,7 +151,7 @@ const pepsiStackPos = { x: -10, y: sodaCaseSize[1] / 2, z: displayZ };
 for (let i = 0; i < 3; i++) {
   for (let j = 0; j < 3; j++) {
     for (let k = 0; k < 2; k++) {
-      products.push({ id: currentId++, name: "Pepsi 12-Pack (Display)", price: 5.98, description: "A 12-pack of classic Pepsi cola.", image: "https://i5.walmartimages.com/seo/Pepsi-Cola-Soda-Pop-12-fl-oz-12-Pack-Cans_7663737b-9441-479d-8353-28956b647f0e.dcf84a3233b2931a28a381014a6a5786.jpeg", category: "Groceries", position: [ pepsiStackPos.x + j * sodaCaseSize[0], sodaCaseSize[1] / 2 + i * sodaCaseSize[1], pepsiStackPos.z + k * sodaCaseSize[2], ], size: sodaCaseSize, hint: "pepsi case", });
+      products.push({ id: currentId++, name: "Pepsi 12-Pack (Display)", price: 5.98, description: "A 12-pack of classic Pepsi cola.", image: "https://i0.wp.com/www.printmag.com/wp-content/uploads/2023/03/Screen-Shot-2023-03-30-at-12.00.38-PM.png?fit=1568%2C650&quality=80&ssl=1", category: "Groceries", position: [pepsiStackPos.x + j * sodaCaseSize[0], sodaCaseSize[1] / 2 + i * sodaCaseSize[1], pepsiStackPos.z + k * sodaCaseSize[2],], size: sodaCaseSize, hint: "pepsi case", });
     }
   }
 }
@@ -161,7 +161,7 @@ const waterStackPos = { x: 10, y: waterCaseSize[1] / 2, z: displayZ };
 for (let i = 0; i < 4; i++) {
   for (let j = 0; j < 3; j++) {
     for (let k = 0; k < 2; k++) {
-      products.push({ id: currentId++, name: "Aquafina Water (Display)", price: 5.99, description: "A 24-pack of purified drinking water.", image: "https://i5.walmartimages.com/seo/Aquafina-Purified-Drinking-Water-16-9-oz-24-Pack-Bottles_05de1092-424a-464a-8123-2615456f932e.9312b934e8ce934094a36d415b3a4a27.jpeg", category: "Groceries", position: [ waterStackPos.x + j * waterCaseSize[0], waterCaseSize[1] / 2 + i * waterCaseSize[1], waterStackPos.z + k * waterCaseSize[2], ], size: waterCaseSize, hint: "water case", });
+      products.push({ id: currentId++, name: "Aquafina Water (Display)", price: 5.99, description: "A 24-pack of purified drinking water.", image: "https://mir-s3-cdn-cf.behance.net/project_modules/1400/4aed4b179665855.64fdf1079be28.png", category: "Groceries", position: [waterStackPos.x + j * waterCaseSize[0], waterCaseSize[1] / 2 + i * waterCaseSize[1], waterStackPos.z + k * waterCaseSize[2],], size: waterCaseSize, hint: "water case", });
     }
   }
 }
@@ -176,7 +176,7 @@ const addProducePile = (
   for (let i = 0; i < count; i++) {
     const x = center[0] + (Math.random() - 0.5) * pileSize[0];
     const z = center[2] + (Math.random() - 0.5) * pileSize[1];
-    const y = center[1] + baseProduct.size[1] / 2 + Math.random() * 0.2; // y is surface + half height + random pile height
+    const y = center[1] + baseProduct.size[1] / 2 + Math.random() * 0.08;
 
     products.push({
       ...baseProduct,
@@ -190,18 +190,31 @@ const binSurfaceY = 1.0;
 const produceBinZ = 20;
 
 addProducePile(
-  { name: "Banana", price: 0.21, description: "A single fresh banana.", image: "https://i5.walmartimages.com/seo/Banana-Each_d50b4a45-b844-42b1-a20c-035a3d7ac5de.3f60f69a5332f1702c2e144a024564b7.jpeg", category: "Produce", size: [0.2, 0.1, 0.6], hint: "banana" },
+  { name: "Banana", price: 0.21, description: "A single fresh banana.", image: "https://files.merca20.com/uploads/2021/08/one-a-day-bananas-packaging.jpg", category: "Produce", size: [0.2, 0.1, 0.6], hint: "banana" },
   [-12, binSurfaceY, produceBinZ], [3.5, 3.5], 30
 );
 addProducePile(
-  { name: "Red Apple", price: 0.54, description: "A crisp and sweet red delicious apple.", image: "https://i5.walmartimages.com/seo/Red-Delicious-Apples-3-lb-Bag_65a39772-8419-45b0-a083-29a43a014a1e.640f1aed967e805562d9893d987d6928.jpeg", category: "Produce", size: [0.3, 0.3, 0.3], hint: "red apple" },
+  { name: "Red Apple", price: 0.54, description: "A crisp and sweet red delicious apple.", image: "https://4.imimg.com/data4/JX/WJ/ANDROID-16294238/product-1000x1000.jpeg", category: "Produce", size: [0.3, 0.3, 0.3], hint: "red apple" },
   [0, binSurfaceY, produceBinZ], [3.5, 3.5], 25
 );
 addProducePile(
-  { name: "Navel Orange", price: 0.88, description: "A sweet and juicy navel orange.", image: "https://i5.walmartimages.com/seo/Navel-Oranges-4-lb-Bag_f2b18751-c03b-488b-944a-f383e5361021.01f4a3f112e457f54c93540a58334812.jpeg", category: "Produce", size: [0.3, 0.3, 0.3], hint: "orange fruit" },
+  { name: "Navel Orange", price: 0.88, description: "A sweet and juicy navel orange.", image: "https://img06.weeecdn.com/product/image/187/337/35B5E8830448B7D5.png", category: "Produce", size: [0.3, 0.3, 0.3], hint: "orange fruit" },
   [12, binSurfaceY, produceBinZ], [3.5, 3.5], 25
 );
 
+// --- EXTRA PRODUCTS FOR DEMO ---
+stockShelf(
+  { name: "Nutella", price: 3.99, description: "Chocolate hazelnut spread.", image: "https://upload.wikimedia.org/wikipedia/commons/6/6a/Nutella_450g.png", category: "Groceries", size: [0.5, 0.6, 0.5], hint: "nutella jar" },
+  [aisle1XLeft, shelfY.mid, aisleZStart + 5], 8, "z"
+);
+stockShelf(
+  { name: "Sprite Can", price: 1.10, description: "Refreshing lemon-lime soda.", image: "https://www.pngall.com/wp-content/uploads/12/Sprite-Can-PNG-Image.png", category: "Drinks", size: [0.3, 0.5, 0.3], hint: "sprite can" },
+  [aisle2XRight, shelfY.high, aisleZStart + 8], 10, "z"
+);
+stockShelf(
+  { name: "Pringles Original", price: 2.50, description: "Crispy potato chips in a can.", image: "https://www.pngall.com/wp-content/uploads/12/Pringles-PNG-Image.png", category: "Snacks", size: [0.4, 0.8, 0.4], hint: "pringles can" },
+  [aisle1XRight, shelfY.low, aisleZStart + 12], 6, "z"
+);
 
 export const trendingProducts: string[] = [
   'onn. 50" TV',
